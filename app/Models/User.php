@@ -22,7 +22,6 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-
     protected $fillable = [
         'name',
         'email',
@@ -32,6 +31,7 @@ class User extends Authenticatable
         'status',
         'email_verified_at',
     ];
+
     protected function casts(): array
     {
         return [
