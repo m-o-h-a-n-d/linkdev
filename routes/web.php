@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Viewer\AccountController;
+use App\Http\Controllers\Viewer\TeamController;
 use App\Http\Controllers\User\Auth\EmailVerificationController;
 use App\Http\Controllers\User\Auth\LoginController;
 use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
@@ -53,7 +54,6 @@ Route::get('/matches', function () {
     return view('frontend.pages.matches');
 })->name('matches.index');
 
-Route::get('/teams', function () {
-    return view('frontend.pages.teams');
-})->name('teams.index');
+Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
 

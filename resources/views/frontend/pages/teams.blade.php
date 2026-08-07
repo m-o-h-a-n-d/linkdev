@@ -5,48 +5,48 @@
 @section('content')
 <section class="section">
     <div class="container">
-        <h1 class="section-title" style="margin-bottom: 30px;">Teams</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div>
+                <h1 class="section-title" style="margin: 0;">Teams & Clubs</h1>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 4px;">Registered handball clubs and competition participants.</p>
+            </div>
+            <span style="font-size: 0.9rem; color: #ea580c; font-weight: 700; background: rgba(234, 88, 12, 0.1); padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(234, 88, 12, 0.2);">
+                Total Teams: {{ count($teams) }}
+            </span>
+        </div>
 
         <div class="teams-grid">
+            @forelse($teams as $team)
+                <div class="team-card">
+                    <div class="team-card-header">
+                        @if(!empty($team->logo))
+                            <img src="{{ asset($team->logo) }}" alt="{{ $team->name }}" style="width: 52px; height: 52px; object-fit: contain; border-radius: 8px;">
+                        @else
+                            <div class="team-logo">{{ strtoupper(substr($team->short_name ?? $team->name, 0, 3)) }}</div>
+                        @endif
+                        <div>
+                            <div class="team-name">{{ $team->name }}</div>
+                            <div class="team-location">{{ $team->city ?? 'City' }} &middot; {{ $team->country ?? 'Egypt' }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-coach" style="margin: 12px 0;">
+                        Short Code: <strong style="color: #ffffff;">{{ $team->short_name ?? 'N/A' }}</strong>
+                    </div>
 
-            <!-- Team 1: Zamalek HC -->
-            <div class="team-card">
-                <div class="team-card-header">
-                    <div class="team-logo">ZAM</div>
                     <div>
-                        <div class="team-name">Zamalek HC</div>
-                        <div class="team-location">Cairo &middot; est. 1911</div>
+                        <a href="{{ route('teams.show', $team->id) }}" style="display: inline-block; width: 100%; text-align: center; padding: 10px; background: rgba(234, 88, 12, 0.15); border: 1px solid #ea580c; color: #ea580c; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">
+                            View Team Profile &rarr;
+                        </a>
                     </div>
                 </div>
-                <div class="team-coach">Head coach: H. Farouk</div>
-                <div class="team-stats">
-                    <div class="team-stat"><div class="team-stat-number">3</div><div class="team-stat-label">P</div></div>
-                    <div class="team-stat"><div class="team-stat-number">3</div><div class="team-stat-label">W</div></div>
-                    <div class="team-stat"><div class="team-stat-number">0</div><div class="team-stat-label">D</div></div>
-                    <div class="team-stat"><div class="team-stat-number">0</div><div class="team-stat-label">L</div></div>
+            @empty
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: #0e1626; border: 1px dashed #334155; border-radius: 12px; color: #94a3b8;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🛡️</div>
+                    <h3 style="color: #ffffff; margin-bottom: 8px;">No Teams Found</h3>
+                    <p style="font-size: 0.9rem;">There are currently no registered teams available in the system.</p>
                 </div>
-                <div class="team-goals">Goals 81 : 65</div>
-            </div>
-
-            <!-- Team 2: Al Ahly HC -->
-            <div class="team-card">
-                <div class="team-card-header">
-                    <div class="team-logo">AHL</div>
-                    <div>
-                        <div class="team-name">Al Ahly HC</div>
-                        <div class="team-location">Cairo &middot; est. 1907</div>
-                    </div>
-                </div>
-                <div class="team-coach">Head coach: M. Sayed</div>
-                <div class="team-stats">
-                    <div class="team-stat"><div class="team-stat-number">3</div><div class="team-stat-label">P</div></div>
-                    <div class="team-stat"><div class="team-stat-number">1</div><div class="team-stat-label">W</div></div>
-                    <div class="team-stat"><div class="team-stat-number">0</div><div class="team-stat-label">D</div></div>
-                    <div class="team-stat"><div class="team-stat-number">2</div><div class="team-stat-label">L</div></div>
-                </div>
-                <div class="team-goals">Goals 76 : 70</div>
-            </div>
-
+            @endforelse
         </div>
     </div>
 </section>
