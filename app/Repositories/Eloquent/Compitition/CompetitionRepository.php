@@ -5,11 +5,11 @@ namespace App\Repositories\Eloquent\Compitition;
 use App\Data\Competition\CreateCompetitionData;
 use App\Data\Competition\UpdateCompetitionData;
 use App\Models\Competition;
-use App\Repositories\Contracts\Competition\CompititionRepositoryInterface;
+use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class CompititionRepository implements CompititionRepositoryInterface
+class CompetitionRepository implements CompetitionRepositoryInterface
 {
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
