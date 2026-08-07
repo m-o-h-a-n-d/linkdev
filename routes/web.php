@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Viewer\AccountController;
+use App\Http\Controllers\User\Auth\EmailVerificationController;
 use App\Http\Controllers\User\Auth\LoginController;
 use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\User\Auth\Password\OtpVerificationController;
@@ -20,6 +21,11 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+
+// Email Verification OTP Routes
+Route::get('/email/verify-otp', [EmailVerificationController::class, 'show'])->name('verification.notice');
+Route::post('/email/verify-otp', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+Route::post('/email/resend-otp', [EmailVerificationController::class, 'resend'])->name('verification.resend');
 
 // Password Reset & OTP Routes
 Route::get('/forgot-password', [ForgetPasswordController::class, 'showForgetPasswordForm'])->name('password.request');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User\Auth;
 use App\Data\User\CreateUserData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Auth\RegisterRequest;
+use App\Services\User\EmailVerificationService;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -13,7 +14,8 @@ use Illuminate\View\View;
 class RegisterController extends Controller
 {
     public function __construct(
-        protected UserService $userService
+        protected UserService $userService,
+        protected EmailVerificationService $emailVerificationService
     ) {}
 
     /**
@@ -36,6 +38,9 @@ class RegisterController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('account.index')->with('success', 'Account created successfully!');
+        // Send Email Verification OTP
+        $this->emailVerificationService->sendVerificationOtp($user->email);
+
+        return redirect()->route('verification.notice')->with('status', 'Registration successful! Please verify your email address with the OTP code sent to your email.');
     }
 }
