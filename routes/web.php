@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\User\AccountController;
+use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\User\Auth\LoginController;
 use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\User\Auth\Password\OtpVerificationController;

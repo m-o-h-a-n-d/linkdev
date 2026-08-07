@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\User;
+
 use App\Data\User\Auth\ResetPasswordData;
-use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\User\UserRepositoryInterface;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;

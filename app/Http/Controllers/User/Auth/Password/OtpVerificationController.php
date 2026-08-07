@@ -7,7 +7,7 @@ use App\Data\User\Auth\VerifyOtpData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Auth\ForgotPasswordRequest;
 use App\Http\Requests\User\Auth\VerifyOtpRequest;
-use App\Services\OtpService;
+use App\Services\User\OtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;

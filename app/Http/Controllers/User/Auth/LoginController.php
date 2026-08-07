@@ -12,7 +12,7 @@ class LoginController extends Controller
 {
 
     public function __construct(
-        protected  readonly \App\Services\UserService $userService,
+        protected  readonly \App\Services\User\UserService $userService,
     ) {}
     public function show(): View
     {

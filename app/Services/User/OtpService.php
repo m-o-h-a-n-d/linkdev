@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\User;
 
 use App\Notifications\SendOtpNotify;
-use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\Password;
 
 class OtpService

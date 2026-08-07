@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Contracts;
+namespace App\Repositories\Contracts\User;
 
 use App\Data\User\CreateUserData;
 use App\Data\User\UpdateUserData;
@@ -15,7 +15,6 @@ interface UserRepositoryInterface
     public function all(): Collection;
 
     public function find(int $id): ?User;
-
 
     public function create(CreateUserData $data): User;
 

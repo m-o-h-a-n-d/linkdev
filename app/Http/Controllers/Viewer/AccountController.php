@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Viewer;
 
 use App\Data\User\UpdateUserData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateAccountRequest;
-use App\Services\UserService;
+use App\Services\User\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 

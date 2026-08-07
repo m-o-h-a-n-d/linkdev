@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\User;
 
 use App\Data\User\CreateUserData;
 use App\Data\User\LoginData;
 use App\Data\User\UpdateUserData;
 use App\Models\User;
-use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\User\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -28,8 +28,6 @@ class UserService
     {
         return $this->userRepository->all();
     }
-
-
 
     public function findOrFail(int $id): User
     {
@@ -66,7 +64,7 @@ class UserService
         return Auth::attempt($data->toArray());
     }
 
-     public function sendResetLink(string $email): string
+    public function sendResetLink(string $email): string
     {
         return Password::sendResetLink([
             'email' => $email,
