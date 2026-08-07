@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Eloquent;
 
-use App\DTOs\User\CreateUserData;
-use App\DTOs\User\UpdateUserData;
+use App\Data\User\CreateUserData;
+use App\Data\User\UpdateUserData;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -23,7 +23,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function find(int $id): ?User
     {
-        return User::findOrFail($id);
+        return User::find($id);
     }
 
     public function create(CreateUserData $data): User
@@ -41,5 +41,10 @@ class UserRepository implements UserRepositoryInterface
     public function delete(User $user): bool
     {
         return (bool) $user->delete();
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
     }
 }

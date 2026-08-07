@@ -172,6 +172,23 @@ h3 { font-size: 1.25rem; }
   border-color: var(--accent-orange);
 }
 
+.btn-nav-signin {
+  padding: 8px 20px;
+  border: 1px solid var(--accent-orange);
+  border-radius: 4px;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  background: var(--accent-orange);
+  transition: var(--transition);
+}
+
+.btn-nav-signin:hover,
+.btn-nav-signin.active {
+  background: var(--accent-orange-hover);
+  border-color: var(--accent-orange-hover);
+  color: #ffffff !important;
+}
+
 .mobile-toggle {
   display: none;
   flex-direction: column;
@@ -744,6 +761,12 @@ h3 { font-size: 1.25rem; }
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.form-group.form-options {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .form-label {

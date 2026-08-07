@@ -60,6 +60,14 @@
                 >
             </div>
 
+            <div class="form-group form-options" style="flex-direction: row !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 0.5rem;">
+                <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; color: #94a3b8; margin: 0;">
+                    <input type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }} style="width: 16px; height: 16px; cursor: pointer;">
+                    Remember Me
+                </label>
+                <a href="{{ route('password.request') }}" style="font-size: 0.9rem; color: #ea580c; text-decoration: none;">Forgot Password?</a>
+            </div>
+
             <button type="submit" class="btn-submit">Sign In</button>
         </form>
 

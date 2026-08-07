@@ -61,8 +61,44 @@
                     id="email" 
                     name="email" 
                     class="form-control" 
-                    value="{{ old('email', $user->email ?? 'mohabmohan800@gmail.com') }}" 
+                    value="{{ old('email', $user->email ?? '') }}" 
                     required
+                >
+            </div>
+
+            <!-- Current Password -->
+            <div class="form-group">
+                <label for="current_password" class="form-label">CURRENT PASSWORD (REQUIRED TO CHANGE PASSWORD)</label>
+                <input 
+                    type="password" 
+                    id="current_password" 
+                    name="current_password" 
+                    class="form-control" 
+                    placeholder="Leave blank unless changing password"
+                >
+            </div>
+
+            <!-- New Password -->
+            <div class="form-group">
+                <label for="password" class="form-label">NEW PASSWORD</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-control" 
+                    placeholder="Enter new password (minimum 8 characters)"
+                >
+            </div>
+
+            <!-- Confirm New Password -->
+            <div class="form-group">
+                <label for="password_confirmation" class="form-label">CONFIRM NEW PASSWORD</label>
+                <input 
+                    type="password" 
+                    id="password_confirmation" 
+                    name="password_confirmation" 
+                    class="form-control" 
+                    placeholder="Confirm new password"
                 >
             </div>
 

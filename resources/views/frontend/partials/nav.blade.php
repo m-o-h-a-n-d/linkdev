@@ -8,7 +8,11 @@
             <a href="{{ url('/competitions') }}" class="{{ request()->is('competitions*') ? 'active' : '' }}">Competitions</a>
             <a href="{{ url('/matches') }}" class="{{ request()->is('matches*') ? 'active' : '' }}">Matches</a>
             <a href="{{ url('/teams') }}" class="{{ request()->is('teams*') ? 'active' : '' }}">Teams</a>
-            <a href="{{ route('account.index') }}" class="btn-nav-account {{ request()->routeIs('account.*') ? 'active' : '' }}">ACCOUNT</a>
+            @auth
+                <a href="{{ route('account.index') }}" class="btn-nav-account {{ request()->routeIs('account.*') ? 'active' : '' }}">ACCOUNT</a>
+            @else
+                <a href="{{ route('login') }}" class="btn-nav-signin {{ request()->routeIs('login') ? 'active' : '' }}">SIGN IN</a>
+            @endauth
         </div>
         <button class="mobile-toggle" aria-label="Toggle menu">
             <span></span>

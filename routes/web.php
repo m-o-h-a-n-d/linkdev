@@ -1,7 +1,11 @@
 <?php
 
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\AccountController;
+use App\Http\Controllers\User\Auth\LoginController;
+use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
+use App\Http\Controllers\User\Auth\Password\OtpVerificationController;
+use App\Http\Controllers\User\Auth\Password\ResetPasswordController;
+use App\Http\Controllers\User\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 // Home Page
@@ -9,52 +13,30 @@ Route::get('/', function () {
     return view('frontend.index');
 })->name('home');
 
-// Account Page - Direct Route Closures without Controller
-Route::get('/account', function () {
-    $user = auth()->user() ?? User::first();
-    if (! $user) {
-        $user = User::create([
-            'name' => 'System Admin',
-            'email' => 'admin@linkdev.com',
-            'password' => bcrypt('password'),
-        ]);
-    }
-    return view('frontend.account.account', compact('user'));
-})->name('account.index');
-
-Route::put('/account', function (Request $request) {
-    $user = auth()->user() ?? User::first();
-    if (! $user) {
-        $user = User::create([
-            'name' => 'System Admin',
-            'email' => 'admin@linkdev.com',
-            'password' => bcrypt('password'),
-        ]);
-    }
-
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-    ]);
-
-    $user->update($validated);
-
-    return redirect()->route('account.index')->with('success', 'Account details updated successfully!');
-})->name('account.update');
-
 // Auth Pages
-Route::get('/login', function () {
-    return view('frontend.auth.login');
-})->name('login');
+Route::get('/login', [LoginController::class, 'show'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/register', function () {
-    return view('frontend.auth.register');
-})->name('register');
+Route::get('/register', [RegisterController::class, 'show'])->name('register');
+Route::post('/register', [RegisterController::class, 'store']);
+Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
 
-Route::post('/logout', function () {
-    auth()->logout();
-    return redirect()->route('login');
-})->name('logout');
+// Password Reset & OTP Routes
+Route::get('/forgot-password', [ForgetPasswordController::class, 'showForgetPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [ForgetPasswordController::class, 'sendOtp'])->name('password.email');
+
+Route::get('/verify-otp', [OtpVerificationController::class, 'showOtpForm'])->name('password.otp.show');
+Route::post('/verify-otp', [OtpVerificationController::class, 'verifyOtp'])->name('password.otp.verify');
+Route::post('/resend-otp', [OtpVerificationController::class, 'resendOtp'])->name('password.otp.resend');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
+
+// Account Page (Protected by auth middleware)
+Route::middleware('auth:web')->group(function () {
+    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+    Route::put('/account', [AccountController::class, 'update'])->name('account.update');
+});
 
 // Public Pages
 Route::get('/competitions', function () {
@@ -68,3 +50,4 @@ Route::get('/matches', function () {
 Route::get('/teams', function () {
     return view('frontend.pages.teams');
 })->name('teams.index');
+
