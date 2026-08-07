@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Eloquent\Compitition;
+namespace App\Repositories\Eloquent\Competition;
 
 use App\Data\Competition\CreateCompetitionData;
 use App\Data\Competition\UpdateCompetitionData;

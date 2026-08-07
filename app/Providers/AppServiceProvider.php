@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
+use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Team\TeamRepository;
+use App\Repositories\Eloquent\Competition\CompetitionRepository;
 use App\Repositories\Eloquent\User\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(TeamRepositoryInterface::class, TeamRepository::class);
+        $this->app->bind(CompetitionRepositoryInterface::class, CompetitionRepository::class);
     }
 
     /**
