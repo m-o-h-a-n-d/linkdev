@@ -18,12 +18,12 @@ class TeamRepository implements TeamRepositoryInterface
 
     public function all(): Collection
     {
-        return Team::get();
+        return Team::all();
     }
 
     public function find(int $id): ?Team
     {
-        return Team::find($id);
+        return Team::findOrFail($id);
     }
 
     public function create(CreateTeamData $data): Team
