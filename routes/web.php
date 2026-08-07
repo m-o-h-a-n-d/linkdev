@@ -47,12 +47,8 @@ Route::middleware('auth:web')->group(function () {
 });
 
 // Public Pages
-Route::get('/competitions', function () {
-    return view('frontend.pages.competitions');
-})->name('competitions.index');
-Route::get('/competitions/{id}', function ($id) {
-    return view('frontend.pages.competition-detail', ['competitionId' => $id]);
-})->name('competitions.show');
+Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
+Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
 
 Route::get('/matches', function () {
     return view('frontend.pages.matches');
