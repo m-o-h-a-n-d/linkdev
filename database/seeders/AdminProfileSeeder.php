@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\StaffProfile;
+use App\Models\AdminProfile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class StaffProfileSeeder extends Seeder
+class AdminProfileSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,7 +20,7 @@ class StaffProfileSeeder extends Seeder
         }
 
         foreach ($users->take(4) as $user) {
-            StaffProfile::factory()->create([
+            AdminProfile::factory()->create([
                 'user_id' => $user->id,
             ]);
         }

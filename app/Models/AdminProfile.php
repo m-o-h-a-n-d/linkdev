@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class StaffProfile extends Model
+class AdminProfile extends Model
 {
     use HasFactory;
 
-    protected $table = 'staff_profiles';
+    protected $table = 'admin_profiles';
 
     protected $fillable = [
         'user_id',
@@ -23,7 +23,7 @@ class StaffProfile extends Model
     ];
 
     /**
-     * Get the user that owns the staff profile.
+     * Get the user that owns the admin profile.
      */
     public function user(): BelongsTo
     {

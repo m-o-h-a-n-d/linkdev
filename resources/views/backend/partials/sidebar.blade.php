@@ -101,10 +101,10 @@
         </a>
     </li>
 
-    <li class="nav-item {{ request()->routeIs('admin.staff*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.staff.index') }}">
+    <li class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.admins.index') }}">
             <i class="fas fa-fw fa-user-tie"></i>
-            <span>Staff Management</span>
+            <span>Admin Management</span>
         </a>
     </li>
 

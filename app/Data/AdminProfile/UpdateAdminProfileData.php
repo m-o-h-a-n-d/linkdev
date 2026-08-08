@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Data\StaffProfile;
+namespace App\Data\AdminProfile;
 
 use Spatie\LaravelData\Data;
 
-class UpdateStaffProfileData extends Data
+class UpdateAdminProfileData extends Data
 {
     public function __construct(
         public ?string $phone = null,

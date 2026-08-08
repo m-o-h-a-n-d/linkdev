@@ -177,40 +177,40 @@
                 </div>
             </div>
 
-            <!-- MODULE 4: STAFF & REFEREES -->
+            <!-- MODULE 4: ADMINS & REFEREES -->
             <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <div class="font-weight-bold text-warning h6 mb-0">
-                        <i class="fas fa-user-tie mr-2"></i>Staff & Match Officials
+                        <i class="fas fa-user-tie mr-2"></i>Admins & Match Officials
                     </div>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleStaffAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleStaffAll">Select Module All</label>
+                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleAdminAll">
+                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleAdminAll">Select Module All</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-3 mb-2">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-staff" id="perm_staff_view" checked>
-                            <label class="custom-control-label font-weight-bold small" for="perm_staff_view">View Staff Directory</label>
+                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_view" checked>
+                            <label class="custom-control-label font-weight-bold small" for="perm_admin_view">View Admins Directory</label>
                         </div>
                     </div>
                     <div class="col-md-3 mb-2">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-staff" id="perm_staff_create">
-                            <label class="custom-control-label font-weight-bold small" for="perm_staff_create">Register Staff</label>
+                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_create">
+                            <label class="custom-control-label font-weight-bold small" for="perm_admin_create">Register Admin</label>
                         </div>
                     </div>
                     <div class="col-md-3 mb-2">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-staff" id="perm_staff_edit">
-                            <label class="custom-control-label font-weight-bold small" for="perm_staff_edit">Edit Staff Profile</label>
+                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_edit">
+                            <label class="custom-control-label font-weight-bold small" for="perm_admin_edit">Edit Admin Profile</label>
                         </div>
                     </div>
                     <div class="col-md-3 mb-2">
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-staff" id="perm_staff_delete">
-                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_staff_delete">Delete Staff Member</label>
+                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_delete">
+                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_admin_delete">Delete Admin Member</label>
                         </div>
                     </div>
                 </div>

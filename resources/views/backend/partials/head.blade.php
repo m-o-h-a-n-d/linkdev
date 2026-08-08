@@ -17,7 +17,7 @@
 
     <!-- Premium Handball Animations & Design -->
     <link href="{{ asset('backend/css/handball-pro.css') }}?v={{ time() }}" rel="stylesheet">
-    <link href="{{ asset('backend/css/staff-cards.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('backend/css/admin-cards.css') }}?v={{ time() }}" rel="stylesheet">
 
     <!-- Immediate Sidebar State Initialization (Prevent FOUC / Animation Flash) -->
     <script>

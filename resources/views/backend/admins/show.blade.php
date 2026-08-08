@@ -10,22 +10,22 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0 mb-0 small">
                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard.index') }}" class="text-muted"><i class="fas fa-home mr-1"></i>Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.staff.index') }}" class="text-muted">Staff Directory</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('admin.admins.index') }}" class="text-muted">Admins Directory</a></li>
                 <li class="breadcrumb-item active text-primary font-weight-bold" aria-current="page">View Profile</li>
             </ol>
         </nav>
     </div>
     <div>
-        <a href="{{ route('admin.staff.edit') }}" class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
+        <a href="{{ route('admin.admins.edit') }}" class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
             <i class="fas fa-edit mr-1"></i> Edit Profile
         </a>
-        <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary shadow-sm font-weight-bold px-3" style="border-radius: 10px;">
+        <a href="{{ route('admin.admins.index') }}" class="btn btn-outline-secondary shadow-sm font-weight-bold px-3" style="border-radius: 10px;">
             <i class="fas fa-arrow-left mr-1"></i> Back to Directory
         </a>
     </div>
 </div>
 
-<!-- CENTERED & WIDER PROFILE CARD ("في نص الصفحة وواسع حبتين") -->
+<!-- CENTERED & WIDER PROFILE CARD -->
 <div class="row">
     <div class="col-lg-8 col-xl-7 mx-auto mb-5">
 
@@ -34,7 +34,7 @@
             <div class="profile-card-banner-wide">
                 <div class="d-flex justify-content-between align-items-center p-3 text-white">
                     <span class="badge badge-light text-primary font-weight-bold px-3 py-2" style="border-radius: 20px;">
-                        <i class="fas fa-user-shield mr-1"></i> Staff Profile ID: #STF-2026
+                        <i class="fas fa-user-shield mr-1"></i> Admin Profile ID: #ADM-2026
                     </span>
                     <span class="badge badge-success font-weight-bold px-3 py-2" style="border-radius: 20px;">
                         <i class="fas fa-check-circle mr-1"></i> Active Official
@@ -104,10 +104,10 @@
 
                 <!-- Action Footer -->
                 <div class="mt-4 pt-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid #1e293b;">
-                    <a href="{{ route('admin.staff.index') }}" class="btn btn-secondary rounded-pill font-weight-bold px-4">
-                        <i class="fas fa-chevron-left mr-1"></i> Return to Staff List
+                    <a href="{{ route('admin.admins.index') }}" class="btn btn-secondary rounded-pill font-weight-bold px-4">
+                        <i class="fas fa-chevron-left mr-1"></i> Return to Admins List
                     </a>
-                    <a href="{{ route('admin.staff.edit') }}" class="btn btn-primary rounded-pill font-weight-bold px-4" style="background: #ea580c; border: none;">
+                    <a href="{{ route('admin.admins.edit') }}" class="btn btn-primary rounded-pill font-weight-bold px-4" style="background: #ea580c; border: none;">
                         <i class="fas fa-cog mr-1"></i> Edit Profile Settings
                     </a>
                 </div>

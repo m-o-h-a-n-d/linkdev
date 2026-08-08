@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Data\StaffProfile;
+namespace App\Data\AdminProfile;
 
 use Spatie\LaravelData\Data;
 
-class CreateStaffProfileData extends Data
+class CreateAdminProfileData extends Data
 {
     public function __construct(
         public int $user_id,

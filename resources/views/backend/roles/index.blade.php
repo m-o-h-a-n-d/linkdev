@@ -123,7 +123,7 @@
                         </td>
                         <td class="align-middle">
                             <div class="d-flex flex-wrap" style="gap: 4px;">
-                                <span class="badge badge-info">Staff (CRUD)</span>
+                                <span class="badge badge-info">Admins (CRUD)</span>
                                 <span class="badge badge-secondary">Matches (View)</span>
                                 <span class="badge badge-success">Match Reports</span>
                             </div>

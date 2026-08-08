@@ -206,28 +206,28 @@ Route::prefix('admin')->name('admin.')->group(function () {
         })->name('show');
     });
 
-    // 9. Staff Management
-    Route::prefix('staff')->name('staff.')->group(function () {
+    // 9. Admin Management
+    Route::prefix('admins')->name('admins.')->group(function () {
         Route::get('/', function () {
-            return view('backend.staff.index');
+            return view('backend.admins.index');
         })->name('index');
 
         Route::get('/create', function () {
-            return view('backend.staff.create');
+            return view('backend.admins.create');
         })->name('create');
 
         Route::get('/edit', function () {
-            return view('backend.staff.edit');
+            return view('backend.admins.edit');
         })->name('edit');
 
         Route::get('/show', function () {
-            return view('backend.staff.show');
+            return view('backend.admins.show');
         })->name('show');
     });
 
     // Profile Settings Route (Topbar Profile Direct Link)
     Route::get('/profile', function () {
-        return view('backend.staff.edit');
+        return view('backend.admins.edit');
     })->name('profile');
 
     // 10. Activity Logs

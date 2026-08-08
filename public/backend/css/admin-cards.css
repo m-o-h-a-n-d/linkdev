@@ -1,9 +1,9 @@
 /* ==========================================
-   PREMIUM STAFF CARDS & PROFILE UI SYSTEM
+   PREMIUM ADMIN CARDS & PROFILE UI SYSTEM
    ========================================== */
 
 /* Modern Card Layout (Dark Mode Compatible) */
-.staff-card {
+.admin-card, .staff-card {
     border: 1px solid #1e293b;
     border-radius: 16px;
     overflow: hidden;
@@ -13,53 +13,53 @@
     position: relative;
 }
 
-.staff-card:hover {
+.admin-card:hover, .staff-card:hover {
     transform: translateY(-6px);
     border-color: #ea580c;
     box-shadow: 0 12px 40px rgba(234, 88, 12, 0.2);
 }
 
 /* Vibrant Card Header Gradients */
-.staff-card-header {
+.admin-card-header, .staff-card-header {
     height: 110px;
     position: relative;
     padding: 12px 16px;
 }
 
-.staff-card-header-gradient-1 {
+.admin-card-header-gradient-1, .staff-card-header-gradient-1 {
     background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
 }
 
-.staff-card-header-gradient-2 {
+.admin-card-header-gradient-2, .staff-card-header-gradient-2 {
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
 }
 
-.staff-card-header-gradient-3 {
+.admin-card-header-gradient-3, .staff-card-header-gradient-3 {
     background: linear-gradient(135deg, #654ea3 0%, #eaafc8 100%);
 }
 
-.staff-card-header-gradient-4 {
+.admin-card-header-gradient-4, .staff-card-header-gradient-4 {
     background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
 }
 
-.staff-card-header-gradient-5 {
+.admin-card-header-gradient-5, .staff-card-header-gradient-5 {
     background: linear-gradient(135deg, #4776e6 0%, #8e54e9 100%);
 }
 
-.staff-card-header-gradient-6 {
+.admin-card-header-gradient-6, .staff-card-header-gradient-6 {
     background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%);
 }
 
-.staff-card-header-gradient-7 {
+.admin-card-header-gradient-7, .staff-card-header-gradient-7 {
     background: linear-gradient(135deg, #1d976c 0%, #93f9b9 100%);
 }
 
-.staff-card-header-gradient-8 {
+.admin-card-header-gradient-8, .staff-card-header-gradient-8 {
     background: linear-gradient(135deg, #8a2387 0%, #e94057 50%, #f27121 100%);
 }
 
 /* Card Menu Options Button */
-.staff-card-options {
+.admin-card-options, .staff-card-options {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -77,21 +77,21 @@
     transition: background 0.2s ease;
 }
 
-.staff-card-options:hover {
+.admin-card-options:hover, .staff-card-options:hover {
     background: rgba(234, 88, 12, 0.8);
     border-color: #ea580c;
     color: #ffffff;
 }
 
 /* Floating Avatar Circle */
-.staff-avatar-wrapper {
+.admin-avatar-wrapper, .staff-avatar-wrapper {
     position: relative;
     margin-top: -45px;
     display: flex;
     justify-content: center;
 }
 
-.staff-avatar-circle {
+.admin-avatar-circle, .staff-avatar-circle {
     width: 90px;
     height: 90px;
     border-radius: 50%;
@@ -102,11 +102,11 @@
     transition: transform 0.3s ease;
 }
 
-.staff-card:hover .staff-avatar-circle {
+.admin-card:hover .admin-avatar-circle, .staff-card:hover .staff-avatar-circle {
     transform: scale(1.06);
 }
 
-.staff-avatar-placeholder {
+.admin-avatar-placeholder, .staff-avatar-placeholder {
     width: 90px;
     height: 90px;
     border-radius: 50%;
@@ -121,19 +121,19 @@
 }
 
 /* Card Body Details */
-.staff-card-body {
+.admin-card-body, .staff-card-body {
     padding: 16px 20px 20px 20px;
     text-align: center;
 }
 
-.staff-name {
+.admin-name, .staff-name {
     font-size: 1.15rem;
     font-weight: 800;
     color: #f8fafc;
     margin-bottom: 2px;
 }
 
-.staff-email {
+.admin-email, .staff-email {
     font-size: 0.85rem;
     color: #94a3b8;
     margin-bottom: 16px;
@@ -141,7 +141,7 @@
 }
 
 /* Two-Column Info Box Pill */
-.staff-info-pill-box {
+.admin-info-pill-box, .staff-info-pill-box {
     background: #162238;
     border-radius: 12px;
     padding: 10px 12px;
@@ -151,29 +151,29 @@
     border: 1px solid #1e293b;
 }
 
-.staff-info-col {
+.admin-info-col, .staff-info-col {
     flex: 1;
     text-align: center;
 }
 
-.staff-info-col:first-child {
+.admin-info-col:first-child, .staff-info-col:first-child {
     border-right: 1px solid #1e293b;
 }
 
-.staff-info-label {
+.admin-info-label, .staff-info-label {
     font-size: 0.85rem;
     font-weight: 700;
     color: #f8fafc;
     margin-bottom: 2px;
 }
 
-.staff-info-value {
+.admin-info-value, .staff-info-value {
     font-size: 0.75rem;
     color: #94a3b8;
 }
 
 /* View Profile Link Action */
-.staff-view-link {
+.admin-view-link, .staff-view-link {
     color: #ea580c;
     font-size: 0.88rem;
     font-weight: 700;
@@ -183,7 +183,7 @@
     transition: color 0.2s ease, transform 0.2s ease;
 }
 
-.staff-view-link:hover {
+.admin-view-link:hover, .staff-view-link:hover {
     color: #f97316;
     text-decoration: none;
     transform: translateX(3px);

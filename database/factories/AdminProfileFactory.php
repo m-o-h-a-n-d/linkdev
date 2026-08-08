@@ -2,16 +2,16 @@
 
 namespace Database\Factories;
 
-use App\Models\StaffProfile;
+use App\Models\AdminProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<StaffProfile>
+ * @extends Factory<AdminProfile>
  */
-class StaffProfileFactory extends Factory
+class AdminProfileFactory extends Factory
 {
-    protected $model = StaffProfile::class;
+    protected $model = AdminProfile::class;
 
     public function definition(): array
     {

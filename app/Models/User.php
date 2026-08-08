@@ -52,11 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Get the staff profile associated with the user.
+     * Get the admin profile associated with the user.
      */
-    public function staffProfile(): HasOne
+    public function adminProfile(): HasOne
     {
-        return $this->hasOne(StaffProfile::class);
+        return $this->hasOne(AdminProfile::class);
     }
 
     /**
