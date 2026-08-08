@@ -2,28 +2,35 @@
 
 namespace App\Http\Controllers\Admin\Auth\Password;
 
+use App\Data\User\Auth\ForgotPasswordData;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\Auth\ForgotPasswordRequest;
 
 class ForgetPasswordController extends Controller
 {
+
+
     public function showForgetPasswordForm()
     {
         return view('backend.auth.forgot-password');
-    
+
     }
 
-    public function sendOtp(ForgetPasswordRequest $request)
+    public function sendOtp(ForgotPasswordRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $request->validated();
 
-        if(!$user || !$user->admin()->exists()){
-            return redirect()->back()->with('error', 'User not found');
-        }
+        $dto = ForgotPasswordData::from($request);
 
         
 
-        
-        
+
+
+
+
+
+
+
+
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\Viewer\AccountController;
-use App\Http\Controllers\Viewer\TeamController;
+use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\User\Auth\EmailVerificationController;
 use App\Http\Controllers\User\Auth\LoginController;
 use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\User\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\User\Auth\Password\ResetPasswordController;
 use App\Http\Controllers\User\Auth\RegisterController;
-use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
+use App\Http\Controllers\Viewer\AccountController;
+use App\Http\Controllers\Viewer\TeamController;
 use Illuminate\Support\Facades\Route;
 
 // Home Page
@@ -22,7 +22,7 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
-Route::post('/logout',[LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Email Verification OTP Routes
 Route::get('/email/verify-otp', [EmailVerificationController::class, 'show'])->name('verification.notice');
@@ -69,17 +69,8 @@ Route::get('/team-registration', function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
-    // 1. Dashboard
-    Route::prefix('dashboard')->name('dashboard.')->group(function () {
-        Route::get('/', function () {
-            return view('backend.dashboard.index');
-        })->name('index');
-    });
-    Route::get('/', function () {
-        return view('backend.dashboard.index');
-    })->name('dashboard');
 
-     Route::prefix('auth')->name('auth.')->group(function () {
+    Route::prefix('auth')->name('auth.')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'show'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login']);
         Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
@@ -96,6 +87,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
             return view('backend.auth.reset-password');
         })->name('reset-password');
     });
+    // 1. Dashboard
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.dashboard.index');
+        })->name('index');
+    });
+    Route::get('/', function () {
+        return view('backend.dashboard.index');
+    })->name('dashboard');
 
     // 2. Competitions
     Route::prefix('competitions')->name('competitions.')->group(function () {
@@ -257,8 +257,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Auth Pages
-    
+
 });
-
-
-

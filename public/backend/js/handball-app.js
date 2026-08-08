@@ -80,14 +80,7 @@ function initCountUpNumbers() {
 // ═══════════════════════════════════════
 
 function initNavActiveHighlight() {
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  const navLinks = document.querySelectorAll('.sidebar .nav-item .nav-link');
-  navLinks.forEach(link => {
-    const href = link.getAttribute('href');
-    if (href && href.includes(currentPage)) {
-      link.closest('.nav-item').classList.add('active');
-    }
-  });
+  // Server-side Laravel Blade handles route highlighting accurately via request()->routeIs()
 }
 
 // ═══════════════════════════════════════
