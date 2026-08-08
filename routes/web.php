@@ -57,3 +57,209 @@ Route::get('/matches', function () {
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
 
+// Public Team Registration Form Link for Coaches
+Route::get('/team-registration', function () {
+    return view('frontend.team-registration');
+})->name('team-registration.public');
+
+/*
+|--------------------------------------------------------------------------
+| Admin / Backend Direct View Routes (Dedicated Subfolder per Sidebar Item)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('admin')->name('admin.')->group(function () {
+    // 1. Dashboard
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.dashboard.index');
+        })->name('index');
+    });
+    Route::get('/', function () {
+        return view('backend.dashboard.index');
+    })->name('dashboard');
+
+    // 2. Competitions
+    Route::prefix('competitions')->name('competitions.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.competitions.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.competitions.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.competitions.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.competitions.show');
+        })->name('show');
+    });
+
+    // 3. Groups
+    Route::prefix('groups')->name('groups.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.groups.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.groups.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.groups.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.groups.show');
+        })->name('show');
+    });
+
+    // 4. Matches
+    Route::prefix('matches')->name('matches.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.matches.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.matches.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.matches.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.matches.show');
+        })->name('show');
+
+        Route::get('/live-center', function () {
+            return view('backend.matches.live-center');
+        })->name('live-center');
+    });
+
+    // 5. Standings
+    Route::prefix('standings')->name('standings.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.standings.index');
+        })->name('index');
+    });
+
+    // 6. Teams
+    Route::prefix('teams')->name('teams.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.teams.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.teams.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.teams.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.teams.show');
+        })->name('show');
+    });
+
+    // 7. Team Statistics
+    Route::prefix('statistics')->name('statistics.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.statistics.index');
+        })->name('index');
+    });
+
+    // 8. Users Directory
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.users.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.users.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.users.edit');
+        })->name('edit');
+    });
+
+    // Roles & Permissions Management
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.roles.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.roles.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.roles.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.roles.show');
+        })->name('show');
+    });
+
+    // 9. Admin Management
+    Route::prefix('admins')->name('admins.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.admins.index');
+        })->name('index');
+
+        Route::get('/create', function () {
+            return view('backend.admins.create');
+        })->name('create');
+
+        Route::get('/edit', function () {
+            return view('backend.admins.edit');
+        })->name('edit');
+
+        Route::get('/show', function () {
+            return view('backend.admins.show');
+        })->name('show');
+    });
+
+    // Profile Settings Route (Topbar Profile Direct Link)
+    Route::get('/profile', function () {
+        return view('backend.admins.edit');
+    })->name('profile');
+
+    // 10. Activity Logs
+    Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
+        Route::get('/', function () {
+            return view('backend.activity-logs.index');
+        })->name('index');
+    });
+
+    // Auth Pages
+    Route::prefix('auth')->name('auth.')->group(function () {
+        Route::get('/login', function () {
+            return view('backend.auth.login');
+        })->name('login');
+
+        Route::get('/register', function () {
+            return view('backend.auth.register');
+        })->name('register');
+
+        Route::get('/forgot-password', function () {
+            return view('backend.auth.forgot-password');
+        })->name('forgot-password');
+
+        Route::get('/verify-otp', function () {
+            return view('backend.auth.verify-otp');
+        })->name('verify-otp');
+
+        Route::get('/reset-password', function () {
+            return view('backend.auth.reset-password');
+        })->name('reset-password');
+    });
+});
+
+
+
