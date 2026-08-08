@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="ahlyBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b91c1c"/>
+      <stop offset="100%" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield Base -->
+  <path d="M 50 6 C 85 6 92 20 92 50 C 92 88 50 114 50 114 C 50 114 8 88 8 50 C 8 20 15 6 50 6 Z" fill="url(#ahlyBg)" stroke="url(#goldGrad)" stroke-width="3.5"/>
+
+  <!-- Inner Gold Shield Border -->
+  <path d="M 50 12 C 80 12 85 24 85 48 C 85 80 50 104 50 104 C 50 104 15 80 15 48 C 15 24 20 12 50 12 Z" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Eagle Silhouette -->
+  <!-- Wings Spread -->
+  <path d="M 50 32 C 40 22 24 24 18 36 C 24 38 32 36 40 42 C 32 46 22 48 16 60 C 26 56 35 52 44 56 C 36 62 26 70 24 82 C 34 74 44 68 50 72 C 56 68 66 74 76 82 C 74 70 64 62 56 56 C 65 52 74 56 84 60 C 78 48 68 46 60 42 C 68 36 76 38 82 36 C 76 24 60 22 50 32 Z" fill="#ffffff"/>
+
+  <!-- Eagle Head -->
+  <path d="M 50 28 C 47 24 45 20 50 16 C 53 18 56 22 55 26 C 58 24 61 24 60 27 C 56 29 53 30 50 28 Z" fill="url(#goldGrad)"/>
+
+  <!-- Stars at top -->
+  <g fill="url(#goldGrad)">
+    <polygon points="50,18 51.5,22 56,22 52.5,24.5 54,29 50,26 46,29 47.5,24.5 44,22 48.5,22" transform="translate(0, -12) scale(0.6) translate(33, 0)"/>
+    <polygon points="50,18 51.5,22 56,22 52.5,24.5 54,29 50,26 46,29 47.5,24.5 44,22 48.5,22" transform="translate(-18, -8) scale(0.5) translate(50, 0)"/>
+    <polygon points="50,18 51.5,22 56,22 52.5,24.5 54,29 50,26 46,29 47.5,24.5 44,22 48.5,22" transform="translate(18, -8) scale(0.5) translate(16, 0)"/>
+  </g>
+
+  <!-- Arabic Calligraphy Text Ribbon simulated -->
+  <path d="M 28 90 Q 50 98 72 90 Q 50 102 28 90 Z" fill="url(#goldGrad)"/>
+  <text x="50" y="86" text-anchor="middle" fill="#ffffff" font-family="'Inter', sans-serif" font-weight="900" font-size="11" letter-spacing="1"> الأهلي </text>
+</svg>

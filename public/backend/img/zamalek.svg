@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+  <defs>
+    <linearGradient id="zamalekBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="zamGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+    <linearGradient id="whiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Shield -->
+  <path d="M 50 6 L 90 22 L 90 60 C 90 88 50 114 50 114 C 50 114 10 88 10 60 L 10 22 Z" fill="url(#zamalekBg)" stroke="url(#zamGold)" stroke-width="3.5"/>
+
+  <!-- Inner Red Stripes (Iconic Zamalek 2 Red Lines) -->
+  <line x1="16" y1="36" x2="84" y2="36" stroke="#ef4444" stroke-width="3"/>
+  <line x1="18" y1="44" x2="82" y2="44" stroke="#ef4444" stroke-width="3"/>
+
+  <!-- Pharaonic Archer Silhouette -->
+  <!-- Bow -->
+  <path d="M 32 30 C 22 50 24 75 38 88" fill="none" stroke="url(#zamGold)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Bow String -->
+  <line x1="32" y1="30" x2="38" y2="88" stroke="url(#whiteGrad)" stroke-width="1.2" opacity="0.8"/>
+
+  <!-- Arrow -->
+  <line x1="26" y1="62" x2="72" y2="42" stroke="url(#zamGold)" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="72,42 64,42 68,48" fill="url(#zamGold)"/>
+
+  <!-- Archer Body (Pharaoh Aiming Bow) -->
+  <!-- Head / Crown -->
+  <circle cx="44" cy="50" r="5" fill="url(#whiteGrad)"/>
+  <path d="M 42 45 L 36 42 L 40 48 Z" fill="url(#zamGold)"/>
+  <!-- Torso & Arms aiming -->
+  <path d="M 44 55 L 56 50 L 66 45" fill="none" stroke="url(#whiteGrad)" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 44 55 L 36 58 L 34 52" fill="none" stroke="url(#whiteGrad)" stroke-width="3" stroke-linecap="round"/>
+  <!-- Kilt / Legs in stance -->
+  <path d="M 44 55 L 48 72 L 54 86" fill="none" stroke="url(#whiteGrad)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 44 55 L 38 70 L 32 84" fill="none" stroke="url(#whiteGrad)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Zamalek Text Ribbon -->
+  <text x="50" y="104" text-anchor="middle" fill="url(#zamGold)" font-family="'Inter', sans-serif" font-weight="900" font-size="10" letter-spacing="1">ZAMALEK</text>
+</svg>
