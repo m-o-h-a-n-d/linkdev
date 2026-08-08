@@ -382,25 +382,38 @@
                 <p class="login-subtitle">Welcome back! please enter your detail</p>
 
                 <!-- Login Form -->
-                <form action="{{ route('admin.dashboard.index') }}" method="GET">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: #10b981; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.auth.login') }}" method="POST">
+                    @csrf
 
                     <!-- Email Input -->
                     <div class="input-group-custom">
                         <i class="far fa-envelope input-icon-left"></i>
-                        <input type="email" class="form-control-login" placeholder="Email" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="form-control-login @error('email') is-invalid @enderror" placeholder="Email" required>
                     </div>
+                    @error('email')
+                        <div class="text-danger small mb-3" style="margin-top: -12px;">{{ $message }}</div>
+                    @enderror
 
                     <!-- Password Input with Toggle Eye -->
                     <div class="input-group-custom">
                         <i class="fas fa-lock input-icon-left"></i>
-                        <input type="password" id="passwordInput" class="form-control-login" placeholder="Password" required>
+                        <input type="password" name="password" id="passwordInput" class="form-control-login @error('password') is-invalid @enderror" placeholder="Password" required>
                         <i class="far fa-eye input-icon-right" id="togglePasswordBtn"></i>
                     </div>
+                    @error('password')
+                        <div class="text-danger small mb-3" style="margin-top: -12px;">{{ $message }}</div>
+                    @enderror
 
                     <!-- Remember Me & Forgot Password -->
                     <div class="remember-forgot-row">
                         <label class="remember-checkbox">
-                            <input type="checkbox">
+                            <input type="checkbox" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
                             <span>Remember me</span>
                         </label>
                         <a href="{{ route('admin.auth.forgot-password') }}" class="forgot-password-link">Forgot Password?</a>
@@ -410,26 +423,6 @@
                     <button type="submit" class="btn-signin">
                         Sign In
                     </button>
-
-                    <!-- Divider -->
-                    <div class="divider-line">
-                        <span>Or sign in with</span>
-                    </div>
-
-                    <!-- Social Login Buttons -->
-                    <div class="social-buttons-row">
-                        <a href="#!" class="btn-social">
-                            <i class="fab fa-facebook text-primary"></i> Facebook
-                        </a>
-                        <a href="#!" class="btn-social">
-                            <i class="fab fa-google text-danger"></i> Google
-                        </a>
-                    </div>
-
-                    <!-- Signup Link Footer -->
-                    <div class="signup-footer-text">
-                        Don't have an account? <a href="{{ route('admin.auth.register') }}">Sign Up</a>
-                    </div>
 
                 </form>
 

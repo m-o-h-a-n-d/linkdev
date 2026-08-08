@@ -8,6 +8,7 @@ use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\User\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\User\Auth\Password\ResetPasswordController;
 use App\Http\Controllers\User\Auth\RegisterController;
+use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use Illuminate\Support\Facades\Route;
 
 // Home Page
@@ -77,6 +78,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', function () {
         return view('backend.dashboard.index');
     })->name('dashboard');
+
+     Route::prefix('auth')->name('auth.')->group(function () {
+        Route::get('/login', [AdminLoginController::class, 'show'])->name('login');
+        Route::post('/login', [AdminLoginController::class, 'login']);
+        Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
+
+        Route::get('/forgot-password', function () {
+            return view('backend.auth.forgot-password');
+        })->name('forgot-password');
+
+        Route::get('/verify-otp', function () {
+            return view('backend.auth.verify-otp');
+        })->name('verify-otp');
+
+        Route::get('/reset-password', function () {
+            return view('backend.auth.reset-password');
+        })->name('reset-password');
+    });
 
     // 2. Competitions
     Route::prefix('competitions')->name('competitions.')->group(function () {
@@ -238,27 +257,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     // Auth Pages
-    Route::prefix('auth')->name('auth.')->group(function () {
-        Route::get('/login', function () {
-            return view('backend.auth.login');
-        })->name('login');
-
-        Route::get('/register', function () {
-            return view('backend.auth.register');
-        })->name('register');
-
-        Route::get('/forgot-password', function () {
-            return view('backend.auth.forgot-password');
-        })->name('forgot-password');
-
-        Route::get('/verify-otp', function () {
-            return view('backend.auth.verify-otp');
-        })->name('verify-otp');
-
-        Route::get('/reset-password', function () {
-            return view('backend.auth.reset-password');
-        })->name('reset-password');
-    });
+    
 });
 
 

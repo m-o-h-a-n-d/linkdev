@@ -23,6 +23,10 @@ class AdminProfileSeeder extends Seeder
             AdminProfile::factory()->create([
                 'user_id' => $user->id,
             ]);
+
+            if (! $user->hasRole('super-admin')) {
+                $user->assignRole('super-admin');
+            }
         }
     }
 }

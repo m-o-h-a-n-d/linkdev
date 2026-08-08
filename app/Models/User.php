@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\OneTimePasswords\Models\Concerns\HasOneTimePasswords;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, HasOneTimePasswords;
+    use HasFactory, Notifiable, SoftDeletes, HasOneTimePasswords, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -54,7 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the admin profile associated with the user.
      */
-    public function adminProfile(): HasOne
+    public function admin(): HasOne
     {
         return $this->hasOne(AdminProfile::class);
     }
