@@ -181,52 +181,55 @@ function showHandballToast(title, message, type = 'success') {
   if (!container) {
     container = document.createElement('div');
     container.id = 'handballToastContainer';
-    container.className = 'position-fixed';
-    container.style.cssText = 'z-index:9999;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;';
     document.body.appendChild(container);
   }
 
-  const bgClass = type === 'success' ? 'bg-success' : type === 'warning' ? 'bg-warning' : type === 'danger' ? 'bg-danger' : 'bg-primary';
+  const bgStyle = type === 'success' 
+    ? 'background: #10b981;' 
+    : type === 'warning' 
+      ? 'background: #f59e0b;' 
+      : type === 'danger' 
+        ? 'background: #ef4444;' 
+        : 'background: #ea580c;';
+
   const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : type === 'danger' ? 'fa-times-circle' : 'fa-info-circle';
 
   const toastId = 'toast-' + Date.now();
   const toastHtml = `
-    <div id="${toastId}" class="toast show ${bgClass} text-white shadow-lg" role="alert"
-         style="min-width:320px;border-radius:10px;overflow:hidden;backdrop-filter:blur(8px);
-                animation:slide-in-up 0.4s cubic-bezier(0.22,1,0.36,1);">
-      <div class="toast-header ${bgClass} text-white border-0" style="border-radius:10px 10px 0 0;">
-        <i class="fas ${icon} mr-2"></i>
-        <strong class="mr-auto text-white">${title}</strong>
-        <button type="button" class="ml-2 mb-1 close text-white" onclick="document.getElementById('${toastId}').style.animation='slide-out 0.3s ease forwards';setTimeout(()=>document.getElementById('${toastId}')?.remove(),300)" aria-label="Close">
+    <div id="${toastId}" class="handball-toast text-white" style="${bgStyle}">
+      <div class="handball-toast-header">
+        <div class="d-flex align-items-center">
+          <i class="fas ${icon} mr-2"></i>
+          <span>${title}</span>
+        </div>
+        <button type="button" class="close text-white border-0 bg-transparent p-0" onclick="document.getElementById('${toastId}')?.remove()" style="font-size: 1.1rem; line-height: 1; opacity: 0.8;" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="toast-body pt-0 text-white-50">
+      <div class="handball-toast-body">
         ${message}
       </div>
+      <div id="${toastId}-bar" class="handball-toast-progress"></div>
     </div>
   `;
 
   container.insertAdjacentHTML('beforeend', toastHtml);
 
-  // Progress bar auto-dismiss
-  const toast = document.getElementById(toastId);
-  if (toast) {
-    const bar = document.createElement('div');
-    bar.style.cssText = 'height:3px;background:rgba(255,255,255,0.5);width:100%;transition:width 3.5s linear;border-radius:0 0 10px 10px;';
-    toast.appendChild(bar);
-    requestAnimationFrame(() => { bar.style.width = '0%'; });
-  }
+  // Progress bar animation
+  requestAnimationFrame(() => {
+    const bar = document.getElementById(`${toastId}-bar`);
+    if (bar) bar.style.width = '0%';
+  });
 
   setTimeout(() => {
     const el = document.getElementById(toastId);
     if (el) {
       el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
       el.style.opacity = '0';
-      el.style.transform = 'translateX(30px)';
+      el.style.transform = 'translateY(20px)';
       setTimeout(() => el.remove(), 300);
     }
-  }, 4000);
+  }, 3500);
 }
 
 // ═══════════════════════════════════════

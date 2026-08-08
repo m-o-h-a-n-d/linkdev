@@ -1065,6 +1065,63 @@ footer.sticky-footer .copyright,
   box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4) !important;
 }
 
+/* ═══════════════════════════════════════
+   13. COMPACT HANDBALL TOAST NOTIFICATION
+   ═══════════════════════════════════════ */
+
+#handballToastContainer {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  max-width: 340px !important;
+  pointer-events: none;
+}
+
+.handball-toast {
+  pointer-events: auto;
+  min-width: 280px !important;
+  max-width: 340px !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+  display: block !important;
+  position: relative !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  animation: slide-in-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.handball-toast-header {
+  padding: 10px 14px 4px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-weight: 700 !important;
+  font-size: 0.9rem !important;
+}
+
+.handball-toast-body {
+  padding: 2px 14px 10px 14px !important;
+  font-size: 0.82rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.handball-toast-progress {
+  height: 3px !important;
+  min-height: 3px !important;
+  max-height: 3px !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  width: 100% !important;
+  transition: width 3.5s linear !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
 .scroll-to-top:hover {
   background: #c2410c !important;
 }
