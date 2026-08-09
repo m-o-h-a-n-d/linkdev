@@ -3,6 +3,7 @@
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\TeamController;
 use App\Http\Controllers\Viewer\CompetitionController;
+use App\Http\Controllers\Viewer\MatchController;
 use App\Http\Controllers\User\Auth\EmailVerificationController;
 use App\Http\Controllers\User\Auth\LoginController;
 use App\Http\Controllers\User\Auth\Password\ForgetPasswordController;
@@ -50,9 +51,7 @@ Route::middleware('auth:web')->group(function () {
 Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
 Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
 
-Route::get('/matches', function () {
-    return view('frontend.pages.matches');
-})->name('matches.index');
+Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
