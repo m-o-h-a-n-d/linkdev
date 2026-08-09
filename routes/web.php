@@ -52,6 +52,7 @@ Route::get('/competitions', [CompetitionController::class, 'index'])->name('comp
 Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
 
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
+Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');
 
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
