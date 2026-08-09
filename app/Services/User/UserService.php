@@ -59,9 +59,15 @@ class UserService
         return $this->userRepository->delete($user);
     }
 
-    public function login(LoginData $data): bool
+    public function login(LoginData $data, string $guard = 'web', bool $remember = false): bool
     {
-        return Auth::attempt($data->toArray());
+        return Auth::guard($guard)->attempt(
+            [
+                'email' => $data->email,
+                'password' => $data->password,
+            ],
+            $remember
+        );
     }
 
     public function sendResetLink(string $email): string

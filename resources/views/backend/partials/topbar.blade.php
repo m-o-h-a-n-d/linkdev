@@ -82,7 +82,10 @@
                 <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Profile</a>
                 <a class="dropdown-item" href="{{ route('admin.activity-logs.index') }}"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> Activity Log</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item text-danger" href="{{ route('admin.auth.login') }}"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger"></i> Logout</a>
+                <a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-danger"></i> Logout</a>
+                <form id="admin-logout-form" action="{{ route('admin.auth.logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
             </div>
         </li>
 

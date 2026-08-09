@@ -58,7 +58,7 @@ return [
         ],
 
         'matches' => [
-            'label' => 'Matches & Live Center',
+            'label' => 'Matches & Live Scoreboard',
             'permissions' => [
                 'view' => 'matches.view',
                 'create' => 'matches.create',

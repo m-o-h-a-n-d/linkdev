@@ -5,6 +5,7 @@ namespace App\Services\User;
 use App\Data\User\Auth\ResetPasswordData;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -14,11 +15,15 @@ class PasswordResetService
         protected UserRepositoryInterface $userRepository
     ) {}
 
-    public function resetPassword(ResetPasswordData $data): bool
+    public function resetPassword(ResetPasswordData $data, bool $requireAdmin = false): bool
     {
         $user = $this->userRepository->findByEmail($data->email);
 
         if (! $user) {
+            return false;
+        }
+
+        if ($requireAdmin && ! $user->admin()->exists()) {
             return false;
         }
 

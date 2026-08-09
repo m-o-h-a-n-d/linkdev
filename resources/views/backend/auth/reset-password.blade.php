@@ -299,19 +299,39 @@
                 <p class="login-subtitle">Your new password must be strong and different from previous passwords.</p>
 
                 <!-- Reset Password Form -->
-                <form action="{{ route('admin.dashboard.index') }}" method="GET">
+                <form action="{{ route('admin.auth.reset-password.submit') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+
+                    @if (session('status'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: #10b981; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <!-- Email Input -->
+                    <div class="input-group-custom">
+                        <i class="far fa-envelope input-icon-left"></i>
+                        <input type="email" name="email" value="{{ old('email', $email ?? '') }}" class="form-control-login @error('email') is-invalid @enderror" placeholder="Email" required readonly style="opacity: 0.85; cursor: not-allowed;">
+                    </div>
+                    @error('email')
+                        <div class="text-danger small mb-3" style="margin-top: -12px;">{{ $message }}</div>
+                    @enderror
 
                     <!-- New Password Input -->
                     <div class="input-group-custom">
                         <i class="fas fa-lock input-icon-left"></i>
-                        <input type="password" id="newPasswordInput" class="form-control-login" placeholder="Enter new password" required>
+                        <input type="password" name="password" id="newPasswordInput" class="form-control-login @error('password') is-invalid @enderror" placeholder="Enter new password" required>
                         <i class="far fa-eye input-icon-right" id="toggleNewPasswordBtn"></i>
                     </div>
+                    @error('password')
+                        <div class="text-danger small mb-3" style="margin-top: -12px;">{{ $message }}</div>
+                    @enderror
 
                     <!-- Confirm New Password Input -->
                     <div class="input-group-custom">
                         <i class="fas fa-check-double input-icon-left"></i>
-                        <input type="password" id="confirmPasswordInput" class="form-control-login" placeholder="Confirm new password" required>
+                        <input type="password" name="password_confirmation" id="confirmPasswordInput" class="form-control-login" placeholder="Confirm new password" required>
                         <i class="far fa-eye input-icon-right" id="toggleConfirmPasswordBtn"></i>
                     </div>
 

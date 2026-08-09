@@ -251,10 +251,29 @@
 
                 <!-- Form Titles -->
                 <h2 class="login-title">Enter OTP Code</h2>
-                <p class="login-subtitle">We sent a 6-digit verification code to <strong class="text-dark">admin@example.com</strong>. Enter it below to proceed.</p>
+                <p class="login-subtitle">We sent a 6-digit verification code to <strong style="color: #f97316;">{{ session('reset_email', $email ?? 'your email') }}</strong>. Enter it below to proceed.</p>
 
                 <!-- OTP Form -->
-                <form action="{{ route('admin.auth.reset-password') }}" method="GET" id="otpForm">
+                <form action="{{ route('admin.auth.verify-otp.submit') }}" method="POST" id="otpForm">
+                    @csrf
+                    <input type="hidden" name="email" value="{{ session('reset_email', $email ?? '') }}">
+                    <input type="hidden" name="otp" id="otpFullInput">
+
+                    @if (session('status'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: #10b981; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: #ef4444; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @error('otp')
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: #ef4444; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ $message }}
+                        </div>
+                    @enderror
 
                     <!-- 6 Digit OTP Inputs -->
                     <div class="otp-inputs-wrapper">
@@ -266,22 +285,29 @@
                         <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]" required>
                     </div>
 
-                    <!-- Resend Timer -->
-                    <div class="resend-timer-box">
-                        Didn't receive the code? <a href="#!" id="resendOtpBtn">Resend Code</a> <span class="text-muted ml-1" id="timerCount">(00:45)</span>
-                    </div>
-
                     <!-- Submit Button -->
                     <button type="submit" class="btn-signin">
                         Verify OTP Code
                     </button>
-
-                    <!-- Back to Login Footer -->
-                    <div class="signup-footer-text">
-                        Wrong email address? <a href="{{ route('admin.auth.forgot-password') }}">Change Email</a>
-                    </div>
-
                 </form>
+
+                <!-- Resend Timer (Separate Form Outside otpForm) -->
+                <div class="resend-timer-box" style="text-align: center; font-size: 14px; color: #94a3b8; margin-top: 24px;">
+                    Didn't receive the code?
+                    <form action="{{ route('admin.auth.verify-otp.resend') }}" method="POST" style="display: inline;" id="resendForm">
+                        @csrf
+                        <input type="hidden" name="email" value="{{ session('reset_email', $email ?? '') }}">
+                        <button type="submit" id="resendOtpBtn" style="background: none; border: none; color: #f97316; font-weight: 700; padding: 0;" disabled>
+                            Resend Code
+                        </button>
+                    </form>
+                    <span class="text-muted ml-1" id="timerCount">(00:45)</span>
+                </div>
+
+                <!-- Back to Login Footer -->
+                <div class="signup-footer-text" style="text-align: center; font-size: 14px; color: #94a3b8; margin-top: 20px;">
+                    Wrong email address? <a href="{{ route('admin.auth.forgot-password') }}">Change Email</a>
+                </div>
 
             </div>
         </div>
@@ -294,9 +320,34 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const otpInputs = document.querySelectorAll('.otp-digit-input');
+            const otpForm = document.getElementById('otpForm');
+            const otpFullInput = document.getElementById('otpFullInput');
+            const resendOtpBtn = document.getElementById('resendOtpBtn');
+            const timerCount = document.getElementById('timerCount');
+
+            function syncOtp() {
+                let code = '';
+                otpInputs.forEach(i => code += i.value);
+                if (otpFullInput) otpFullInput.value = code;
+            }
+
+            if (otpInputs.length > 0) {
+                otpInputs[0].addEventListener('paste', function (e) {
+                    const pastedData = (e.clipboardData || window.clipboardData).getData('text').trim();
+                    if (/^\d{6}$/.test(pastedData)) {
+                        e.preventDefault();
+                        pastedData.split('').forEach((char, idx) => {
+                            if (otpInputs[idx]) otpInputs[idx].value = char;
+                        });
+                        otpInputs[5].focus();
+                        syncOtp();
+                    }
+                });
+            }
 
             otpInputs.forEach((input, index) => {
                 input.addEventListener('input', function () {
+                    syncOtp();
                     if (this.value.length === 1 && index < otpInputs.length - 1) {
                         otpInputs[index + 1].focus();
                     }
@@ -305,9 +356,34 @@
                 input.addEventListener('keydown', function (e) {
                     if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
                         otpInputs[index - 1].focus();
+                        syncOtp();
                     }
                 });
             });
+
+            if (otpForm) {
+                otpForm.addEventListener('submit', function () {
+                    syncOtp();
+                });
+            }
+
+            // 45 Seconds Countdown Timer for Resend Button
+            if (timerCount && resendOtpBtn) {
+                let timeLeft = 45;
+                const timerInterval = setInterval(function () {
+                    timeLeft--;
+                    const secondsStr = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+                    timerCount.textContent = '(00:' + secondsStr + ')';
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        timerCount.textContent = '';
+                        resendOtpBtn.removeAttribute('disabled');
+                        resendOtpBtn.style.opacity = '1';
+                        resendOtpBtn.style.cursor = 'pointer';
+                    }
+                }, 1000);
+            }
         });
     </script>
 </body>

@@ -241,13 +241,28 @@
                 <p class="login-subtitle">No worries! Enter your registered email address below and we'll send you a 6-digit OTP verification code.</p>
 
                 <!-- Forgot Password Form -->
-                <form action="{{ route('admin.auth.verify-otp') }}" method="GET">
+                <form action="{{ route('admin.auth.forgot-password.send') }}" method="POST">
+                    @csrf
+
+                    @if (session('status'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert" style="background-color: #10b981; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: #ef4444; color: #fff; border: none; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
                     <!-- Email Input -->
                     <div class="input-group-custom">
                         <i class="far fa-envelope input-icon-left"></i>
-                        <input type="email" class="form-control-login" placeholder="Enter your email address" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="form-control-login @error('email') is-invalid @enderror" placeholder="Enter your email address" required>
                     </div>
+                    @error('email')
+                        <div class="text-danger small mb-3" style="margin-top: -16px;">{{ $message }}</div>
+                    @enderror
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn-signin">

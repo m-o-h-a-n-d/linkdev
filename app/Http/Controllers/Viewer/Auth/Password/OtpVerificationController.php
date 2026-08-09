@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User\Auth\Password;
+namespace App\Http\Controllers\Viewer\Auth\Password;
 
 use App\Data\User\Auth\ForgotPasswordData;
 use App\Data\User\Auth\VerifyOtpData;

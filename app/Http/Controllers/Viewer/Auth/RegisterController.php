@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User\Auth;
+namespace App\Http\Controllers\Viewer\Auth;
 
 use App\Data\User\CreateUserData;
 use App\Http\Controllers\Controller;

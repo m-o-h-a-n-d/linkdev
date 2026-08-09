@@ -19,25 +19,45 @@ class RoleAndPermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $modules = config('permissions.modules', []);
-
-        // 1. Create All Permissions from config
+        $guards = ['admin', 'web'];
         $allPermissionNames = [];
+
+        // 1. Create All Permissions for both 'admin' and 'web' guards
         foreach ($modules as $moduleKey => $moduleData) {
             $permissions = $moduleData['permissions'] ?? [];
             foreach ($permissions as $permissionName) {
-                Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
+                foreach ($guards as $guard) {
+                    Permission::firstOrCreate([
+                        'name' => $permissionName,
+                        'guard_name' => $guard,
+                    ]);
+                }
                 $allPermissionNames[] = $permissionName;
             }
         }
 
-        // 2. Create Super Admin Role with All Permissions
-        $superAdminRole = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'web']);
-        $superAdminRole->syncPermissions($allPermissionNames);
+        // 2. Create Super Admin Roles for both 'admin' and 'web' guards
+        foreach ($guards as $guard) {
+            $superAdminRole = Role::firstOrCreate([
+                'name' => 'super-admin',
+                'guard_name' => $guard,
+            ]);
+            $superAdminRole->syncPermissions($allPermissionNames);
+        }
 
-        // Assign Super Admin Role to Main System Admin
-        $systemAdmin = User::where('email', 'admin@linkdev.com')->first();
-        if ($systemAdmin) {
-            $systemAdmin->assignRole($superAdminRole);
+        // 3. Assign Super Admin Roles to System Admins (Users with AdminProfile)
+        $admins = User::whereHas('admin')->get();
+        if ($admins->isEmpty()) {
+            $admins = User::limit(5)->get();
+        }
+
+        foreach ($admins as $adminUser) {
+            foreach ($guards as $guard) {
+                $role = Role::where('name', 'super-admin')->where('guard_name', $guard)->first();
+                if ($role && ! $adminUser->hasRole('super-admin', $guard)) {
+                    $adminUser->assignRole($role);
+                }
+            }
         }
     }
 }

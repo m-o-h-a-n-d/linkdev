@@ -20,7 +20,21 @@
     </a>
 </div>
 
-<form action="{{ route('admin.roles.index') }}" method="GET" id="createRoleForm">
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+@endif
+
+<form action="{{ route('admin.roles.store') }}" method="POST" id="createRoleForm">
+    @csrf
 
     <!-- ROLE BASIC INFORMATION CARD -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
@@ -28,19 +42,9 @@
             <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-id-card mr-2"></i>Role Basic Details</h6>
         </div>
         <div class="card-body p-4">
-            <div class="form-row">
-                <div class="col-md-6 form-group">
-                    <label class="font-weight-bold small text-gray-800">Role Title <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control form-control-custom" placeholder="e.g. Competition Manager" required>
-                </div>
-                <div class="col-md-6 form-group">
-                    <label class="font-weight-bold small text-gray-800">Role Slug / Code <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control form-control-custom" placeholder="e.g. competition-manager" required>
-                </div>
-            </div>
             <div class="form-group mb-0">
-                <label class="font-weight-bold small text-gray-800">Role Description</label>
-                <textarea class="form-control form-control-custom" rows="2" placeholder="Describe the responsibilities and access scope of this role..."></textarea>
+                <label class="font-weight-bold small text-gray-800">Role Title / Name <span class="text-danger">*</span></label>
+                <input type="text" name="name" value="{{ old('name') }}" class="form-control form-control-custom @error('name') is-invalid @enderror" placeholder="e.g. competition-manager" required>
             </div>
         </div>
     </div>
@@ -60,194 +64,31 @@
         </div>
         <div class="card-body p-4">
 
-            <!-- MODULE 1: COMPETITIONS -->
-            <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="font-weight-bold text-primary h6 mb-0">
-                        <i class="fas fa-trophy mr-2"></i>Competitions Module
+            @foreach ($modules as $moduleKey => $moduleData)
+                <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div class="font-weight-bold text-primary h6 mb-0">
+                            <i class="fas fa-shield-alt mr-2"></i>{{ $moduleData['label'] ?? ucfirst($moduleKey) }}
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input select-module-all" id="module_{{ $moduleKey }}">
+                            <label class="custom-control-label font-weight-bold text-muted small" for="module_{{ $moduleKey }}">Select Module All</label>
+                        </div>
                     </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleCompAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleCompAll">Select Module All</label>
+                    <div class="row">
+                        @foreach ($moduleData['permissions'] ?? [] as $permKey => $permissionName)
+                            <div class="col-md-3 mb-2">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" name="permissions[]" value="{{ $permissionName }}" class="custom-control-input perm-check" id="perm_{{ Str::slug($permissionName) }}">
+                                    <label class="custom-control-label font-weight-bold small" for="perm_{{ Str::slug($permissionName) }}">
+                                        {{ ucfirst(str_replace('_', ' ', $permKey)) }} ({{ $permissionName }})
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-comp" id="perm_comp_view" checked>
-                            <label class="custom-control-label font-weight-bold small" for="perm_comp_view">View Competitions</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-comp" id="perm_comp_create">
-                            <label class="custom-control-label font-weight-bold small" for="perm_comp_create">Create Competition</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-comp" id="perm_comp_edit">
-                            <label class="custom-control-label font-weight-bold small" for="perm_comp_edit">Edit Competition</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-comp" id="perm_comp_delete">
-                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_comp_delete">Delete Competition</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODULE 2: MATCHES & LIVE SCOREBOARD -->
-            <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="font-weight-bold text-info h6 mb-0">
-                        <i class="fas fa-running mr-2"></i>Matches & Live Scoreboard
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleMatchesAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleMatchesAll">Select Module All</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-matches" id="perm_match_view" checked>
-                            <label class="custom-control-label font-weight-bold small" for="perm_match_view">View Matches</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-matches" id="perm_match_schedule">
-                            <label class="custom-control-label font-weight-bold small" for="perm_match_schedule">Schedule Matches</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-matches" id="perm_match_live">
-                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_match_live">Operate Live Center</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-matches" id="perm_match_score">
-                            <label class="custom-control-label font-weight-bold small" for="perm_match_score">Edit Scores & Results</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODULE 3: TEAMS & CLUBS -->
-            <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="font-weight-bold text-success h6 mb-0">
-                        <i class="fas fa-shield-alt mr-2"></i>Teams & Clubs Management
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleTeamsAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleTeamsAll">Select Module All</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-teams" id="perm_team_view" checked>
-                            <label class="custom-control-label font-weight-bold small" for="perm_team_view">View Teams</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-teams" id="perm_team_create">
-                            <label class="custom-control-label font-weight-bold small" for="perm_team_create">Register Team</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-teams" id="perm_team_edit">
-                            <label class="custom-control-label font-weight-bold small" for="perm_team_edit">Edit Team Details</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-teams" id="perm_team_delete">
-                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_team_delete">Delete Team</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODULE 4: ADMINS & REFEREES -->
-            <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="font-weight-bold text-warning h6 mb-0">
-                        <i class="fas fa-user-tie mr-2"></i>Admins & Match Officials
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleAdminAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleAdminAll">Select Module All</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_view" checked>
-                            <label class="custom-control-label font-weight-bold small" for="perm_admin_view">View Admins Directory</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_create">
-                            <label class="custom-control-label font-weight-bold small" for="perm_admin_create">Register Admin</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_edit">
-                            <label class="custom-control-label font-weight-bold small" for="perm_admin_edit">Edit Admin Profile</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-admin" id="perm_admin_delete">
-                            <label class="custom-control-label font-weight-bold small text-danger" for="perm_admin_delete">Delete Admin Member</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODULE 5: SYSTEM USERS & ROLES -->
-            <div class="permission-module-box p-3 bg-light rounded-lg border">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                    <div class="font-weight-bold text-dark h6 mb-0">
-                        <i class="fas fa-user-shield mr-2"></i>Users & Roles Administration
-                    </div>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input select-module-all" id="moduleUsersAll">
-                        <label class="custom-control-label font-weight-bold text-muted small" for="moduleUsersAll">Select Module All</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-users" id="perm_users_view">
-                            <label class="custom-control-label font-weight-bold small" for="perm_users_view">View Users & Roles</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-users" id="perm_users_manage">
-                            <label class="custom-control-label font-weight-bold small" for="perm_users_manage">Manage Roles</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input perm-check module-users" id="perm_users_logs">
-                            <label class="custom-control-label font-weight-bold small" for="perm_users_logs">View Activity Logs</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
 
         </div>
 
@@ -265,7 +106,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Select / Deselect All
     const selectAllBtn = document.getElementById('selectAllBtn');
     const deselectAllBtn = document.getElementById('deselectAllBtn');
     const allCheckboxes = document.querySelectorAll('.perm-check');
@@ -284,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Module Select All toggles
     document.querySelectorAll('.select-module-all').forEach(moduleHeaderCb => {
         moduleHeaderCb.addEventListener('change', function() {
             const moduleBox = this.closest('.permission-module-box');

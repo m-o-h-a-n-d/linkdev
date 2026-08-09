@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Services\User\UserService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -26,7 +26,7 @@ class LoginController extends Controller
     {
         $dto = LoginData::from($request);
 
-        if (! $this->userService->login($dto)) {
+        if (! $this->userService->login($dto, 'admin', $request->boolean('remember'))) {
             return back()
                 ->withErrors([
                     'email' => __('auth.failed'),
@@ -34,10 +34,14 @@ class LoginController extends Controller
                 ->onlyInput('email');
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('admin')->user();
 
-        if (! $user || (! $user->can('dashboard.access') && ! $user->admin()->exists())) {
-            Auth::logout();
+        if (
+            ! $user ||
+            ! $user->admin()->exists() ||
+            ! $user->can('dashboard.access')
+        ) {
+            Auth::guard('admin')->logout();
 
             return back()
                 ->withErrors([
@@ -46,7 +50,6 @@ class LoginController extends Controller
                 ->onlyInput('email');
         }
 
-
         $request->session()->regenerate();
 
         return redirect()->intended(
@@ -54,12 +57,12 @@ class LoginController extends Controller
         );
     }
 
-    public function logout(): RedirectResponse
+    public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('admin')->logout();
 
-    Session::invalidate();
-    Session::regenerateToken();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect()
             ->route('admin.auth.login')

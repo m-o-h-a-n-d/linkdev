@@ -12,6 +12,15 @@ class VerifyOtpRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('email') && session()->has('reset_email')) {
+            $this->merge([
+                'email' => session('reset_email'),
+            ]);
+        }
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -19,7 +28,7 @@ class VerifyOtpRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email', 'exists:users,email'],
-            'otp'   => ['required', 'string', 'regex:/^[0-9]{6}$/'],
+            'otp'   => ['required', 'string', 'digits:6'],
         ];
     }
 }

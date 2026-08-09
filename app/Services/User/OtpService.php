@@ -15,7 +15,9 @@ class OtpService
     public function sendOtp(string $email): bool
     {
         $user = $this->userRepository->findByEmail($email);
-        if (! $user) {
+        if (! $user ||
+    ! $user->admin()->exists() ||
+    ! $user->can('dashboard.access')) {
             return false;
         }
 
@@ -28,17 +30,23 @@ class OtpService
         // Send notification via SendOtpNotify
         try {
             $user->notify(new SendOtpNotify($otp->password));
-        } catch (\Throwable $e) {
-            logger()->error('Failed to send OTP notification: ' . $e->getMessage());
-        }
 
-        return true;
+            return true;
+        } catch (\Throwable $e) {
+            logger()->error('Failed to send OTP notification.', [
+                'user_id' => $user->id,
+                'email' => $email,
+                'exception' => $e,
+            ]);
+
+            return false;
+        }
     }
 
     public function verifyOtp(string $email, string $otp): ?string
     {
         $user = $this->userRepository->findByEmail($email);
-        if (! $user) {
+        if (! $user || ! $user->admin()->exists()) {
             return null;
         }
 

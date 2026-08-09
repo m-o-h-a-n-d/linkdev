@@ -12,6 +12,15 @@ class ForgotPasswordRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if (! $this->has('email') && session()->has('reset_email')) {
+            $this->merge([
+                'email' => session('reset_email'),
+            ]);
+        }
+    }
+
     /**
      * @return array<string, ValidationRule|array<mixed>|string>
      */
