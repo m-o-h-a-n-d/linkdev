@@ -12,6 +12,7 @@ use App\Http\Controllers\Viewer\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\Viewer\Auth\Password\ResetPasswordController;
 use App\Http\Controllers\Viewer\Auth\RegisterController;
 use App\Http\Controllers\Viewer\CompetitionController;
+use App\Http\Controllers\Viewer\MatchController;
 use App\Http\Controllers\Viewer\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,9 +55,8 @@ Route::middleware('auth:web')->group(function () {
 Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
 Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
 
-Route::get('/matches', function () {
-    return view('frontend.pages.matches');
-})->name('matches.index');
+Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
+Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');
 
 Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
