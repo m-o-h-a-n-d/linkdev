@@ -34,37 +34,38 @@
                         default => strtoupper($rawStatus),
                     };
                 @endphp
-
-                <div class="match-card">
-                    <div class="match-meta">
-                        <div class="match-date-str">
-                            {{ $match->scheduled_at ? $match->scheduled_at->format('D d M, H:i') : 'TBD' }}
-                        </div>
-                        <div class="match-group-str">
-                            {{ $match->group->name ?? 'Round ' . $match->round_number }}
-                        </div>
-                    </div>
-
-                    <div class="match-center">
-                        <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
-
-                        <div class="score-badge">
-                            @if(in_array($rawStatus, ['finished', 'live']))
-                                {{ $match->home_score }} : {{ $match->away_score }}
-                            @else
-                                VS
-                            @endif
+                <a href="{{ route('matches.show', $match->id) }}" class="match-card-link">
+                    <div class="match-card">
+                        <div class="match-meta">
+                            <div class="match-date-str">
+                                {{ $match->scheduled_at ? $match->scheduled_at->format('D d M, H:i') : 'TBD' }}
+                            </div>
+                            <div class="match-group-str">
+                                {{ $match->group->name ?? 'Round ' . $match->round_number }}
+                            </div>
                         </div>
 
-                        <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
-                    </div>
+                        <div class="match-center">
+                            <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
 
-                    <div class="match-badge-wrap">
-                        <span class="status-pill {{ $pillClass }}">
-                            {{ $statusDisplay }}
-                        </span>
+                            <div class="score-badge">
+                                @if(in_array($rawStatus, ['finished', 'live']))
+                                    {{ $match->home_score }} : {{ $match->away_score }}
+                                @else
+                                    VS
+                                @endif
+                            </div>
+
+                            <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                        </div>
+
+                        <div class="match-badge-wrap">
+                            <span class="status-pill {{ $pillClass }}">
+                                {{ $statusDisplay }}
+                            </span>
+                        </div>
                     </div>
-                </div>
+                </a>
             @empty
                 <div style="text-align: center; padding: 60px 20px; background: #0e1626; border: 1px dashed #334155; border-radius: 12px; color: #94a3b8; width: 100%;">
                     <div style="font-size: 2.5rem; margin-bottom: 12px;">🤾‍♂️</div>
