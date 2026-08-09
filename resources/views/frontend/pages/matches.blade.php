@@ -7,12 +7,12 @@
     <div class="container">
         <h1 class="page-title" style="margin-bottom: 32px;">MATCH CENTRE</h1>
 
-        <!-- Filter Tabs Bar -->
+        <!-- Filter Tabs Bar (UI Only) -->
         <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="all">ALL</button>
-            <button class="filter-tab" data-filter="live">LIVE</button>
-            <button class="filter-tab" data-filter="upcoming">UPCOMING</button>
-            <button class="filter-tab" data-filter="results">RESULTS</button>
+            <button class="filter-tab active" type="button">ALL</button>
+            <button class="filter-tab" type="button">LIVE</button>
+            <button class="filter-tab" type="button">UPCOMING</button>
+            <button class="filter-tab" type="button">RESULTS</button>
         </div>
 
         <!-- Matches Cards List -->
@@ -21,14 +21,6 @@
                 @php
                     $rawStatus = strtolower($match->status);
 
-                    // تعيين الفلتر المناسب للـ data-status
-                    $filterCategory = match($rawStatus) {
-                        'live' => 'live',
-                        'finished' => 'results',
-                        default => 'upcoming', // scheduled, postponed, cancelled
-                    };
-
-                    // تعيين كلاس الكبسولة والنص المعروض
                     $pillClass = match($rawStatus) {
                         'live' => 'pill-live',
                         'finished' => 'pill-fulltime',
@@ -43,7 +35,7 @@
                     };
                 @endphp
 
-                <div class="match-card" data-status="{{ $filterCategory }}">
+                <div class="match-card">
                     <div class="match-meta">
                         <div class="match-date-str">
                             {{ $match->scheduled_at ? $match->scheduled_at->format('D d M, H:i') : 'TBD' }}
@@ -83,30 +75,4 @@
         </div>
     </div>
 </section>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const tabs = document.querySelectorAll('.filter-tab');
-        const cards = document.querySelectorAll('.match-card');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function () {
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-
-                const filter = this.getAttribute('data-filter');
-
-                cards.forEach(card => {
-                    if (filter === 'all' || card.getAttribute('data-status') === filter) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        });
-    });
-</script>
-@endpush
 @endsection
