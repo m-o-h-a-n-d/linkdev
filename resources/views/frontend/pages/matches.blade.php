@@ -17,136 +17,96 @@
 
         <!-- Matches Cards List -->
         <div class="matches-cards-list">
+            @forelse($matches ?? [] as $match)
+                @php
+                    $rawStatus = strtolower($match->status);
 
-            <!-- Match Card 1 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Fri 10 Jul, 17:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">ZAMALEK HC</span>
-                    <div class="score-badge">22 : 19</div>
-                    <span class="team-name away">AL AHLY HC</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                    // تعيين الفلتر المناسب للـ data-status
+                    $filterCategory = match($rawStatus) {
+                        'live' => 'live',
+                        'finished' => 'results',
+                        default => 'upcoming', // scheduled, postponed, cancelled
+                    };
 
-            <!-- Match Card 2 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Mon 13 Jul, 18:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">ZAMALEK HC</span>
-                    <div class="score-badge">27 : 26</div>
-                    <span class="team-name away">SPORTING CLUB</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                    // تعيين كلاس الكبسولة والنص المعروض
+                    $pillClass = match($rawStatus) {
+                        'live' => 'pill-live',
+                        'finished' => 'pill-fulltime',
+                        'postponed' => 'pill-postponed',
+                        'cancelled' => 'pill-cancelled',
+                        default => 'pill-upcoming',
+                    };
 
-            <!-- Match Card 3 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Thu 16 Jul, 19:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">ZAMALEK HC</span>
-                    <div class="score-badge">32 : 20</div>
-                    <span class="team-name away">SMOUHA HC</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                    $statusDisplay = match($rawStatus) {
+                        'finished' => 'FULL TIME',
+                        default => strtoupper($rawStatus),
+                    };
+                @endphp
 
-            <!-- Match Card 4 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Sun 19 Jul, 17:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">AL AHLY HC</span>
-                    <div class="score-badge">26 : 27</div>
-                    <span class="team-name away">SPORTING CLUB</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                <div class="match-card" data-status="{{ $filterCategory }}">
+                    <div class="match-meta">
+                        <div class="match-date-str">
+                            {{ $match->scheduled_at ? $match->scheduled_at->format('D d M, H:i') : 'TBD' }}
+                        </div>
+                        <div class="match-group-str">
+                            {{ $match->group->name ?? 'Round ' . $match->round_number }}
+                        </div>
+                    </div>
 
-            <!-- Match Card 5 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Wed 22 Jul, 18:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">AL AHLY HC</span>
-                    <div class="score-badge">31 : 21</div>
-                    <span class="team-name away">SMOUHA HC</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                    <div class="match-center">
+                        <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
 
-            <!-- Match Card 6 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Sat 25 Jul, 19:00</div>
-                    <div class="match-group-str">Group A</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">SPORTING CLUB</span>
-                    <div class="score-badge">25 : 28</div>
-                    <span class="team-name away">SMOUHA HC</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                        <div class="score-badge">
+                            @if(in_array($rawStatus, ['finished', 'live']))
+                                {{ $match->home_score }} : {{ $match->away_score }}
+                            @else
+                                VS
+                            @endif
+                        </div>
 
-            <!-- Match Card 7 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Tue 28 Jul, 17:00</div>
-                    <div class="match-group-str">Group B</div>
-                </div>
-                <div class="match-center">
-                    <span class="team-name home">HELIOPOLIS</span>
-                    <div class="score-badge">30 : 22</div>
-                    <span class="team-name away">PORT SAID HC</span>
-                </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
+                        <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                    </div>
 
-            <!-- Match Card 8 -->
-            <div class="match-card" data-status="results">
-                <div class="match-meta">
-                    <div class="match-date-str">Tue 28 Jul, 18:00</div>
-                    <div class="match-group-str">Group B</div>
+                    <div class="match-badge-wrap">
+                        <span class="status-pill {{ $pillClass }}">
+                            {{ $statusDisplay }}
+                        </span>
+                    </div>
                 </div>
-                <div class="match-center">
-                    <span class="team-name home">HELIOPOLIS</span>
-                    <div class="score-badge">24 : 29</div>
-                    <span class="team-name away">ASWAN HC</span>
+            @empty
+                <div style="text-align: center; padding: 60px 20px; background: #0e1626; border: 1px dashed #334155; border-radius: 12px; color: #94a3b8; width: 100%;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">🤾‍♂️</div>
+                    <h3 style="color: #ffffff; margin-bottom: 8px;">No Matches Found</h3>
+                    <p style="font-size: 0.9rem;">There are no matches available in the match centre at the moment.</p>
                 </div>
-                <div class="match-badge-wrap">
-                    <span class="status-pill pill-fulltime">FULL TIME</span>
-                </div>
-            </div>
-
+            @endforelse
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.filter-tab');
+        const cards = document.querySelectorAll('.match-card');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+
+                cards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-status') === filter) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection
