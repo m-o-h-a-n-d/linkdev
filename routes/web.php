@@ -11,6 +11,7 @@ use App\Http\Controllers\Viewer\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\Viewer\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\Viewer\Auth\Password\ResetPasswordController;
 use App\Http\Controllers\Viewer\Auth\RegisterController;
+use App\Http\Controllers\Viewer\CompetitionController;
 use App\Http\Controllers\Viewer\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,9 +51,8 @@ Route::middleware('auth:web')->group(function () {
 });
 
 // Public Pages
-Route::get('/competitions', function () {
-    return view('frontend.pages.competitions');
-})->name('competitions.index');
+Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
+Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
 
 Route::get('/matches', function () {
     return view('frontend.pages.matches');
@@ -73,7 +73,7 @@ Route::get('/team-registration', function () {
 */
 Route::prefix('admin')->name('admin.')->group(function () {
     // Admin Authentication Routes
-    
+
     Route::prefix('auth')->name('auth.')->group(function () {
         Route::get('/login', [AdminLoginController::class, 'show'])->name('login');
         Route::post('/login', [AdminLoginController::class, 'login']);
