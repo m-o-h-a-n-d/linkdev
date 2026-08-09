@@ -2,6 +2,42 @@
 
 @section('title', 'Roles & Permissions Management | Handball System')
 
+@push('styles')
+<style>
+    .role-badge-title {
+        color: #f97316 !important;
+        font-weight: 700 !important;
+        font-size: 15px !important;
+    }
+    .custom-perm-badge {
+        background-color: rgba(14, 165, 233, 0.15) !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 20px !important;
+        padding: 4px 10px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin: 4px !important;
+        transition: all 0.2s ease;
+    }
+    .custom-perm-badge:hover {
+        background-color: rgba(14, 165, 233, 0.22) !important;
+        transform: translateY(-1px);
+    }
+    .perm-count-badge {
+        background-color: #3b82f6 !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 11px;
+    }
+</style>
+@endpush
+
 @section('content')
 <!-- Page Header & Control Bar -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -57,8 +93,8 @@
 </div>
 
 <!-- Roles Table Card -->
-<div class="card mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+<div class="card mb-4" style="border-radius: 16px;">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
         <h6 class="m-0 font-weight-bold text-gray-800"><i class="fas fa-user-shield text-primary mr-2"></i>System Roles Table</h6>
     </div>
     <div class="card-body p-0">
@@ -66,7 +102,7 @@
             <table class="table table-hover mb-0" id="rolesTable">
                 <thead>
                     <tr>
-                        <th style="width: 240px;">Role Name</th>
+                        <th style="width: 220px;">Role Name</th>
                         <th>Assigned Permissions</th>
                         <th class="text-right" style="width: 180px;">Actions</th>
                     </tr>
@@ -75,27 +111,35 @@
                     @forelse ($roles as $role)
                         <tr>
                             <td class="align-middle">
-                                <div class="font-weight-bold text-dark mb-1" style="font-size: 14px;">
-                                    <i class="fas fa-shield-alt text-primary mr-1.5"></i> {{ $role->name }}
+                                <div class="role-badge-title mb-1">
+                                    <i class="fas fa-shield-alt text-warning mr-2"></i>{{ $role->name }}
                                 </div>
+                                <span class="perm-count-badge">{{ count($role->permissions) }} Permissions</span>
                             </td>
                             <td class="align-middle">
-                                <div class="d-flex flex-wrap" style="gap: 4px;">
+                                <div class="d-flex flex-wrap align-items-center">
                                     @forelse ($role->permissions as $perm)
-                                        <span class="badge badge-info">{{ $perm->name }}</span>
+                                        <span class="custom-perm-badge" title="{{ $perm->name }}">
+                                            <i class="fas fa-check-circle text-success" style="font-size: 11px;"></i>
+                                            <span>{{ ucwords(str_replace(['.', '-', '_'], ' ', $perm->name)) }}</span>
+                                        </span>
                                     @empty
-                                        <span class="badge badge-secondary">No permissions assigned</span>
+                                        <span class="badge badge-secondary py-1 px-3" style="border-radius: 12px;">No permissions assigned</span>
                                     @endforelse
                                 </div>
                             </td>
                             <td class="text-right align-middle">
                                 <div class="d-inline-flex align-items-center" style="gap: 6px;">
-                                    <a class="btn btn-warning btn-sm" href="{{ route('admin.roles.edit', $role->id) }}"><i class="fas fa-edit mr-1"></i> Edit</a>
+                                    <a class="btn btn-warning btn-sm font-weight-bold px-3" style="border-radius: 8px;" href="{{ route('admin.roles.edit', $role->id) }}">
+                                        <i class="fas fa-edit mr-1"></i> Edit
+                                    </a>
                                     @if ($role->name !== 'super-admin')
                                         <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash mr-1"></i> Delete</button>
+                                            <button type="submit" class="btn btn-danger btn-sm font-weight-bold px-3" style="border-radius: 8px;">
+                                                <i class="fas fa-trash mr-1"></i> Delete
+                                            </button>
                                         </form>
                                     @endif
                                 </div>

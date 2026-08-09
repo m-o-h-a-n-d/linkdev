@@ -2,6 +2,54 @@
 
 @section('title', 'Create Role & Permissions | Handball System')
 
+@push('styles')
+<style>
+    .permission-module-box {
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 14px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .permission-card-item {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+    .permission-card-item:hover {
+        border-color: #f97316 !important;
+        box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
+        transform: translateY(-1px);
+    }
+    .permission-label-text {
+        color: #0f172a !important;
+        font-weight: 700 !important;
+        font-size: 13px !important;
+        cursor: pointer !important;
+    }
+    .permission-code-text {
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-size: 11px !important;
+        display: block !important;
+        margin-top: 2px;
+    }
+    .module-header-title {
+        color: #ea580c !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+    }
+    .select-all-label {
+        color: #334155 !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        cursor: pointer !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <!-- Page Header & Breadcrumb -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -38,7 +86,7 @@
 
     <!-- ROLE BASIC INFORMATION CARD -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-header bg-primary text-white py-3">
+        <div class="card-header bg-primary text-white py-3" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
             <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-id-card mr-2"></i>Role Basic Details</h6>
         </div>
         <div class="card-body p-4">
@@ -51,7 +99,7 @@
 
     <!-- PERMISSIONS SELECTOR MATRIX -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
             <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-key mr-2"></i>Assign Module Permissions</h6>
             <div>
                 <button type="button" class="btn btn-sm btn-outline-primary rounded-pill font-weight-bold px-3 mr-2" id="selectAllBtn">
@@ -65,24 +113,27 @@
         <div class="card-body p-4">
 
             @foreach ($modules as $moduleKey => $moduleData)
-                <div class="permission-module-box mb-4 p-3 bg-light rounded-lg border">
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                        <div class="font-weight-bold text-primary h6 mb-0">
-                            <i class="fas fa-shield-alt mr-2"></i>{{ $moduleData['label'] ?? ucfirst($moduleKey) }}
+                <div class="permission-module-box mb-4 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom" style="border-color: #cbd5e1 !important;">
+                        <div class="module-header-title">
+                            <i class="fas fa-shield-alt mr-2 text-warning"></i>{{ $moduleData['label'] ?? ucfirst($moduleKey) }}
                         </div>
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" class="custom-control-input select-module-all" id="module_{{ $moduleKey }}">
-                            <label class="custom-control-label font-weight-bold text-muted small" for="module_{{ $moduleKey }}">Select Module All</label>
+                            <label class="custom-control-label select-all-label" for="module_{{ $moduleKey }}">Select Module All</label>
                         </div>
                     </div>
                     <div class="row">
                         @foreach ($moduleData['permissions'] ?? [] as $permKey => $permissionName)
-                            <div class="col-md-3 mb-2">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" name="permissions[]" value="{{ $permissionName }}" class="custom-control-input perm-check" id="perm_{{ Str::slug($permissionName) }}">
-                                    <label class="custom-control-label font-weight-bold small" for="perm_{{ Str::slug($permissionName) }}">
-                                        {{ ucfirst(str_replace('_', ' ', $permKey)) }} ({{ $permissionName }})
-                                    </label>
+                            <div class="col-md-3 mb-3">
+                                <div class="permission-card-item">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" name="permissions[]" value="{{ $permissionName }}" class="custom-control-input perm-check" id="perm_{{ Str::slug($permissionName) }}">
+                                        <label class="custom-control-label permission-label-text pl-1" for="perm_{{ Str::slug($permissionName) }}">
+                                            {{ ucfirst(str_replace('_', ' ', $permKey)) }}
+                                            <span class="permission-code-text">({{ $permissionName }})</span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -92,7 +143,7 @@
 
         </div>
 
-        <div class="card-footer bg-white py-3 border-top d-flex justify-content-end">
+        <div class="card-footer bg-white py-3 border-top d-flex justify-content-end" style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
             <a href="{{ route('admin.roles.index') }}" class="btn btn-light rounded-pill font-weight-bold px-4 mr-2">Cancel</a>
             <button type="submit" class="btn btn-primary rounded-pill font-weight-bold px-4">
                 <i class="fas fa-save mr-1"></i> Save & Assign Role
