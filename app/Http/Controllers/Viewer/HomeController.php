@@ -16,7 +16,8 @@ class HomeController extends Controller
     {
         // Fetch strictly Competition model data
         $competitions = $this->homeService->getCompetitions();
+        $upcomingMatches = $this->homeService->getUpcomingMatches();
 
-        return view('frontend.index', compact('competitions'));
+        return view('frontend.index', compact('competitions', 'upcomingMatches'));
     }
 }
