@@ -41,4 +41,12 @@ class MatchRepository implements MatchRepositoryInterface
     {
         return $match->delete();
     }
+
+    public function getUpcomingMatches(int $limit): Collection
+    {
+        return GameMatch::where('scheduled_at', '>', now())
+            ->orderBy('scheduled_at', 'asc')
+            ->limit($limit)
+            ->get();
+    }
 }
