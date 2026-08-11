@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Utility\Enums\TeamStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,7 +19,33 @@ class Team extends Model
         'logo',
         'city',
         'country',
+        'email',
+        'phone',
+        'manager_name',
+        'arena',
+        'status',
+        'rejection_reason',
     ];
+
+    protected $casts = [
+        'status' => TeamStatus::class,
+    ];
+
+    public function isPending(): bool
+    {
+        return $this->status === TeamStatus::PENDING;
+    }
+
+    public function isAccepted(): bool
+    {
+        return $this->status === TeamStatus::ACCEPTED;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === TeamStatus::REJECTED;
+    }
+
 
     /**
      * Competitions this team participates in.

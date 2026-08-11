@@ -62,9 +62,8 @@ Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
 
 // Public Team Registration Form Link for Coaches
-Route::get('/team-registration', function () {
-    return view('frontend.team-registration');
-})->name('team-registration.public');
+Route::get('/team-registration', [App\Http\Controllers\Viewer\PublicTeamRegistrationController::class, 'show'])->name('team-registration.public');
+Route::post('/team-registration', [App\Http\Controllers\Viewer\PublicTeamRegistrationController::class, 'store'])->name('team-registration.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -172,23 +171,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // 6. Teams
-        Route::prefix('teams')->name('teams.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.teams.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.teams.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.teams.edit');
-            })->name('edit');
-
-            Route::get('/show', function () {
-                return view('backend.teams.show');
-            })->name('show');
-        });
+        Route::patch('teams/{team}/accept', [App\Http\Controllers\Admin\TeamController::class, 'accept'])->name('teams.accept');
+        Route::patch('teams/{team}/reject', [App\Http\Controllers\Admin\TeamController::class, 'reject'])->name('teams.reject');
+        Route::resource('teams', App\Http\Controllers\Admin\TeamController::class);
 
         // 7. Team Statistics
         Route::prefix('statistics')->name('statistics.')->group(function () {

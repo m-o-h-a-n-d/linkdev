@@ -1125,3 +1125,44 @@ footer.sticky-footer .copyright,
 .scroll-to-top:hover {
   background: #c2410c !important;
 }
+
+/* ═══════════════════════════════════════
+   14. DARK THEME PAGINATION STYLES
+   ═══════════════════════════════════════ */
+
+.pagination {
+  margin-bottom: 0 !important;
+  gap: 4px;
+}
+
+.page-item .page-link {
+  background-color: #162238 !important;
+  border: 1px solid #1e293b !important;
+  color: #cbd5e1 !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.page-item .page-link:hover {
+  background-color: var(--login-primary) !important;
+  border-color: var(--login-primary) !important;
+  color: #ffffff !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--login-primary) !important;
+  border-color: var(--login-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4) !important;
+}
+
+.page-item.disabled .page-link {
+  background-color: #0e1626 !important;
+  border-color: #1e293b !important;
+  color: #475569 !important;
+  opacity: 0.6;
+}
+
