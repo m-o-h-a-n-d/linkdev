@@ -34,6 +34,7 @@ class MatchRepository implements MatchRepositoryInterface
     public function update(GameMatch $match, UpdateMatchData $data): GameMatch
     {
         $match->update($data->toArray());
+
         return $match;
     }
 
@@ -47,6 +48,14 @@ class MatchRepository implements MatchRepositoryInterface
         return GameMatch::where('scheduled_at', '>', now())
             ->orderBy('scheduled_at', 'asc')
             ->limit($limit)
+            ->get();
+    }
+
+    public function getLiveMatches(): Collection
+    {
+        return GameMatch::with(['group', 'homeTeam', 'awayTeam'])
+            ->where('status', 'live')
+            ->orderBy('scheduled_at', 'asc')
             ->get();
     }
 }
