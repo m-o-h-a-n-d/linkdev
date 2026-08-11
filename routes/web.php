@@ -14,12 +14,11 @@ use App\Http\Controllers\Viewer\Auth\RegisterController;
 use App\Http\Controllers\Viewer\CompetitionController;
 use App\Http\Controllers\Viewer\MatchController;
 use App\Http\Controllers\Viewer\TeamController;
+use App\Http\Controllers\Viewer\HomeController;
 use Illuminate\Support\Facades\Route;
 
 // Home Page
-Route::get('/', function () {
-    return view('frontend.index');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Auth Pages
 Route::get('/login', [LoginController::class, 'show'])->name('login');
