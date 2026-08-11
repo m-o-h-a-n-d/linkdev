@@ -19,4 +19,9 @@ class HomeService
     {
         return $this->competitionRepository->all();
     }
+
+    public function getUpcomingMatches(int $limit = 3): Collection
+    {
+        return $this->matchRepository->getUpcomingMatches($limit);
+    }
 }
