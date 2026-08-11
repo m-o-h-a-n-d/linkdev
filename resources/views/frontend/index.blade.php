@@ -53,57 +53,31 @@
             <h2 class="section-title">Competitions</h2>
         </div>
         <div class="competitions-grid">
-
-            <!-- Ongoing Competition -->
-            <a href="{{ url('/competitions') }}" class="competition-card">
-                <span class="competition-status status-ongoing">ONGOING</span>
-                <h3>NATIONAL HANDBALL LEAGUE</h3>
-                <p class="competition-meta">2025/26 &middot; Cairo Indoor Arena</p>
-                <div class="competition-stats">
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Teams</span>
-                        <span class="competition-stat-value">8</span>
+            @forelse($competitions ?? [] as $competition)
+                <a href="{{ route('competitions.show', $competition->id) }}" class="competition-card">
+                    <span class="competition-status status-{{ strtolower($competition->status ?? 'ongoing') }}">
+                        {{ ucfirst($competition->status ?? 'Ongoing') }}
+                    </span>
+                    <h3>{{ $competition->name }}</h3>
+                    <p class="competition-meta">{{ $competition->season ?? 'N/A' }} &middot; {{ $competition->venue ?? 'N/A' }}</p>
+                    <div class="competition-stats">
+                        <div class="competition-stat">
+                            <span class="competition-stat-label">Teams</span>
+                            <span class="competition-stat-value">{{ $competition->teams_count ?? 0 }}</span>
+                        </div>
+                        <div class="competition-stat">
+                            <span class="competition-stat-label">Groups</span>
+                            <span class="competition-stat-value">{{ $competition->groups_count ?? 0 }}</span>
+                        </div>
                     </div>
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Groups</span>
-                        <span class="competition-stat-value">2</span>
-                    </div>
+                </a>
+            @empty
+                <div class="no-competitions">
+                    <div class="no-competitions-icon">🏆</div>
+                    <h3>No Competitions Found</h3>
+                    <p>There are currently no active competitions available in the system.</p>
                 </div>
-            </a>
-
-            <!-- Upcoming Competition -->
-            <a href="{{ url('/competitions') }}" class="competition-card">
-                <span class="competition-status status-upcoming">UPCOMING</span>
-                <h3>DELTA CHAMPIONSHIP CUP</h3>
-                <p class="competition-meta">2026 &middot; Mansoura Sports Hall</p>
-                <div class="competition-stats">
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Teams</span>
-                        <span class="competition-stat-value">4</span>
-                    </div>
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Groups</span>
-                        <span class="competition-stat-value">1</span>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Finished Competition -->
-            <a href="{{ url('/competitions') }}" class="competition-card">
-                <span class="competition-status status-finished">FINISHED</span>
-                <h3>WINTER SHIELD</h3>
-                <p class="competition-meta">2025 &middot; Alexandria Dome</p>
-                <div class="competition-stats">
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Teams</span>
-                        <span class="competition-stat-value">4</span>
-                    </div>
-                    <div class="competition-stat">
-                        <span class="competition-stat-label">Groups</span>
-                        <span class="competition-stat-value">1</span>
-                    </div>
-                </div>
-            </a>
+            @endforelse
 
         </div>
     </div>
