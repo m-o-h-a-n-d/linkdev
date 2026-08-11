@@ -14,10 +14,16 @@ class HomeController extends Controller
 
     public function index(): View
     {
-        // Fetch strictly Competition model data
         $competitions = $this->homeService->getCompetitions();
+
+        $matches = $this->homeService->getMatches();
+
+        $teams = $this->homeService->getTeams();
+
         $upcomingMatches = $this->homeService->getUpcomingMatches();
 
-        return view('frontend.index', compact('competitions', 'upcomingMatches'));
+        $liveMatches = $this->homeService->getLiveMatches();
+
+        return view('frontend.index', compact('competitions', 'upcomingMatches', 'matches', 'teams', 'liveMatches'));
     }
 }
