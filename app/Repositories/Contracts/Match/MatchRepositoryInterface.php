@@ -23,4 +23,6 @@ interface MatchRepositoryInterface
     public function delete(GameMatch $match): bool;
 
     public function getUpcomingMatches(int $limit): Collection;
+
+    public function getLiveMatches(): Collection;
 }
