@@ -16,9 +16,11 @@
         </nav>
     </div>
     <div>
-        <a href="{{ route('admin.roles.edit') }}" class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
-            <i class="fas fa-edit mr-1"></i> Edit Role
-        </a>
+        @if (! in_array($role->name, $protectedRoleNames, true))
+            <a href="{{ route('admin.roles.edit', $role->id) }}" class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
+                <i class="fas fa-edit mr-1"></i> Edit Role
+            </a>
+        @endif
         <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary shadow-sm font-weight-bold px-3" style="border-radius: 10px;">
             <i class="fas fa-arrow-left mr-1"></i> Back to Roles
         </a>

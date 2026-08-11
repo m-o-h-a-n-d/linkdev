@@ -15,9 +15,7 @@ class OtpService
     public function sendOtp(string $email): bool
     {
         $user = $this->userRepository->findByEmail($email);
-        if (! $user ||
-    ! $user->admin()->exists() ||
-    ! $user->can('dashboard.access')) {
+        if (! $user) {
             return false;
         }
 
@@ -46,7 +44,7 @@ class OtpService
     public function verifyOtp(string $email, string $otp): ?string
     {
         $user = $this->userRepository->findByEmail($email);
-        if (! $user || ! $user->admin()->exists()) {
+        if (! $user) {
             return null;
         }
 

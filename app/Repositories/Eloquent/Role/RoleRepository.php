@@ -18,6 +18,11 @@ class RoleRepository implements RoleRepositoryInterface
         return Role::with('permissions')->findOrFail($id);
     }
 
+    public function findByName(string $name, string $guardName = 'admin'): Role
+    {
+        return Role::with('permissions')->findByName($name, $guardName);
+    }
+
     public function create(array $data): Role
     {
         return Role::create([

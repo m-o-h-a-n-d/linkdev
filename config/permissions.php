@@ -2,122 +2,114 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Permissions Grouped by Module
-    |--------------------------------------------------------------------------
-    |
-    | Here you may define all system permissions grouped by modules.
-    |
-    */
     'modules' => [
 
         'dashboard' => [
-            'label' => 'Dashboard Access',
+            'label' => 'Dashboard',
             'permissions' => [
-                'access' => 'dashboard.access',
+                'dashboard.access',
             ],
         ],
 
         'competitions' => [
             'label' => 'Competitions Management',
             'permissions' => [
-                'view' => 'competitions.view',
-                'create' => 'competitions.create',
-                'edit' => 'competitions.edit',
-                'delete' => 'competitions.delete',
+                'competitions.view',
+                'competitions.create',
+                'competitions.edit',
+                'competitions.delete',
             ],
         ],
 
         'competition_settings' => [
             'label' => 'Competition Settings',
             'permissions' => [
-                'view' => 'competition-settings.view',
-                'manage' => 'competition-settings.manage',
+                'competition-settings.view',
+                'competition-settings.manage',
             ],
         ],
 
         'groups' => [
             'label' => 'Competition Groups',
             'permissions' => [
-                'view' => 'groups.view',
-                'create' => 'groups.create',
-                'edit' => 'groups.edit',
-                'delete' => 'groups.delete',
+                'groups.view',
+                'groups.create',
+                'groups.edit',
+                'groups.delete',
             ],
         ],
 
         'teams' => [
             'label' => 'Teams Management',
             'permissions' => [
-                'view' => 'teams.view',
-                'create' => 'teams.create',
-                'edit' => 'teams.edit',
-                'delete' => 'teams.delete',
+                'teams.view',
+                'teams.create',
+                'teams.edit',
+                'teams.delete',
             ],
         ],
 
         'matches' => [
             'label' => 'Matches & Live Scoreboard',
             'permissions' => [
-                'view' => 'matches.view',
-                'create' => 'matches.create',
-                'edit' => 'matches.edit',
-                'delete' => 'matches.delete',
-                'live_center' => 'matches.live-center',
+                'matches.view',
+                'matches.create',
+                'matches.edit',
+                'matches.delete',
+                'matches.live-center',
             ],
         ],
 
         'standings' => [
             'label' => 'Standings',
             'permissions' => [
-                'view' => 'standings.view',
-                'manage' => 'standings.manage',
+                'standings.view',
+                'standings.manage',
             ],
         ],
 
         'statistics' => [
             'label' => 'Team Statistics',
             'permissions' => [
-                'view' => 'statistics.view',
-                'manage' => 'statistics.manage',
+                'statistics.view',
+                'statistics.manage',
             ],
         ],
 
         'users' => [
             'label' => 'Users Directory',
             'permissions' => [
-                'view' => 'users.view',
-                'create' => 'users.create',
-                'edit' => 'users.edit',
-                'delete' => 'users.delete',
+                'users.view',
+                'users.create',
+                'users.edit',
+                'users.delete',
             ],
         ],
 
         'admins' => [
             'label' => 'Admins Directory',
             'permissions' => [
-                'view' => 'admins.view',
-                'create' => 'admins.create',
-                'edit' => 'admins.edit',
-                'delete' => 'admins.delete',
+                'admins.view',
+                'admins.create',
+                'admins.edit',
+                'admins.delete',
             ],
         ],
 
         'roles' => [
             'label' => 'Roles & Permissions',
             'permissions' => [
-                'view' => 'roles.view',
-                'create' => 'roles.create',
-                'edit' => 'roles.edit',
-                'delete' => 'roles.delete',
+                'roles.view',
+                'roles.create',
+                'roles.edit',
+                'roles.delete',
             ],
         ],
 
         'activity_logs' => [
             'label' => 'Activity Logs',
             'permissions' => [
-                'view' => 'activity-logs.view',
+                'activity-logs.view',
             ],
         ],
 

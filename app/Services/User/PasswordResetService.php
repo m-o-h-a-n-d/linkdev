@@ -15,7 +15,7 @@ class PasswordResetService
         protected UserRepositoryInterface $userRepository
     ) {}
 
-    public function resetPassword(ResetPasswordData $data, bool $requireAdmin = false): bool
+    public function resetPassword(ResetPasswordData $data): bool
     {
         $user = $this->userRepository->findByEmail($data->email);
 
@@ -23,9 +23,7 @@ class PasswordResetService
             return false;
         }
 
-        if ($requireAdmin && ! $user->admin()->exists()) {
-            return false;
-        }
+
 
         if (! Password::tokenExists($user, $data->token)) {
             return false;
