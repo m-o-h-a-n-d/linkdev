@@ -130,10 +130,10 @@
                             </td>
                             <td class="text-right align-middle">
                                 <div class="d-inline-flex align-items-center" style="gap: 6px;">
-                                    <a class="btn btn-warning btn-sm font-weight-bold px-3" style="border-radius: 8px;" href="{{ route('admin.roles.edit', $role->id) }}">
-                                        <i class="fas fa-edit mr-1"></i> Edit
-                                    </a>
-                                    @if ($role->name !== 'super-admin')
+                                    @if (! in_array($role->name, $protectedRoleNames, true))
+                                        <a class="btn btn-warning btn-sm font-weight-bold px-3" style="border-radius: 8px;" href="{{ route('admin.roles.edit', $role->id) }}">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
                                         <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');" class="d-inline">
                                             @csrf
                                             @method('DELETE')
@@ -141,6 +141,8 @@
                                                 <i class="fas fa-trash mr-1"></i> Delete
                                             </button>
                                         </form>
+                                    @else
+                                        <span class="badge badge-light text-muted px-3 py-2" style="border-radius: 8px;">Protected Role</span>
                                     @endif
                                 </div>
                             </td>

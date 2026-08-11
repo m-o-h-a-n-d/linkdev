@@ -216,23 +216,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
 
         // 9. Admin Management
-        Route::prefix('admins')->name('admins.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.admins.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.admins.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.admins.edit');
-            })->name('edit');
-
-            Route::get('/show', function () {
-                return view('backend.admins.show');
-            })->name('show');
-        });
+        Route::resource('admins', App\Http\Controllers\Admin\AdminController::class);
 
         // Profile Settings Route (Topbar Profile Direct Link)
         Route::get('/profile', function () {

@@ -36,7 +36,7 @@ class ResetPasswordController extends Controller
     {
         $dto = ResetPasswordData::from($request);
 
-        $success = $this->passwordResetService->resetPassword($dto, true);
+        $success = $this->passwordResetService->resetPassword($dto);
 
         if (! $success) {
             return back()
