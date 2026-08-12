@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\Auth\Password\ForgetPasswordController as AdminForgetPasswordController;
 use App\Http\Controllers\Admin\Auth\Password\OtpVerificationController as AdminOtpVerificationController;
 use App\Http\Controllers\Admin\Auth\Password\ResetPasswordController as AdminResetPasswordController;
+use App\Http\Controllers\Admin\CompetitionController as AdminCompetitionController;
+use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGroupController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
 use App\Http\Controllers\Viewer\Auth\LoginController;
@@ -11,10 +15,11 @@ use App\Http\Controllers\Viewer\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\Viewer\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\Viewer\Auth\Password\ResetPasswordController;
 use App\Http\Controllers\Viewer\Auth\RegisterController;
-use App\Http\Controllers\Viewer\CompetitionController;
-use App\Http\Controllers\Viewer\MatchController;
-use App\Http\Controllers\Viewer\TeamController;
+use App\Http\Controllers\Viewer\CompetitionController as ViewerCompetitionController;
 use App\Http\Controllers\Viewer\HomeController;
+use App\Http\Controllers\Viewer\MatchController;
+use App\Http\Controllers\Viewer\PublicTeamRegistrationController;
+use App\Http\Controllers\Viewer\TeamController;
 use Illuminate\Support\Facades\Route;
 
 // Home Page
@@ -51,8 +56,8 @@ Route::middleware('auth:web')->group(function () {
 });
 
 // Public Pages
-Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
-Route::get('/competitions/{id}', [CompetitionController::class, 'show'])->name('competitions.show');
+Route::get('/competitions', [ViewerCompetitionController::class, 'index'])->name('competitions.index');
+Route::get('/competitions/{id}', [ViewerCompetitionController::class, 'show'])->name('competitions.show');
 
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');
@@ -61,8 +66,8 @@ Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
 Route::get('/teams/{id}', [TeamController::class, 'show'])->name('teams.show');
 
 // Public Team Registration Form Link for Coaches
-Route::get('/team-registration', [App\Http\Controllers\Viewer\PublicTeamRegistrationController::class, 'show'])->name('team-registration.public');
-Route::post('/team-registration', [App\Http\Controllers\Viewer\PublicTeamRegistrationController::class, 'store'])->name('team-registration.store');
+Route::get('/team-registration', [PublicTeamRegistrationController::class, 'show'])->name('team-registration.public');
+Route::post('/team-registration', [PublicTeamRegistrationController::class, 'store'])->name('team-registration.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -103,40 +108,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 2. Competitions
         Route::prefix('competitions')->name('competitions.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.competitions.index');
-            })->name('index');
+            Route::get('/', [AdminCompetitionController::class, 'index'])->name('index');
 
-            Route::get('/create', function () {
-                return view('backend.competitions.create');
-            })->name('create');
+            Route::get('/create', [AdminCompetitionController::class, 'create'])->name('create');
 
-            Route::get('/edit', function () {
-                return view('backend.competitions.edit');
-            })->name('edit');
+            Route::get('/{id}/edit', [AdminCompetitionController::class, 'edit'])->name('edit');
 
-            Route::get('/show', function () {
-                return view('backend.competitions.show');
-            })->name('show');
+            Route::get('/{id}', [AdminCompetitionController::class, 'show'])->name('show');
+
+            Route::post('/', [AdminCompetitionController::class, 'store'])->name('store');
+
+            Route::put('/{id}', [AdminCompetitionController::class, 'update'])->name('update');
+
+            Route::delete('/{id}', [AdminCompetitionController::class, 'destroy'])->name('destroy');
         });
 
         // 3. Groups
         Route::prefix('groups')->name('groups.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.groups.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.groups.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.groups.edit');
-            })->name('edit');
-
-            Route::get('/show', function () {
-                return view('backend.groups.show');
-            })->name('show');
+            Route::get('/', [AdminCompetitionGroupController::class, 'index'])->name('index');
+            Route::get('/create', [AdminCompetitionGroupController::class, 'create'])->name('create');
+            Route::post('/', [AdminCompetitionGroupController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminCompetitionGroupController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminCompetitionGroupController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminCompetitionGroupController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminCompetitionGroupController::class, 'destroy'])->name('destroy');
         });
 
         // 4. Matches
@@ -197,10 +192,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // Dynamic Roles & Permissions Management
-        Route::resource('roles', App\Http\Controllers\Admin\RoleController::class);
+        Route::resource('roles', RoleController::class);
 
         // 9. Admin Management
-        Route::resource('admins', App\Http\Controllers\Admin\AdminController::class);
+        Route::resource('admins', AdminController::class);
 
         // Profile Settings Routes
         Route::get('/profile', [App\Http\Controllers\Admin\AdminProfile::class, 'index'])->name('profile.index');

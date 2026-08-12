@@ -23,7 +23,7 @@ class CompetitionRepository implements CompetitionRepositoryInterface
 
     public function find(int $id): ?Competition
     {
-        return Competition::findOrFail($id);
+        return Competition::with(['teams', 'groups.teams'])->findOrFail($id);
     }
 
     public function create(CreateCompetitionData $data): Competition
