@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface AdminRepositoryInterface
 {
+    public function authAdmin(): ?User;
+
     public function paginate(int $perPage = 12): LengthAwarePaginator;
 
     public function all(): Collection;

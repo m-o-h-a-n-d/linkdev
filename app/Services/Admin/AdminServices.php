@@ -20,6 +20,14 @@ class AdminServices
     ) {}
 
     /**
+     * Get currently authenticated admin.
+     */
+    public function authAdmin(): ?User
+    {
+        return $this->adminRepository->authAdmin();
+    }
+
+    /**
      * Get paginated admins.
      */
     public function paginateAdmins(int $perPage = 12): LengthAwarePaginator
@@ -129,28 +137,15 @@ class AdminServices
     }
 
     /**
-     * Delete admin.
+     * Delete admin (deletes only the admin profile and image, keeping the user record).
      */
     public function deleteAdmin(int $id): bool
     {
         $user = $this->getAdminById($id);
 
-        $imagePath = $user->admin?->image;
+        $this->deleteAdminProfile($user);
 
-        $deleted = $this->adminRepository->delete($user);
-
-        if (
-            $deleted &&
-            $imagePath &&
-            $imagePath !== 'defaults/avatar.png'
-        ) {
-            $this->imageManager->delete(
-                $imagePath,
-                'public'
-            );
-        }
-
-        return $deleted;
+        return true;
     }
 
     /**

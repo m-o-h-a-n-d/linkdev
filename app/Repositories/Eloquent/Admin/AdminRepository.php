@@ -13,11 +13,22 @@ use Illuminate\Support\Facades\DB;
 class AdminRepository implements AdminRepositoryInterface
 {
     /**
+     * Get currently authenticated admin user.
+     */
+    public function authAdmin(): ?User
+    {
+        /** @var User|null $admin */
+        $admin = auth('admin')->user() ?? auth()->user();
+
+        return $admin?->load(['admin', 'roles']);
+    }
+
+    /**
      * Get paginated admins.
      */
     public function paginate(int $perPage = 12): LengthAwarePaginator
     {
-        $currentUserId = auth('admin')->id() ?? auth()->id();
+        $currentUserId = $this->authAdmin()?->id;
 
         return User::query()
             ->whereHas('admin')
@@ -35,7 +46,7 @@ class AdminRepository implements AdminRepositoryInterface
      */
     public function all(): Collection
     {
-        $currentUserId = auth('admin')->id() ?? auth()->id();
+        $currentUserId = $this->authAdmin()?->id;
 
         return User::query()
             ->whereHas('admin')
@@ -98,11 +109,16 @@ class AdminRepository implements AdminRepositoryInterface
     ): User {
         return DB::transaction(function () use ($user, $data, $imagePath) {
 
-            $user->update([
+            $userPayload = [
                 'name' => $data->name,
                 'email' => $data->email,
-                'password' => $data->password,
-            ]);
+            ];
+
+            if (! empty($data->password)) {
+                $userPayload['password'] = $data->password;
+            }
+
+            $user->update($userPayload);
 
             $profilePayload = [
                 'phone' => $data->phone,
@@ -128,15 +144,12 @@ class AdminRepository implements AdminRepositoryInterface
     }
 
     /**
-     * Delete User + Admin Profile atomically.
+     * Delete Admin Profile only (keeping the user record).
      */
     public function delete(User $user): bool
     {
         return DB::transaction(function () use ($user) {
-
-            $user->admin()->delete();
-
-            return $user->delete();
+            return (bool) $user->admin()?->delete();
         });
     }
 }

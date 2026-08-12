@@ -72,11 +72,20 @@
 
         <div class="topbar-divider d-none d-sm-block"></div>
 
+        @php
+            $authUser = auth('admin')->user() ?? auth()->user();
+            $authAvatarUrl = asset('assets/img/avatar-placeholder.png');
+            if (!empty($authUser?->admin?->image) && $authUser->admin->image !== 'defaults/avatar.png') {
+                $authAvatarUrl = filter_var($authUser->admin->image, FILTER_VALIDATE_URL)
+                    ? $authUser->admin->image
+                    : asset('storage/' . $authUser->admin->image);
+            }
+        @endphp
         <!-- User Profile -->
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small font-weight-bold">Mohanad Admin</span>
-                <img class="img-profile rounded-circle" src="{{ asset('backend/img/undraw_profile.svg') }}">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small font-weight-bold">{{ $authUser?->name ?? 'Admin' }}</span>
+                <img class="img-profile rounded-circle" src="{{ $authAvatarUrl }}" style="width: 32px; height: 32px; object-fit: cover;">
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Profile</a>

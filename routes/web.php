@@ -202,10 +202,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 9. Admin Management
         Route::resource('admins', App\Http\Controllers\Admin\AdminController::class);
 
-        // Profile Settings Route (Topbar Profile Direct Link)
-        Route::get('/profile', function () {
-            return view('backend.admins.edit');
-        })->name('profile');
+        // Profile Settings Routes
+        Route::get('/profile', [App\Http\Controllers\Admin\AdminProfile::class, 'index'])->name('profile.index');
+        Route::get('/profile/edit', [App\Http\Controllers\Admin\AdminProfile::class, 'index'])->name('profile');
+        Route::put('/profile', [App\Http\Controllers\Admin\AdminProfile::class, 'update'])->name('profile.update');
 
         // 10. Activity Logs
         Route::prefix('activity-logs')->name('activity-logs.')->group(function () {

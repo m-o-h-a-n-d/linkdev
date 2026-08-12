@@ -7,6 +7,7 @@ use App\Data\User\LoginData;
 use App\Data\User\UpdateUserData;
 use App\Models\User;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
+use App\Services\Admin\AdminServices;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -17,6 +18,7 @@ class UserService
 {
     public function __construct(
         protected UserRepositoryInterface $userRepository,
+        protected AdminServices $adminServices,
     ) {}
 
     public function paginate(int $perPage = 15): LengthAwarePaginator
@@ -55,6 +57,9 @@ class UserService
     public function destroy(int $id): bool
     {
         $user = $this->findOrFail($id);
+
+        // delete admin profile if exists
+        $this->adminServices->deleteAdminProfile($user);
 
         return $this->userRepository->delete($user);
     }
