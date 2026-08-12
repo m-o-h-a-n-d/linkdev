@@ -62,6 +62,43 @@
                     </p>
                 </div>
             </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-gray-800">Groups and Teams</h6>
+                </div>
+                <div class="card-body">
+                    @if ($competition->groups->isNotEmpty())
+                        @foreach ($competition->groups as $group)
+                            <div class="mb-4 border rounded p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="m-0 font-weight-bold text-gray-800">{{ $group->name }}</h6>
+                                    <span class="badge badge-info">Order #{{ $group->display_order }}</span>
+                                </div>
+
+                                @if ($group->teams->isNotEmpty())
+                                    <div class="list-group">
+                                        @foreach ($group->teams as $team)
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong>{{ $team->name }}</strong>
+                                                    <div class="small text-muted">{{ $team->city }},
+                                                        {{ $team->country }}</div>
+                                                </div>
+                                                <span class="badge badge-primary">{{ $team->short_name }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="text-muted">No teams assigned to this group yet.</div>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-muted">No groups created for this competition yet.</div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <div class="col-lg-4">
