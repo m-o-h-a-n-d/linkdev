@@ -34,6 +34,27 @@ class Competition extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Competition $competition) {
+            if ($competition->isForceDeleting()) {
+                $competition->groups()->withTrashed()->forceDelete();
+                $competition->settings()->withTrashed()->forceDelete();
+                $competition->matches()->withTrashed()->forceDelete();
+            } else {
+                $competition->groups()->delete();
+                $competition->settings()->delete();
+                $competition->matches()->delete();
+            }
+        });
+
+        static::restoring(function (Competition $competition) {
+            $competition->groups()->onlyTrashed()->restore();
+            $competition->settings()->onlyTrashed()->restore();
+            $competition->matches()->onlyTrashed()->restore();
+        });
+    }
+
     /**
      * Get the team that won this competition.
      */

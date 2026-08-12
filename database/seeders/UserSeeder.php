@@ -12,13 +12,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // System Admin / Main Test User
-        User::factory()->create([
-            'name' => 'System Admin',
-            'email' => 'admin@linkdev.com',
-        ]);
+        // System Admin / Super Admin
+        User::updateOrCreate(
+            ['email' => 'admin@example.test'],
+            [
+                'name' => 'Super Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('123456789'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Regular Users
-        User::factory(10)->create();
+        User::factory(5)->create();
     }
 }

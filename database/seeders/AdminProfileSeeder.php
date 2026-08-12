@@ -13,17 +13,20 @@ class AdminProfileSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        $adminUser = User::where('email', 'admin@example.test')->first();
 
-        if ($users->isEmpty()) {
-            $users = User::factory(5)->create();
-        }
-
-        foreach ($users->take(4) as $user) {
-            AdminProfile::factory()->create([
-                'user_id' => $user->id,
-            ]);
-
+        if ($adminUser) {
+            AdminProfile::updateOrCreate(
+                ['user_id' => $adminUser->id],
+                [
+                    'phone' => '01000000000',
+                    'image' => 'defaults/admin-avatar.png',
+                    'status' => 'active',
+                    'national_id' => 12345678901234,
+                    'address' => 'Cairo, Egypt',
+                    'gender' => 'Male',
+                ]
+            );
         }
     }
 }

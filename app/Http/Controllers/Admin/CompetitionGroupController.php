@@ -13,6 +13,7 @@ use App\Services\Competition\CompetitionService;
 use App\Services\CompetitionGroup\CompetitionGroupService;
 use App\Services\Team\TeamService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class CompetitionGroupController extends Controller
@@ -50,8 +51,7 @@ class CompetitionGroupController extends Controller
     public function show(int $id): View
     {
         $group = $this->competitionGroupService->findOrFail($id);
-        $assignedTeamIds = $group->teams->pluck('id')->toArray();
-        $availableTeams = $this->teamService->all()->reject(fn ($team) => in_array($team->id, $assignedTeamIds));
+        $availableTeams = $this->competitionGroupService->getAvailableTeams($id);
 
         return view('backend.groups.show', compact('group', 'availableTeams'));
     }

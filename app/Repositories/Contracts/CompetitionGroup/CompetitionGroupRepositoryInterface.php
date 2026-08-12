@@ -25,4 +25,8 @@ interface CompetitionGroupRepositoryInterface
     public function attachTeam(CompetitionGroup $group, int $teamId): void;
 
     public function detachTeam(CompetitionGroup $group, int $teamId): void;
+
+    public function getAvailableTeamsForGroup(CompetitionGroup $group): Collection;
+
+    public function isTeamInCompetitionGroup(int $competitionId, int $teamId): bool;
 }

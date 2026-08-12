@@ -59,6 +59,19 @@ class CompetitionGroupService
     public function attachTeam(int $groupId, int $teamId): void
     {
         $group = $this->findOrFail($groupId);
+        $team = \App\Models\Team::findOrFail($teamId);
+
+        if (! $team->isAccepted()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'team_id' => 'Only accepted teams can be added to a group.',
+            ]);
+        }
+
+        if ($this->competitionGroupRepository->isTeamInCompetitionGroup($group->competition_id, $teamId)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'team_id' => 'This team is already assigned to a group in this competition.',
+            ]);
+        }
 
         $this->competitionGroupRepository->attachTeam($group, $teamId);
     }
@@ -68,5 +81,12 @@ class CompetitionGroupService
         $group = $this->findOrFail($groupId);
 
         $this->competitionGroupRepository->detachTeam($group, $teamId);
+    }
+
+    public function getAvailableTeams(int $groupId): Collection
+    {
+        $group = $this->findOrFail($groupId);
+
+        return $this->competitionGroupRepository->getAvailableTeamsForGroup($group);
     }
 }

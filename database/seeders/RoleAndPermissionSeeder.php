@@ -92,15 +92,13 @@ class RoleAndPermissionSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Assign Super Admin Role to Existing Admins
+        | Assign Super Admin Role Exclusively to admin@example.test
         |--------------------------------------------------------------------------
         */
 
-        $adminUsers = User::query()
-            ->whereHas('admin')
-            ->get();
+        $adminUser = User::where('email', 'admin@example.test')->first();
 
-        foreach ($adminUsers as $adminUser) {
+        if ($adminUser) {
             $adminUser->assignRole($superAdmin);
         }
 
