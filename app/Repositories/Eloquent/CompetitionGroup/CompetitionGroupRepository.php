@@ -50,4 +50,14 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
     {
         return $group->delete();
     }
+
+    public function attachTeam(CompetitionGroup $group, int $teamId): void
+    {
+        $group->teams()->syncWithoutDetaching([$teamId]);
+    }
+
+    public function detachTeam(CompetitionGroup $group, int $teamId): void
+    {
+        $group->teams()->detach($teamId);
+    }
 }

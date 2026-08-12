@@ -132,6 +132,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/{id}/edit', [AdminCompetitionGroupController::class, 'edit'])->name('edit');
             Route::put('/{id}', [AdminCompetitionGroupController::class, 'update'])->name('update');
             Route::delete('/{id}', [AdminCompetitionGroupController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/teams', [AdminCompetitionGroupController::class, 'attachTeam'])->name('attach-team');
+            Route::delete('/{id}/teams/{teamId}', [AdminCompetitionGroupController::class, 'detachTeam'])->name('detach-team');
         });
 
         // 4. Matches

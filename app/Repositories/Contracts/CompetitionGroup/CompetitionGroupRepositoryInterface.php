@@ -21,4 +21,8 @@ interface CompetitionGroupRepositoryInterface
     public function update(CompetitionGroup $group, UpdateCompetitionGroupData $data): CompetitionGroup;
 
     public function delete(CompetitionGroup $group): bool;
+
+    public function attachTeam(CompetitionGroup $group, int $teamId): void;
+
+    public function detachTeam(CompetitionGroup $group, int $teamId): void;
 }

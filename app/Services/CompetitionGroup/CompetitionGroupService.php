@@ -55,4 +55,18 @@ class CompetitionGroupService
 
         return $this->competitionGroupRepository->delete($group);
     }
+
+    public function attachTeam(int $groupId, int $teamId): void
+    {
+        $group = $this->findOrFail($groupId);
+
+        $this->competitionGroupRepository->attachTeam($group, $teamId);
+    }
+
+    public function detachTeam(int $groupId, int $teamId): void
+    {
+        $group = $this->findOrFail($groupId);
+
+        $this->competitionGroupRepository->detachTeam($group, $teamId);
+    }
 }
