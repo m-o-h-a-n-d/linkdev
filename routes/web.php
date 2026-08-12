@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Auth\Password\ForgetPasswordController as AdminFo
 use App\Http\Controllers\Admin\Auth\Password\OtpVerificationController as AdminOtpVerificationController;
 use App\Http\Controllers\Admin\Auth\Password\ResetPasswordController as AdminResetPasswordController;
 use App\Http\Controllers\Admin\CompetitionController as AdminCompetitionController;
+use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGroupController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
@@ -124,21 +125,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 3. Groups
         Route::prefix('groups')->name('groups.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.groups.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.groups.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.groups.edit');
-            })->name('edit');
-
-            Route::get('/show', function () {
-                return view('backend.groups.show');
-            })->name('show');
+            Route::get('/', [AdminCompetitionGroupController::class, 'index'])->name('index');
+            Route::get('/create', [AdminCompetitionGroupController::class, 'create'])->name('create');
+            Route::post('/', [AdminCompetitionGroupController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminCompetitionGroupController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminCompetitionGroupController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminCompetitionGroupController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminCompetitionGroupController::class, 'destroy'])->name('destroy');
         });
 
         // 4. Matches
