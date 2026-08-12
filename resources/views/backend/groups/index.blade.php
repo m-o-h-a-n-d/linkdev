@@ -3,44 +3,85 @@
 @section('title', 'Groups Management | Handball System')
 
 @section('content')
-<div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-white font-weight-bold"><i class="fas fa-layer-group text-primary mr-2"></i>Groups Directory Table</h1>
-    <a href="{{ route('admin.groups.create') }}" class="btn btn-primary btn-sm font-weight-bold shadow-sm" style="background: #ea580c; border: none;"><i class="fas fa-plus mr-1"></i> Add Group</a>
-</div>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
+            <i class="fas fa-layer-group text-primary mr-2"></i>Groups Directory
+        </h1>
+        <a href="{{ route('admin.groups.create') }}" class="btn btn-primary btn-sm shadow-sm">
+            <i class="fas fa-plus mr-1"></i> Add Group
+        </a>
+    </div>
 
-<!-- Groups Grid / Table -->
-<div class="row">
-    <!-- Group A -->
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow-lg border-0" style="background: #0e1626; border-radius: 16px; border: 1px solid #1e293b;">
-            <div class="card-header py-3 text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; border-top-left-radius: 16px; border-top-right-radius: 16px;">
-                <h6 class="m-0 font-weight-bold text-white"><i class="fas fa-layer-group mr-2"></i>Group A • EHF Champions League</h6>
-                <div class="d-flex align-items-center">
-                    <a href="{{ route('admin.groups.edit') }}" class="btn btn-sm text-white font-weight-bold mr-2" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px;"><i class="fas fa-edit mr-1"></i> Edit</a>
-                    <span class="badge font-weight-extrabold shadow-sm px-3 py-2" style="background: #ffffff !important; color: #0f172a !important; font-size: 0.82rem; border-radius: 20px;"><i class="fas fa-users mr-1"></i> 4 Teams</span>
-                </div>
-            </div>
-            <div class="card-body p-3">
-                <ul class="list-group list-group-flush mb-0" style="border-radius: 12px; overflow: hidden;">
-                    <li class="list-group-item d-flex justify-content-between align-items-center py-3" style="background: #070c14 !important; border-color: #1e293b !important;">
-                        <div>
-                            <span class="badge badge-primary mr-2">BAR</span>
-                            <strong class="text-white">FC Barcelona</strong>
-                            <span class="text-muted small ml-1">(Spain)</span>
-                        </div>
-                        <span class="badge badge-success"><i class="fas fa-medal mr-1"></i>Rank 1</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center py-3" style="background: #0e1626 !important; border-color: #1e293b !important;">
-                        <div>
-                            <span class="badge badge-danger mr-2">VES</span>
-                            <strong class="text-white">Veszprém HC</strong>
-                            <span class="text-muted small ml-1">(Hungary)</span>
-                        </div>
-                        <span class="badge badge-success"><i class="fas fa-award mr-1"></i>Rank 2</span>
-                    </li>
-                </ul>
+    @if (session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-gray-800">All Groups Table</h6>
+            <span class="badge badge-primary font-weight-bold">{{ $groups->count() }} Group(s)</span>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-gray-800">Group Name</th>
+                            <th class="text-gray-800">Competition</th>
+                            <th class="text-gray-800">Order</th>
+                            <th class="text-right text-gray-800">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse ($groups as $group)
+                            <tr>
+                                <td class="font-weight-bold align-middle">
+                                    <a href="{{ route('admin.groups.show', $group->id) }}"
+                                        class="text-primary font-weight-bold">
+                                        {{ $group->name }}
+                                    </a>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge badge-dark px-2 py-2"
+                                        style="background-color: #0f172a; color: #ffffff;">
+                                        {{ $group->competition?->name ?? 'No Competition' }}
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    <span class="badge badge-info px-2 py-2">{{ $group->display_order }}</span>
+                                </td>
+                                <td class="text-right">
+                                    <div class="d-inline-flex align-items-center" style="gap: 6px;">
+                                        <a class="btn btn-primary btn-sm"
+                                            href="{{ route('admin.groups.show', $group->id) }}">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </a>
+                                        <a class="btn btn-warning btn-sm"
+                                            href="{{ route('admin.groups.edit', $group->id) }}">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
+                                        <form action="{{ route('admin.groups.destroy', $group->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure you want to delete this group?')">
+                                                <i class="fas fa-trash-alt mr-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No groups found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
-</div>
 @endsection
