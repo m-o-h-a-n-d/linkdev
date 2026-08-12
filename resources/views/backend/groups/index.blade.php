@@ -29,7 +29,6 @@
                         <tr>
                             <th class="text-gray-800">Group Name</th>
                             <th class="text-gray-800">Competition</th>
-                            <th class="text-gray-800">Order</th>
                             <th class="text-right text-gray-800">Actions</th>
                         </tr>
                     </thead>
@@ -48,9 +47,6 @@
                                         style="background-color: #0f172a; color: #ffffff;">
                                         {{ $group->competition?->name ?? 'No Competition' }}
                                     </span>
-                                </td>
-                                <td class="align-middle">
-                                    <span class="badge badge-info px-2 py-2">{{ $group->display_order }}</span>
                                 </td>
                                 <td class="text-right">
                                     <div class="d-inline-flex align-items-center" style="gap: 6px;">

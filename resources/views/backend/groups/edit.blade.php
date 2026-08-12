@@ -43,15 +43,6 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label class="font-weight-bold">Display Order</label>
-                    <input name="display_order" value="{{ old('display_order', $group->display_order) }}"
-                        class="form-control @error('display_order') is-invalid @enderror" type="number" min="1">
-                    @error('display_order')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
-
                 <button type="submit" class="btn btn-warning font-weight-bold"><i class="fas fa-sync-alt mr-1"></i> Update
                     Group</button>
                 <a href="{{ route('admin.groups.index') }}" class="btn btn-light ml-2">Cancel</a>

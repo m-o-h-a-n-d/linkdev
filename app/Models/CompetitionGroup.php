@@ -16,7 +16,6 @@ class CompetitionGroup extends Model
     protected $fillable = [
         'competition_id',
         'name',
-        'display_order',
     ];
 
     /**

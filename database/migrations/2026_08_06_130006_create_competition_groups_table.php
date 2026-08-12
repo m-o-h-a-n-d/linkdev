@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('competition_groups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('competition_id')->constrained('competitions')->cascadeOnDelete();
-            $table->string('name', 50);
-            $table->smallInteger('display_order')->default(0);
+            $table->string('name', 50)->unique();
             $table->timestamps();
             $table->softDeletes();
-            $table->unique(['competition_id', 'name']);
         });
     }
 

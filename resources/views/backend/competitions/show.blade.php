@@ -73,7 +73,6 @@
                             <div class="mb-4 border rounded p-3">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="m-0 font-weight-bold text-gray-800">{{ $group->name }}</h6>
-                                    <span class="badge badge-info">Order #{{ $group->display_order }}</span>
                                 </div>
 
                                 @if ($group->teams->isNotEmpty())

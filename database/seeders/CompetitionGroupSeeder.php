@@ -24,14 +24,12 @@ class CompetitionGroupSeeder extends Seeder
 
             $groupA = CompetitionGroup::factory()->create([
                 'competition_id' => $competition->id,
-                'name' => 'Group A',
-                'display_order' => 1,
+                'name' => 'Group A - ' . $competition->name,
             ]);
 
             $groupB = CompetitionGroup::factory()->create([
                 'competition_id' => $competition->id,
-                'name' => 'Group B',
-                'display_order' => 2,
+                'name' => 'Group B - ' . $competition->name,
             ]);
 
             if ($compTeams->count() >= 8) {

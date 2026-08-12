@@ -20,9 +20,8 @@ class CreateCompetitionGroupRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('competition_groups', 'name')->where(fn ($query) => $query->where('competition_id', $this->input('competition_id'))),
+                Rule::unique('competition_groups', 'name'),
             ],
-            'display_order' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

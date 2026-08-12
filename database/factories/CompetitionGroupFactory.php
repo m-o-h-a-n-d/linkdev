@@ -17,8 +17,7 @@ class CompetitionGroupFactory extends Factory
     {
         return [
             'competition_id' => Competition::factory(),
-            'name' => 'Group ' . fake()->randomElement(['A', 'B', 'C', 'D', 'E', 'F']),
-            'display_order' => fake()->numberBetween(1, 6),
+            'name' => 'Group ' . fake()->unique()->lexify('???'),
         ];
     }
 }

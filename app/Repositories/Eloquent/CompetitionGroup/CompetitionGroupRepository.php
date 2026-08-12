@@ -15,7 +15,6 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
     {
         return CompetitionGroup::with(['competition', 'teams'])
             ->orderBy('competition_id')
-            ->orderBy('display_order')
             ->orderBy('name')
             ->paginate($perPage);
     }
@@ -24,7 +23,6 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
     {
         return CompetitionGroup::with(['competition', 'teams'])
             ->orderBy('competition_id')
-            ->orderBy('display_order')
             ->orderBy('name')
             ->get();
     }

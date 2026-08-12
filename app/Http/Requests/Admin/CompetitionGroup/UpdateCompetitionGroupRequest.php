@@ -23,11 +23,8 @@ class UpdateCompetitionGroupRequest extends FormRequest
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('competition_groups', 'name')
-                    ->where(fn ($query) => $query->where('competition_id', $this->input('competition_id', $this->route('group') ? $this->route('group')->competition_id : null)))
-                    ->ignore($groupId),
+                Rule::unique('competition_groups', 'name')->ignore($groupId),
             ],
-            'display_order' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }
