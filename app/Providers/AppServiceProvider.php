@@ -4,12 +4,14 @@ namespace App\Providers;
 
 use App\Repositories\Contracts\Admin\AdminRepositoryInterface;
 use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
+use App\Repositories\Contracts\CompetitionGroup\CompetitionGroupRepositoryInterface;
 use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use App\Repositories\Contracts\Role\RoleRepositoryInterface;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Admin\AdminRepository;
 use App\Repositories\Eloquent\Competition\CompetitionRepository;
+use App\Repositories\Eloquent\CompetitionGroup\CompetitionGroupRepository;
 use App\Repositories\Eloquent\Match\MatchRepository;
 use App\Repositories\Eloquent\Role\RoleRepository;
 use App\Repositories\Eloquent\Team\TeamRepository;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(TeamRepositoryInterface::class, TeamRepository::class);
         $this->app->bind(CompetitionRepositoryInterface::class, CompetitionRepository::class);
+        $this->app->bind(CompetitionGroupRepositoryInterface::class, CompetitionGroupRepository::class);
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(MatchRepositoryInterface::class, MatchRepository::class);
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
