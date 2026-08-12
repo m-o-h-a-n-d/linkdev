@@ -36,10 +36,11 @@ class LoginController extends Controller
 
         $user = Auth::guard('admin')->user();
 
+
+
         if (
             ! $user ||
-            ! $user->admin()->exists() ||
-            ! $user->can('dashboard.access')
+            ! $user->can('dashboard.access' , 'admin')
         ) {
             Auth::guard('admin')->logout();
 

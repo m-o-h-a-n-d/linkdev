@@ -16,9 +16,13 @@ interface TeamRepositoryInterface
 
     public function find(int $id): ?Team;
 
-    public function create(CreateTeamData $data): Team;
+    public function create(CreateTeamData $data, ?string $logoPath = null): Team;
 
-    public function update(Team $team, UpdateTeamData $data): Team;
+    public function update(Team $team, UpdateTeamData $data, ?string $logoPath = null): Team;
+
+    public function updateStatus(Team $team, string $status, ?string $reason = null): Team;
+
+    public function getPendingTeams(): Collection;
 
     public function delete(Team $team): bool;
 }

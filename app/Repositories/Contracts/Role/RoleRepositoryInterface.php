@@ -11,6 +11,8 @@ interface RoleRepositoryInterface
 
     public function findById(int $id): Role;
 
+    public function findByName(string $name, string $guardName = 'admin'): Role;
+
     public function create(array $data): Role;
 
     public function update(Role|int $role, array $data): Role;

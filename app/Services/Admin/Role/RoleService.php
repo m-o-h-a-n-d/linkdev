@@ -3,14 +3,20 @@
 namespace App\Services\Admin\Role;
 
 use App\Data\Admin\Role\RoleData;
+use App\Services\Admin\AdminServices;
 use App\Repositories\Contracts\Role\RoleRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 class RoleService
 {
+    private const SUPER_ADMIN_ROLE = 'super-admin';
+
     public function __construct(
-        protected RoleRepositoryInterface $roleRepository
+        protected RoleRepositoryInterface $roleRepository,
+        protected AdminServices $adminServices
     ) {}
 
     public function getAllRoles(): Collection
@@ -23,8 +29,38 @@ class RoleService
         return $this->roleRepository->findById($id);
     }
 
+    public function getProtectedRoleNames(): array
+    {
+        return [self::SUPER_ADMIN_ROLE];
+    }
+
+    public function isProtectedRole(Role $role): bool
+    {
+        return in_array($role->name, $this->getProtectedRoleNames(), true);
+    }
+
+    private function ensureRoleNameIsAllowed(string $name): void
+    {
+        if (in_array($name, $this->getProtectedRoleNames(), true)) {
+            throw ValidationException::withMessages([
+                'name' => 'This role name is reserved and cannot be used.',
+            ]);
+        }
+    }
+
+    private function ensureRoleIsMutable(Role $role): void
+    {
+        if ($this->isProtectedRole($role)) {
+            throw ValidationException::withMessages([
+                'name' => 'This role is protected and cannot be modified.',
+            ]);
+        }
+    }
+
     public function createRole(RoleData $data): Role
     {
+        $this->ensureRoleNameIsAllowed($data->name);
+
         $role = $this->roleRepository->create([
             'name' => $data->name,
             'guard_name' => 'admin',
@@ -39,7 +75,11 @@ class RoleService
 
     public function updateRole(int $id, RoleData $data): Role
     {
-        $role = $this->roleRepository->update($id, [
+        $role = $this->roleRepository->findById($id);
+        $this->ensureRoleIsMutable($role);
+        $this->ensureRoleNameIsAllowed($data->name);
+
+        $role = $this->roleRepository->update($role, [
             'name' => $data->name,
         ]);
 
@@ -52,10 +92,16 @@ class RoleService
     {
         $role = $this->roleRepository->findById($id);
 
-        if ($role->name === 'super-admin') {
-            return false;
-        }
+        $this->ensureRoleIsMutable($role);
 
-        return $this->roleRepository->delete($role);
+        return DB::transaction(function () use ($role) {
+            $users = $role->users()->with('admin')->get();
+
+            foreach ($users as $user) {
+                $this->adminServices->deleteAdminProfile($user);
+            }
+
+            return $this->roleRepository->delete($role);
+        });
     }
 }

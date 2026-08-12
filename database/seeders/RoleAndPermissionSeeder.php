@@ -10,54 +10,106 @@ use Spatie\Permission\PermissionRegistrar;
 
 class RoleAndPermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $guard = 'admin';
+        $superAdminRoleName = 'super-admin';
 
-        $modules = config('permissions.modules', []);
-        $guards = ['admin', 'web'];
-        $allPermissionNames = [];
+        /*
+        |--------------------------------------------------------------------------
+        | Reset Permission Cache
+        |--------------------------------------------------------------------------
+        */
 
-        // 1. Create All Permissions for both 'admin' and 'web' guards
-        foreach ($modules as $moduleKey => $moduleData) {
-            $permissions = $moduleData['permissions'] ?? [];
-            foreach ($permissions as $permissionName) {
-                foreach ($guards as $guard) {
-                    Permission::firstOrCreate([
-                        'name' => $permissionName,
-                        'guard_name' => $guard,
-                    ]);
-                }
-                $allPermissionNames[] = $permissionName;
-            }
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get All Permissions
+        |--------------------------------------------------------------------------
+        */
+
+        $permissions = collect(config('permissions.modules'))
+            ->flatMap(
+                fn (array $module) => $module['permissions'] ?? []
+            )
+            ->unique()
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create / Update Permissions
+        |--------------------------------------------------------------------------
+        */
+
+        Permission::upsert(
+            $permissions
+                ->map(fn (string $permission) => [
+                    'name' => $permission,
+                    'guard_name' => $guard,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])
+                ->toArray(),
+            ['name', 'guard_name'],
+            ['updated_at']
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Remove Any Existing Default Role
+        |--------------------------------------------------------------------------
+        */
+
+        $defaultRole = Role::query()
+            ->where('name', 'default')
+            ->where('guard_name', $guard)
+            ->first();
+
+        if ($defaultRole) {
+            $defaultRole->users()->get()->each(function (User $user) use ($defaultRole): void {
+                $user->removeRole($defaultRole);
+            });
+
+            $defaultRole->delete();
         }
 
-        // 2. Create Super Admin Roles for both 'admin' and 'web' guards
-        foreach ($guards as $guard) {
-            $superAdminRole = Role::firstOrCreate([
-                'name' => 'super-admin',
-                'guard_name' => $guard,
-            ]);
-            $superAdminRole->syncPermissions($allPermissionNames);
+        $superAdmin = Role::firstOrCreate([
+            'name' => $superAdminRoleName,
+            'guard_name' => $guard,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sync All Permissions
+        |--------------------------------------------------------------------------
+        */
+
+        $superAdmin->syncPermissions(
+            $permissions->all()
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Assign Super Admin Role to Existing Admins
+        |--------------------------------------------------------------------------
+        */
+
+        $adminUsers = User::query()
+            ->whereHas('admin')
+            ->get();
+
+        foreach ($adminUsers as $adminUser) {
+            $adminUser->assignRole($superAdmin);
         }
 
-        // 3. Assign Super Admin Roles to System Admins (Users with AdminProfile)
-        $admins = User::whereHas('admin')->get();
-        if ($admins->isEmpty()) {
-            $admins = User::limit(5)->get();
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Clear Cache Again
+        |--------------------------------------------------------------------------
+        */
 
-        foreach ($admins as $adminUser) {
-            foreach ($guards as $guard) {
-                $role = Role::where('name', 'super-admin')->where('guard_name', $guard)->first();
-                if ($role && ! $adminUser->hasRole('super-admin', $guard)) {
-                    $adminUser->assignRole($role);
-                }
-            }
-        }
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

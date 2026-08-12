@@ -10,25 +10,115 @@
 
 <div class="card shadow mb-4">
     <div class="card-header py-3 bg-warning text-dark">
-        <h6 class="m-0 font-weight-bold">Edit Team - Al Ahly SC</h6>
+        <h6 class="m-0 font-weight-bold">Edit Team - {{ $team->name }}</h6>
     </div>
     <div class="card-body">
-        <form action="{{ route('admin.teams.index') }}" method="GET">
+        <form action="{{ route('admin.teams.update', $team->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
             <div class="form-group">
-                <label class="font-weight-bold">Team Full Name</label>
-                <input class="form-control" type="text" value="Al Ahly Handball SC" required>
+                <label class="font-weight-bold text-gray-700">Team Full Name *</label>
+                <input class="form-control @error('name') is-invalid @enderror" type="text" name="name" value="{{ old('name', $team->name) }}" required>
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
+
             <div class="form-row mb-3">
                 <div class="col-md-6">
-                    <label class="font-weight-bold">Short Code</label>
-                    <input class="form-control" type="text" value="AHL" maxlength="4" required>
+                    <label class="font-weight-bold text-gray-700">Short Code / Abbreviation *</label>
+                    <input class="form-control @error('short_name') is-invalid @enderror" type="text" name="short_name" value="{{ old('short_name', $team->short_name) }}" maxlength="20" required>
+                    @error('short_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-6">
-                    <label class="font-weight-bold">City</label>
-                    <input class="form-control" type="text" value="Cairo" required>
+                    <label class="font-weight-bold text-gray-700">City *</label>
+                    <input class="form-control @error('city') is-invalid @enderror" type="text" name="city" value="{{ old('city', $team->city) }}" required>
+                    @error('city')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
-            <button type="submit" class="btn btn-warning font-weight-bold"><i class="fas fa-sync-alt mr-1"></i> Update Team</button>
+
+            <div class="form-row mb-3">
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Country *</label>
+                    <input class="form-control @error('country') is-invalid @enderror" type="text" name="country" value="{{ old('country', $team->country) }}" required>
+                    @error('country')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Home Sports Hall / Arena</label>
+                    <input class="form-control @error('arena') is-invalid @enderror" type="text" name="arena" value="{{ old('arena', $team->arena) }}">
+                    @error('arena')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="form-row mb-3">
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Manager / Head Coach Name</label>
+                    <input class="form-control @error('manager_name') is-invalid @enderror" type="text" name="manager_name" value="{{ old('manager_name', $team->manager_name) }}">
+                    @error('manager_name')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Contact Email Address</label>
+                    <input class="form-control @error('email') is-invalid @enderror" type="email" name="email" value="{{ old('email', $team->email) }}">
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="form-row mb-3">
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Phone / WhatsApp</label>
+                    <input class="form-control @error('phone') is-invalid @enderror" type="text" name="phone" value="{{ old('phone', $team->phone) }}">
+                    @error('phone')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6">
+                    <label class="font-weight-bold text-gray-700">Status</label>
+                    <select name="status" class="form-control @error('status') is-invalid @enderror">
+                        <option value="pending" {{ old('status', $team->status->value) == 'pending' ? 'selected' : '' }}>Pending Review</option>
+                        <option value="accepted" {{ old('status', $team->status->value) == 'accepted' ? 'selected' : '' }}>Accepted</option>
+                        <option value="rejected" {{ old('status', $team->status->value) == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="font-weight-bold text-gray-700">Rejection Reason (If Status is Rejected)</label>
+                <textarea name="rejection_reason" class="form-control @error('rejection_reason') is-invalid @enderror" rows="3" placeholder="Reason for rejection...">{{ old('rejection_reason', $team->rejection_reason) }}</textarea>
+                @error('rejection_reason')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="font-weight-bold text-gray-700">Update Team Logo / Crest</label>
+                @if($team->logo && $team->logo !== 'defaults/team-crest.png')
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $team->logo) }}" alt="Current Logo" style="height: 50px; object-fit: contain;" class="rounded border p-1">
+                    </div>
+                @endif
+                <input type="file" name="logo" class="form-control-file @error('logo') is-invalid @enderror" accept="image/*">
+                @error('logo')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn btn-warning font-weight-bold px-4"><i class="fas fa-sync-alt mr-1"></i> Update Team</button>
             <a href="{{ route('admin.teams.index') }}" class="btn btn-light ml-2">Cancel</a>
         </form>
     </div>

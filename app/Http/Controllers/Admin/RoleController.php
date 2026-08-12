@@ -19,8 +19,9 @@ class RoleController extends Controller
     public function index(): View
     {
         $roles = $this->roleService->getAllRoles();
+        $protectedRoleNames = $this->roleService->getProtectedRoleNames();
 
-        return view('backend.roles.index', compact('roles'));
+        return view('backend.roles.index', compact('roles', 'protectedRoleNames'));
     }
 
     public function create(): View
@@ -42,17 +43,19 @@ class RoleController extends Controller
     public function show(int $id): View
     {
         $role = $this->roleService->getRoleById($id);
+        $protectedRoleNames = $this->roleService->getProtectedRoleNames();
 
-        return view('backend.roles.show', compact('role'));
+        return view('backend.roles.show', compact('role', 'protectedRoleNames'));
     }
 
     public function edit(int $id): View
     {
         $role = $this->roleService->getRoleById($id);
+        $protectedRoleNames = $this->roleService->getProtectedRoleNames();
         $modules = config('permissions.modules', []);
         $rolePermissions = $role->permissions->pluck('name')->toArray();
 
-        return view('backend.roles.edit', compact('role', 'modules', 'rolePermissions'));
+        return view('backend.roles.edit', compact('role', 'modules', 'rolePermissions', 'protectedRoleNames'));
     }
 
     public function update(UpdateRoleRequest $request, int $id): RedirectResponse
@@ -66,11 +69,7 @@ class RoleController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
-        $deleted = $this->roleService->deleteRole($id);
-
-        if (! $deleted) {
-            return back()->with('error', 'Super Admin role cannot be deleted or role does not exist.');
-        }
+        $this->roleService->deleteRole($id);
 
         return redirect()->route('admin.roles.index')->with('success', 'Role deleted successfully!');
     }

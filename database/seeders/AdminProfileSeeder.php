@@ -24,9 +24,6 @@ class AdminProfileSeeder extends Seeder
                 'user_id' => $user->id,
             ]);
 
-            if (! $user->hasRole('super-admin')) {
-                $user->assignRole('super-admin');
-            }
         }
     }
 }

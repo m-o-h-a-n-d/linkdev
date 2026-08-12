@@ -196,7 +196,6 @@
 
         /* Success Card View */
         .success-box {
-            display: none;
             text-align: center;
             padding: 40px;
             background: #f0fdf4;
@@ -240,7 +239,7 @@
                     <div class="brand-logo-icon">
                         <i class="fas fa-volleyball-ball"></i>
                     </div>
-                    <div class="brand-logo-text">Admina <span style="font-size: 14px; color: #60a5fa; margin-left: 6px;">LEAGUE</span></div>
+                    <div class="brand-logo-text">Handball <span style="font-size: 14px; color: #60a5fa; margin-left: 6px;">HUB</span></div>
                 </div>
 
                 <h2 style="font-weight: 800; font-size: 32px; margin-bottom: 16px; line-height: 1.2;">Official Club Registration Portal</h2>
@@ -266,7 +265,7 @@
                     <div class="feature-card-icon"><i class="fas fa-user-check"></i></div>
                     <div>
                         <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Coach & Staff Contact</h4>
-                        <p style="font-size: 13px; color: #94a3b8; margin: 0;">Receive official match schedules and live score engine access.</p>
+                        <p style="font-size: 13px; color: #94a3b8; margin: 0;">Receive official match schedules and status notifications by email.</p>
                     </div>
                 </div>
             </div>
@@ -276,149 +275,148 @@
         <div class="team-reg-form-side">
             <div class="team-reg-form-box">
 
-                <div id="formSection">
-                    <h1 class="form-header-title">Register Your Team</h1>
-                    <p class="form-header-subtitle">Fill out the team form below. This link is sent directly by the tournament organization.</p>
-
-                    <form id="teamRegistrationForm" onsubmit="handleTeamSubmit(event)">
-
-                        <!-- SECTION 1: CLUB INFO -->
-                        <div class="section-label-heading">1. Club Details</div>
-
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Official Team / Club Name *</label>
-                                    <input type="text" class="form-control-custom" placeholder="e.g. Al Ahly SC / Barcelona HC" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Short Code *</label>
-                                    <input type="text" class="form-control-custom text-uppercase" placeholder="e.g. AHL" maxlength="5" required>
-                                </div>
-                            </div>
+                @if(session('success'))
+                    <!-- SUCCESS MESSAGE STATE -->
+                    <div class="success-box mb-4">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Country *</label>
-                                    <select class="form-control-custom" required>
-                                        <option value="">Select Country...</option>
-                                        <option value="Egypt" selected>Egypt</option>
-                                        <option value="Spain">Spain</option>
-                                        <option value="Germany">Germany</option>
-                                        <option value="France">France</option>
-                                        <option value="Denmark">Denmark</option>
-                                        <option value="Hungary">Hungary</option>
-                                        <option value="Croatia">Croatia</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">City / Location *</label>
-                                    <input type="text" class="form-control-custom" placeholder="e.g. Cairo / Barcelona" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="input-group-custom">
-                            <label class="small font-weight-bold text-gray-700 mb-1">Home Sports Arena / Hall Name</label>
-                            <input type="text" class="form-control-custom" placeholder="e.g. Al Ahly Sports Hall / Palau Blaugrana">
-                        </div>
-
-                        <!-- SECTION 2: COACH & MANAGER CONTACT -->
-                        <div class="section-label-heading mt-4">2. Head Coach & Manager Info</div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Manager / Coach Full Name *</label>
-                                    <input type="text" class="form-control-custom" placeholder="e.g. David Davis" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Official Contact Role</label>
-                                    <select class="form-control-custom">
-                                        <option value="Head Coach" selected>Head Coach</option>
-                                        <option value="Team Manager">Team Manager / Director</option>
-                                        <option value="Club Secretary">Club Secretary</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Email Address *</label>
-                                    <input type="email" class="form-control-custom" placeholder="coach@clubdomain.com" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="input-group-custom">
-                                    <label class="small font-weight-bold text-gray-700 mb-1">Phone / WhatsApp *</label>
-                                    <input type="tel" class="form-control-custom" placeholder="+20 100 000 0000" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- SECTION 3: COMPETITION SELECTION -->
-                        <div class="section-label-heading mt-4">3. Competition & Squad Notes</div>
-
-                        <div class="input-group-custom">
-                            <label class="small font-weight-bold text-gray-700 mb-1">Target League Competition *</label>
-                            <select class="form-control-custom" required>
-                                <option value="">Select Target League...</option>
-                                <option value="Egyptian Premier League" selected>Egyptian Handball Premier League 2025/2026</option>
-                                <option value="EHF Champions League">EHF Champions League 2025/2026</option>
-                                <option value="National Cup">National Handball Cup 2025/2026</option>
-                            </select>
-                        </div>
-
-                        <div class="input-group-custom">
-                            <label class="small font-weight-bold text-gray-700 mb-1">Team Crest / Logo (Optional)</label>
-                            <input type="file" class="form-control-custom p-2" accept="image/*">
-                        </div>
-
-                        <div class="input-group-custom">
-                            <label class="small font-weight-bold text-gray-700 mb-1">Squad Roster / Additional Remarks</label>
-                            <textarea class="form-control-custom" rows="3" placeholder="Enter list of preliminary players or special remarks..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-submit-team">
-                            <i class="fas fa-paper-plane mr-2"></i> Submit Official Registration Form
-                        </button>
-
-                    </form>
-                </div>
-
-                <!-- SUCCESS MESSAGE STATE -->
-                <div class="success-box" id="successSection">
-                    <div class="success-icon">
-                        <i class="fas fa-check"></i>
+                        <h2 style="font-weight: 800; color: #15803d; margin-bottom: 8px;">Registration Submitted Successfully!</h2>
+                        <p style="color: #374151; font-size: 15px; margin-bottom: 24px;">{{ session('success') }}</p>
+                        <a href="{{ route('team-registration.public') }}" class="btn btn-outline-primary font-weight-bold px-4" style="border-radius: 12px; padding: 10px 20px;">
+                            <i class="fas fa-redo mr-2"></i> Submit Another Team
+                        </a>
                     </div>
-                    <h2 style="font-weight: 800; color: #15803d; margin-bottom: 8px;">Registration Submitted Successfully!</h2>
-                    <p style="color: #374151; font-size: 15px; margin-bottom: 24px;">Thank you Coach. Your team registration details have been received and sent to the league administration for final approval.</p>
-                    <a href="{{ route('admin.teams.index') }}" class="btn btn-outline-primary font-weight-bold px-4" style="border-radius: 12px; padding: 10px 20px;">
-                        <i class="fas fa-arrow-left mr-2"></i> Return to Handball Portal
-                    </a>
-                </div>
+                @else
+
+                    <div id="formSection">
+                        <h1 class="form-header-title">Register Your Team</h1>
+                        <p class="form-header-subtitle">Fill out the team form below. This request will be sent directly to league administrators for approval.</p>
+
+                        <form action="{{ route('team-registration.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+
+                            <!-- SECTION 1: CLUB INFO -->
+                            <div class="section-label-heading">1. Club Details</div>
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Official Team / Club Name *</label>
+                                        <input type="text" name="name" class="form-control-custom @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="e.g. Al Ahly SC / Barcelona HC" required>
+                                        @error('name')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Short Code *</label>
+                                        <input type="text" name="short_name" class="form-control-custom text-uppercase @error('short_name') is-invalid @enderror" value="{{ old('short_name') }}" placeholder="e.g. AHL" maxlength="20" required>
+                                        @error('short_name')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Country *</label>
+                                        <select name="country" class="form-control-custom @error('country') is-invalid @enderror" required>
+                                            <option value="">Select Country...</option>
+                                            <option value="Egypt" {{ old('country', 'Egypt') == 'Egypt' ? 'selected' : '' }}>Egypt</option>
+                                            <option value="Spain" {{ old('country') == 'Spain' ? 'selected' : '' }}>Spain</option>
+                                            <option value="Germany" {{ old('country') == 'Germany' ? 'selected' : '' }}>Germany</option>
+                                            <option value="France" {{ old('country') == 'France' ? 'selected' : '' }}>France</option>
+                                            <option value="Denmark" {{ old('country') == 'Denmark' ? 'selected' : '' }}>Denmark</option>
+                                            <option value="Hungary" {{ old('country') == 'Hungary' ? 'selected' : '' }}>Hungary</option>
+                                            <option value="Croatia" {{ old('country') == 'Croatia' ? 'selected' : '' }}>Croatia</option>
+                                        </select>
+                                        @error('country')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">City / Location *</label>
+                                        <input type="text" name="city" class="form-control-custom @error('city') is-invalid @enderror" value="{{ old('city') }}" placeholder="e.g. Cairo / Barcelona" required>
+                                        @error('city')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="input-group-custom">
+                                <label class="small font-weight-bold text-gray-700 mb-1">Home Sports Arena / Hall Name</label>
+                                <input type="text" name="arena" class="form-control-custom @error('arena') is-invalid @enderror" value="{{ old('arena') }}" placeholder="e.g. Al Ahly Sports Hall / Palau Blaugrana">
+                                @error('arena')
+                                    <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <!-- SECTION 2: COACH & MANAGER CONTACT -->
+                            <div class="section-label-heading mt-4">2. Head Coach & Manager Info</div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Manager / Coach Full Name *</label>
+                                        <input type="text" name="manager_name" class="form-control-custom @error('manager_name') is-invalid @enderror" value="{{ old('manager_name') }}" placeholder="e.g. David Davis" required>
+                                        @error('manager_name')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Email Address *</label>
+                                        <input type="email" name="email" class="form-control-custom @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="coach@clubdomain.com" required>
+                                        @error('email')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group-custom">
+                                        <label class="small font-weight-bold text-gray-700 mb-1">Phone / WhatsApp *</label>
+                                        <input type="tel" name="phone" class="form-control-custom @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="+20 100 000 0000" required>
+                                        @error('phone')
+                                            <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 3: LOGO -->
+                            <div class="section-label-heading mt-4">3. Team Logo</div>
+
+                            <div class="input-group-custom">
+                                <label class="small font-weight-bold text-gray-700 mb-1">Team Crest / Logo (Optional)</label>
+                                <input type="file" name="logo" class="form-control-custom p-2 @error('logo') is-invalid @enderror" accept="image/*">
+                                @error('logo')
+                                    <small class="text-danger font-weight-bold">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn-submit-team">
+                                <i class="fas fa-paper-plane mr-2"></i> Submit Official Registration Form
+                            </button>
+
+                        </form>
+                    </div>
+
+                @endif
 
             </div>
         </div>
 
     </div>
-
-    <script>
-        function handleTeamSubmit(e) {
-            e.preventDefault();
-            document.getElementById('formSection').style.display = 'none';
-            document.getElementById('successSection').style.display = 'block';
-        }
-    </script>
 </body>
 </html>
