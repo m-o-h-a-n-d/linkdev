@@ -14,6 +14,8 @@ interface CompetitionRepositoryInterface
 
     public function all(): Collection;
 
+    public function allWithRelations(array $relations = []): Collection;
+
     public function find(string|int $id): ?CompetitionModel;
 
     public function findBySlug(string $slug): ?CompetitionModel;

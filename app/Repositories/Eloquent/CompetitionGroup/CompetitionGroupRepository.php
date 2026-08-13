@@ -30,6 +30,11 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
             ->get();
     }
 
+    public function allWithRelations(array $relations = []): Collection
+    {
+        return CompetitionGroup::with($relations)->get();
+    }
+
     public function find(int $id): ?CompetitionGroup
     {
         return CompetitionGroup::with(['competition', 'teams'])->find($id);

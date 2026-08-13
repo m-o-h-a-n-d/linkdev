@@ -3,12 +3,16 @@
 namespace App\Services\Match;
 
 use App\Models\CompetitionGroup;
-use App\Models\GameMatch;
+use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class FixtureGeneratorService
 {
+    public function __construct(
+        protected MatchRepositoryInterface $matchRepository
+    ) {}
+
     /**
      * Generate round-robin match fixtures for a group of teams in a competition.
      */
@@ -41,7 +45,7 @@ class FixtureGeneratorService
                 $away = $teamIds[$numTeams - 1 - $i];
 
                 if ($home !== null && $away !== null) {
-                    $match = GameMatch::create([
+                    $match = $this->matchRepository->create([
                         'competition_id' => $group->competition_id,
                         'group_id' => $group->id,
                         'home_team_id' => $home,

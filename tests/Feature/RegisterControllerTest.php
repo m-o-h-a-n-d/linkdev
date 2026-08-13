@@ -9,7 +9,7 @@ it('registers a new user and authenticates them', function () {
         'status' => 'active',
     ]);
 
-    $response->assertRedirect('/');
+    $response->assertRedirect(route('verification.notice'));
     $this->assertAuthenticated();
     $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
 });

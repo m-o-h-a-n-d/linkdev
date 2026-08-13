@@ -60,13 +60,13 @@ class CompetitionGroupService
     {
         $group = $this->findOrFail($groupId);
         $team = \App\Models\Team::findOrFail($teamId);
-
+        //  يعني لو الفريق مش مقبول ما ينفعش يتضاف للجروب
         if (! $team->isAccepted()) {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'team_id' => 'Only accepted teams can be added to a group.',
             ]);
         }
-
+        //  يعني لو الفريق موجود في جروب تاني في نفس الكومبيتيشن ما ينفعش يتضاف للجروب ده
         if ($this->competitionGroupRepository->isTeamInCompetitionGroup($group->competition_id, $teamId)) {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'team_id' => 'This team is already assigned to a group in this competition.',

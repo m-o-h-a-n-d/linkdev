@@ -14,6 +14,8 @@ interface CompetitionGroupRepositoryInterface
 
     public function all(): Collection;
 
+    public function allWithRelations(array $relations = []): Collection;
+
     public function find(int $id): ?CompetitionGroup;
 
     public function create(CreateCompetitionGroupData $data): CompetitionGroup;

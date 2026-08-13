@@ -7,6 +7,8 @@ use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use App\Repositories\Contracts\CompetitionGroup\CompetitionGroupRepositoryInterface;
 use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use App\Repositories\Contracts\Role\RoleRepositoryInterface;
+use App\Repositories\Contracts\Standing\GroupStandingRepositoryInterface;
+use App\Repositories\Contracts\Standing\TeamStatisticRepositoryInterface;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
 use App\Repositories\Eloquent\Admin\AdminRepository;
@@ -14,6 +16,8 @@ use App\Repositories\Eloquent\Competition\CompetitionRepository;
 use App\Repositories\Eloquent\CompetitionGroup\CompetitionGroupRepository;
 use App\Repositories\Eloquent\Match\MatchRepository;
 use App\Repositories\Eloquent\Role\RoleRepository;
+use App\Repositories\Eloquent\Standing\GroupStandingRepository;
+use App\Repositories\Eloquent\Standing\TeamStatisticRepository;
 use App\Repositories\Eloquent\Team\TeamRepository;
 use App\Repositories\Eloquent\User\UserRepository;
 use Illuminate\Support\ServiceProvider;
@@ -32,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(MatchRepositoryInterface::class, MatchRepository::class);
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
+        $this->app->bind(GroupStandingRepositoryInterface::class, GroupStandingRepository::class);
+        $this->app->bind(TeamStatisticRepositoryInterface::class, TeamStatisticRepository::class);
     }
 
     /**

@@ -3,11 +3,16 @@
 namespace App\Services\Match;
 
 use App\Models\GameMatch;
+use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class MatchLiveStatusService
 {
+    public function __construct(
+        protected MatchRepositoryInterface $matchRepository
+    ) {}
+
     /**
      * Check all scheduled matches and update them to 'live' if their scheduled time has arrived.
      */
@@ -15,13 +20,11 @@ class MatchLiveStatusService
     {
         $now = Carbon::now();
 
-        // Get matches that are 'scheduled' and scheduled_at <= now
-        $matchesToLive = GameMatch::where('status', 'scheduled')
-            ->where('scheduled_at', '<=', $now)
-            ->get();
+        // Get matches that are 'scheduled' and scheduled_at <= now via repository
+        $matchesToLive = $this->matchRepository->getScheduledMatchesToLive($now);
 
         foreach ($matchesToLive as $match) {
-            $match->update([
+            $this->matchRepository->update($match, [
                 'status' => 'live',
                 'started_at' => $match->started_at ?? $match->scheduled_at ?? $now,
             ]);

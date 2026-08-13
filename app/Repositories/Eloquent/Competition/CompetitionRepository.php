@@ -22,6 +22,11 @@ class CompetitionRepository implements CompetitionRepositoryInterface
         return CompetitionModel::all();
     }
 
+    public function allWithRelations(array $relations = []): Collection
+    {
+        return CompetitionModel::with($relations)->get();
+    }
+
     public function find(string|int $id): ?CompetitionModel
     {
         $query = CompetitionModel::with([

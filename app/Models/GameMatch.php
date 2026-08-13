@@ -78,26 +78,17 @@ class GameMatch extends Model
     }
 
     /**
-     * Dynamic status accessor: auto-transitions scheduled matches to live when scheduled_at <= now.
+     * Dynamic status accessor: read-only evaluation without side effects on DB.
      */
     public function getStatusAttribute($value): string
     {
         $rawStatus = strtolower($value ?? 'scheduled');
 
-        if ($rawStatus === 'scheduled' && $this->scheduled_at && $this->scheduled_at->isPast()) {
-            if ($this->exists) {
-                $startedAt = $this->started_at ?? $this->scheduled_at ?? now();
-                try {
-                    $this->newQuery()->where('id', $this->id)->where('status', 'scheduled')->update([
-                        'status' => 'live',
-                        'started_at' => $startedAt,
-                    ]);
-                    $this->attributes['status'] = 'live';
-                    $this->attributes['started_at'] = $startedAt;
-                } catch (\Throwable $e) {
-                    // Fallback
-                }
-            }
+        if (
+            $rawStatus === 'scheduled' &&  // يعني إذا كانت المباراة مجدولة
+            $this->scheduled_at && // وتاريخ ووقت المباراة موجود
+            $this->scheduled_at->isPast() // والوقت الحالي عدى وقت المباراة
+        ) {
             return 'live';
         }
 

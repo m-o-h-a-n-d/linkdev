@@ -5,12 +5,19 @@ namespace App\Services\Match;
 use App\Models\Competition;
 use App\Models\CompetitionGroup;
 use App\Models\GameMatch;
-use App\Models\GroupStanding;
-use App\Models\TeamStatistic;
+use App\Repositories\Contracts\Match\MatchRepositoryInterface;
+use App\Repositories\Contracts\Standing\GroupStandingRepositoryInterface;
+use App\Repositories\Contracts\Standing\TeamStatisticRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class MatchStandingsService
 {
+    public function __construct(
+        protected MatchRepositoryInterface $matchRepository,
+        protected GroupStandingRepositoryInterface $groupStandingRepository,
+        protected TeamStatisticRepositoryInterface $teamStatisticRepository
+    ) {}
+
     /**
      * Recalculate group standings for a given group based on finished matches.
      */
@@ -23,10 +30,8 @@ class MatchStandingsService
             return;
         }
 
-        // Fetch finished matches for this group
-        $finishedMatches = GameMatch::where('group_id', $group->id)
-            ->where('status', 'finished')
-            ->get();
+        // Fetch finished matches for this group via repository
+        $finishedMatches = $this->matchRepository->getFinishedMatchesByGroup($group->id);
 
         $stats = [];
 
@@ -129,11 +134,11 @@ class MatchStandingsService
             return 0;
         });
 
-        // Save / Update Group Standings with Rank
+        // Save / Update Group Standings with Rank via repository
         DB::transaction(function () use ($group, $stats) {
             $rank = 1;
             foreach ($stats as $teamId => $data) {
-                GroupStanding::updateOrCreate(
+                $this->groupStandingRepository->updateOrCreate(
                     [
                         'group_id' => $group->id,
                         'team_id' => $teamId,
@@ -159,9 +164,8 @@ class MatchStandingsService
      */
     public function recalculateTeamStatistics(Competition $competition): void
     {
-        $finishedMatches = GameMatch::where('competition_id', $competition->id)
-            ->where('status', 'finished')
-            ->get();
+        // Fetch finished matches for this competition via repository
+        $finishedMatches = $this->matchRepository->getFinishedMatchesByCompetition($competition->id);
 
         $stats = [];
 
@@ -230,9 +234,10 @@ class MatchStandingsService
         }
         unset($data);
 
+        // Update / create team statistics via repository
         DB::transaction(function () use ($competition, $stats) {
             foreach ($stats as $teamId => $data) {
-                TeamStatistic::updateOrCreate(
+                $this->teamStatisticRepository->updateOrCreate(
                     [
                         'team_id' => $teamId,
                         'competition_id' => $competition->id,
@@ -252,13 +257,10 @@ class MatchStandingsService
             return;
         }
 
-        // Check if there is a next round match in the competition
+        // Check if there is a next round match in the competition via repository
         $nextRoundNumber = $match->round_number + 1;
 
-        $nextMatch = GameMatch::where('competition_id', $match->competition_id)
-            ->where('round_number', $nextRoundNumber)
-            ->whereNull('group_id') // Knockout matches have no group_id
-            ->first();
+        $nextMatch = $this->matchRepository->getNextKnockoutMatch($match->competition_id, $nextRoundNumber);
 
         if (! $nextMatch) {
             return;
@@ -266,9 +268,9 @@ class MatchStandingsService
 
         // Fill home_team_id if empty, else away_team_id
         if (! $nextMatch->home_team_id || $nextMatch->home_team_id == $match->winner_team_id) {
-            $nextMatch->update(['home_team_id' => $match->winner_team_id]);
+            $this->matchRepository->update($nextMatch, ['home_team_id' => $match->winner_team_id]);
         } elseif (! $nextMatch->away_team_id || $nextMatch->away_team_id == $match->winner_team_id) {
-            $nextMatch->update(['away_team_id' => $match->winner_team_id]);
+            $this->matchRepository->update($nextMatch, ['away_team_id' => $match->winner_team_id]);
         }
     }
 }
