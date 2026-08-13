@@ -68,12 +68,14 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
             ->join('competition_groups', 'group_team.group_id', '=', 'competition_groups.id') // اعرف الـ Group التابعة لأنهي Competition
             ->where('competition_groups.competition_id', $group->competition_id)
             ->whereNull('competition_groups.deleted_at') // تأكد أن الجروب غير محذوف
-            ->pluck('group_team.team_id') // هات الـ Team ID
-            ->toArray(); // خليهم Array
+            ->pluck('group_team.team_id')
+            ->toArray(); // هات الـ Team ID
 
+     
         return Team::where('status', TeamStatus::ACCEPTED->value) // اختار اللي متأكد
             ->whereNotIn('id', $assignedTeamIdsInCompetition) // مش موجودين في الـ Array اللي فوق
             ->get(); // وهات اللي طلع
+
     }
 
     public function isTeamInCompetitionGroup(int $competitionId, int $teamId): bool

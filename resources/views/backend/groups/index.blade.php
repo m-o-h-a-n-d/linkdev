@@ -78,11 +78,6 @@
                                             <strong class="text-white font-weight-bold mr-2 text-truncate" style="font-size: 0.95rem;">{{ $team->name }}</strong>
                                             <span class="text-muted text-truncate" style="font-size: 0.85rem;">({{ $team->country ?? ($team->city ?? 'N/A') }})</span>
                                         </div>
-                                        <div style="flex-shrink: 0;">
-                                            <span class="badge px-3 py-2" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 20px; font-weight: 600; font-size: 0.85rem;">
-                                                <i class="fas fa-award mr-1"></i> Rank {{ $index + 1 }}
-                                            </span>
-                                        </div>
                                     </div>
                                 @endforeach
                             </div>
