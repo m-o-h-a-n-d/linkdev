@@ -136,7 +136,7 @@
                     <div class="d-flex justify-content-center mt-3 pt-3" style="border-top: 1px solid #1e293b;">
                         <button class="btn btn-primary btn-sm mr-2 font-weight-bold" data-score-btn="homeScore1" data-action="plus" style="background: #ea580c; border-color: #ea580c;"><i class="fas fa-plus mr-1"></i> Goal Ahly</button>
                         <button class="btn btn-danger btn-sm mr-2 font-weight-bold" data-score-btn="awayScore1" data-action="plus"><i class="fas fa-plus mr-1"></i> Goal Zamalek</button>
-                        <a class="btn btn-secondary btn-sm" href="{{ route('admin.matches.show') }}"><i class="fas fa-eye mr-1"></i> Details</a>
+                        <a class="btn btn-secondary btn-sm" href="{{ route('admin.matches.index') }}"><i class="fas fa-eye mr-1"></i> Details</a>
                     </div>
                 </div>
             </div>

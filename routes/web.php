@@ -1,13 +1,16 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminProfile;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\Auth\Password\ForgetPasswordController as AdminForgetPasswordController;
 use App\Http\Controllers\Admin\Auth\Password\OtpVerificationController as AdminOtpVerificationController;
 use App\Http\Controllers\Admin\Auth\Password\ResetPasswordController as AdminResetPasswordController;
 use App\Http\Controllers\Admin\CompetitionController as AdminCompetitionController;
 use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGroupController;
+use App\Http\Controllers\Admin\MatchController as AdminMatchController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StandingController as AdminStandingController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
 use App\Http\Controllers\Viewer\Auth\LoginController;
@@ -20,7 +23,12 @@ use App\Http\Controllers\Viewer\HomeController;
 use App\Http\Controllers\Viewer\MatchController;
 use App\Http\Controllers\Viewer\PublicTeamRegistrationController;
 use App\Http\Controllers\Viewer\TeamController;
+use App\Services\Competition\CompetitionService;
 use Illuminate\Support\Facades\Route;
+
+Route::bind('competition', function (string $slug) {
+    return app(CompetitionService::class)->findBySlugOrFail($slug);
+});
 
 // Home Page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -57,7 +65,7 @@ Route::middleware('auth:web')->group(function () {
 
 // Public Pages
 Route::get('/competitions', [ViewerCompetitionController::class, 'index'])->name('competitions.index');
-Route::get('/competitions/{id}', [ViewerCompetitionController::class, 'show'])->name('competitions.show');
+Route::get('/competitions/{slug}', [ViewerCompetitionController::class, 'show'])->name('competitions.show');
 
 Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
 Route::get('/matches/{id}', [MatchController::class, 'show'])->name('matches.show');
@@ -138,32 +146,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 4. Matches
         Route::prefix('matches')->name('matches.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.matches.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.matches.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.matches.edit');
-            })->name('edit');
-
-            Route::get('/show', function () {
-                return view('backend.matches.show');
-            })->name('show');
-
-            Route::get('/live-center', function () {
-                return view('backend.matches.live-center');
-            })->name('live-center');
+            Route::get('/', [AdminMatchController::class, 'index'])->name('index');
+            Route::get('/create', [AdminMatchController::class, 'create'])->name('create');
+            Route::post('/', [AdminMatchController::class, 'store'])->name('store');
+            Route::post('/generate-fixtures', [AdminMatchController::class, 'generateFixtures'])->name('generate-fixtures');
+            Route::get('/live-center', [AdminMatchController::class, 'liveCenter'])->name('live-center');
+            Route::post('/{id}/update-score', [AdminMatchController::class, 'updateScore'])->name('update-score');
+            Route::get('/{id}', [AdminMatchController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminMatchController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminMatchController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminMatchController::class, 'destroy'])->name('destroy');
         });
 
         // 5. Standings
         Route::prefix('standings')->name('standings.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.standings.index');
-            })->name('index');
+            Route::get('/', [AdminStandingController::class, 'index'])->name('index');
         });
 
         // 6. Teams
@@ -173,9 +170,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 7. Team Statistics
         Route::prefix('statistics')->name('statistics.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.statistics.index');
-            })->name('index');
+            Route::get('/', [AdminStandingController::class, 'index'])->name('index');
         });
 
         // 8. Users Directory
@@ -200,9 +195,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('admins', AdminController::class);
 
         // Profile Settings Routes
-        Route::get('/profile', [App\Http\Controllers\Admin\AdminProfile::class, 'index'])->name('profile.index');
-        Route::get('/profile/edit', [App\Http\Controllers\Admin\AdminProfile::class, 'index'])->name('profile');
-        Route::put('/profile', [App\Http\Controllers\Admin\AdminProfile::class, 'update'])->name('profile.update');
+        Route::get('/profile', [AdminProfile::class, 'index'])->name('profile.index');
+        Route::get('/profile/edit', [AdminProfile::class, 'index'])->name('profile');
+        Route::put('/profile', [AdminProfile::class, 'update'])->name('profile.update');
 
         // 10. Activity Logs
         Route::prefix('activity-logs')->name('activity-logs.')->group(function () {

@@ -78,7 +78,7 @@
             </div>
             <div class="competitions-grid">
                 @forelse($competitions ?? [] as $competition)
-                    <a href="{{ route('competitions.show', $competition->id) }}" class="competition-card">
+                    <a href="{{ route('competitions.show', ['slug' => $competition->slug]) }}" class="competition-card">
                         <span class="competition-status status-{{ strtolower($competition->status ?? 'ongoing') }}">
                             {{ ucfirst($competition->status ?? 'Ongoing') }}
                         </span>

@@ -14,10 +14,10 @@ class MatchController extends Controller
 
     public function index(): View
     {
-        // Fetch strictly Match model data
         $matches = $this->matchService->all();
+        $competition = \App\Models\Competition::with(['matches.homeTeam', 'matches.awayTeam', 'matches.winnerTeam', 'matches.group', 'teams'])->latest()->first();
 
-        return view('frontend.pages.matches', compact('matches'));
+        return view('frontend.pages.matches', compact('matches', 'competition'));
     }
 
     public function show(int $id): View

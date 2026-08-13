@@ -76,4 +76,67 @@ class GameMatch extends Model
     {
         return $this->belongsTo(Team::class, 'winner_team_id');
     }
+
+    /**
+     * Dynamic status accessor: auto-transitions scheduled matches to live when scheduled_at <= now.
+     */
+    public function getStatusAttribute($value): string
+    {
+        $rawStatus = strtolower($value ?? 'scheduled');
+
+        if ($rawStatus === 'scheduled' && $this->scheduled_at && $this->scheduled_at->isPast()) {
+            if ($this->exists) {
+                $startedAt = $this->started_at ?? $this->scheduled_at ?? now();
+                try {
+                    $this->newQuery()->where('id', $this->id)->where('status', 'scheduled')->update([
+                        'status' => 'live',
+                        'started_at' => $startedAt,
+                    ]);
+                    $this->attributes['status'] = 'live';
+                    $this->attributes['started_at'] = $startedAt;
+                } catch (\Throwable $e) {
+                    // Fallback
+                }
+            }
+            return 'live';
+        }
+
+        return $rawStatus;
+    }
+
+    /**
+     * Get elapsed live seconds.
+     */
+    public function getElapsedSecondsAttribute(): int
+    {
+        if ($this->status === 'finished' && $this->started_at && $this->ended_at) {
+            return (int) $this->started_at->diffInSeconds($this->ended_at);
+        }
+
+        if ($this->status === 'live' && $this->started_at) {
+            return (int) $this->started_at->diffInSeconds(now());
+        }
+
+        if ($this->status === 'scheduled' && $this->scheduled_at && $this->scheduled_at->isPast()) {
+            return (int) $this->scheduled_at->diffInSeconds(now());
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get formatted timer MM:SS.
+     */
+    public function getFormattedTimerAttribute(): string
+    {
+        if ($this->status === 'finished') {
+            return 'FULL TIME';
+        }
+
+        $totalSeconds = $this->elapsed_seconds;
+        $minutes = floor($totalSeconds / 60);
+        $seconds = $totalSeconds % 60;
+
+        return sprintf('%02d:%02d', $minutes, $seconds);
+    }
 }
