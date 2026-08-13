@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Competition extends Model
 {
@@ -16,7 +17,6 @@ class Competition extends Model
 
     protected $fillable = [
         'name',
-        'slug',
         'description',
         'season',
         'status',
@@ -34,8 +34,57 @@ class Competition extends Model
         ];
     }
 
+    // Accessors Not Mutators
+    /*
+            Accessors are used to format or manipulate the value of an attribute when it is accessed,
+            while mutators are used to modify the value of an attribute before it is saved to the database.
+     */
+    public function getSlugAttribute(): string
+    {
+        return Str::slug($this->name);
+    }
+
+
+
+    /*
+|--------------------------------------------------------------------------
+| Soft Deletes في Laravel
+|--------------------------------------------------------------------------
+|
+|
+|
+| withTrashed()
+|-------------
+|بتجيب كل الـ Records:
+|- الـ Records العادية التي deleted_at = NULL
+|- الـ Records التي تم حذفها Soft Delete
+|
+|
+|
+| مثال:
+| $competition->groups()->withTrashed()->get();
+|
+|
+| onlyTrashed()
+| -------------
+| بتجيب فقط الـ Records التي تم حذفها بـ Soft Delete
+| أي التي deleted_at ليست NULL.
+|
+| مثال:
+| $competition->groups()->onlyTrashed()->get();
+|
+|
+| ملخص سريع:
+|
+| withTrashed()  => كل الـ Records (الموجودة + المحذوفة Soft Delete)
+| onlyTrashed()  => المحذوفة بـ Soft Delete فقط
+| Query عادي     => الـ Records الموجودة فقط
+|
+*/
+
     protected static function booted(): void
     {
+
         static::deleting(function (Competition $competition) {
             if ($competition->isForceDeleting()) {
                 $competition->groups()->withTrashed()->forceDelete();
@@ -85,7 +134,7 @@ class Competition extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'competition_team')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     /**

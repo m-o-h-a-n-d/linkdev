@@ -23,13 +23,6 @@ class UpdateCompetitionRequest extends FormRequest
                 'unique:competitions,name,'.$competitionId,
             ],
 
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'unique:competitions,slug,'.$competitionId,
-            ],
-
             'description' => ['nullable', 'string'],
 
             'season' => ['nullable', 'string', 'max:50'],

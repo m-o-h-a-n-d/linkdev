@@ -37,7 +37,6 @@
                                         class="text-primary font-weight-bold">
                                         {{ $competition->name }}
                                     </a>
-                                    <div class="text-muted small mt-1">{{ $competition->slug }}</div>
                                 </td>
                                 <td class="font-weight-medium">{{ $competition->season }}</td>
                                 <td>

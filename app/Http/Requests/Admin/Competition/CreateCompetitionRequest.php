@@ -30,13 +30,6 @@ class CreateCompetitionRequest extends FormRequest
                 'unique:competitions,name',
             ],
 
-            'slug' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:competitions,slug',
-            ],
-
             'description' => [
                 'required',
                 'string',

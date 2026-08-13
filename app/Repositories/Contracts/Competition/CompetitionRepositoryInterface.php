@@ -4,7 +4,7 @@ namespace App\Repositories\Contracts\Competition;
 
 use App\Data\Competition\CreateCompetitionData;
 use App\Data\Competition\UpdateCompetitionData;
-use App\Models\Competition;
+use App\Models\Competition as CompetitionModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -14,11 +14,13 @@ interface CompetitionRepositoryInterface
 
     public function all(): Collection;
 
-    public function find(int $id): ?Competition;
+    public function find(string|int $id): ?CompetitionModel;
 
-    public function create(CreateCompetitionData $data): Competition;
+    public function findBySlug(string $slug): ?CompetitionModel;
 
-    public function update(Competition $competition, UpdateCompetitionData $data): Competition;
+    public function create(CreateCompetitionData $data): CompetitionModel;
 
-    public function delete(Competition $competition): bool;
+    public function update(CompetitionModel $competition, UpdateCompetitionData $data): CompetitionModel;
+
+    public function delete(CompetitionModel $competition): bool;
 }

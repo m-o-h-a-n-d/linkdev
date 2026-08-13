@@ -25,12 +25,6 @@
                         value="{{ old('name', $competition->name) }}" required>
                 </div>
 
-                <div class="form-group">
-                    <label class="font-weight-bold" for="slug">Slug</label>
-                    <input id="slug" name="slug" class="form-control" type="text"
-                        value="{{ old('slug', $competition->slug) }}" required>
-                </div>
-
                 <div class="form-row mb-3">
                     <div class="col-md-6">
                         <label class="font-weight-bold" for="season">Season</label>

@@ -8,7 +8,6 @@ class UpdateCompetitionData extends Data
 {
     public function __construct(
         public ?string $name = null,
-        public ?string $slug = null,
         public ?string $description = null,
         public ?string $season = null,
         public ?string $status = null,

@@ -26,9 +26,20 @@ class CompetitionService
         return $this->competitionRepository->paginate($perPage);
     }
 
-    public function findOrFail(int $id): Competition
+    public function findOrFail(string|int $id): Competition
     {
         $competition = $this->competitionRepository->find($id);
+
+        if (! $competition) {
+            throw new ModelNotFoundException('Competition not found.');
+        }
+
+        return $competition;
+    }
+
+    public function findBySlugOrFail(string $slug): Competition
+    {
+        $competition = $this->competitionRepository->findBySlug($slug);
 
         if (! $competition) {
             throw new ModelNotFoundException('Competition not found.');

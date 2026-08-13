@@ -108,10 +108,6 @@
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            <span class="text-muted">Slug</span>
-                            <strong>{{ $competition->slug }}</strong>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <span class="text-muted">Season</span>
                             <strong>{{ $competition->season }}</strong>
                         </li>

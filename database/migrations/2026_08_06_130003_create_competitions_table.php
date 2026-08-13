@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('competitions', function (Blueprint $table) {
             $table->id();
             $table->string('name', 255);
-            $table->string('slug', 255)->unique();
             $table->text('description');
             $table->string('season', 50);
             $table->enum('status', ['draft', 'upcoming', 'ongoing', 'completed', 'cancelled'])->default('draft');

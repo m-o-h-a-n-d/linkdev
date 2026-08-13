@@ -39,7 +39,7 @@
                     </div>
 
                     <div>
-                        <a href="{{ route('competitions.show', $competition->id) }}" style="display: inline-block; width: 100%; text-align: center; padding: 10px; background: rgba(234, 88, 12, 0.15); border: 1px solid #ea580c; color: #ea580c; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">
+                        <a href="{{ route('competitions.show', ['slug' => $competition->slug]) }}" style="display: inline-block; width: 100%; text-align: center; padding: 10px; background: rgba(234, 88, 12, 0.15); border: 1px solid #ea580c; color: #ea580c; border-radius: 6px; font-weight: 700; text-decoration: none; font-size: 0.85rem; transition: background 0.2s;">
                             View Competition Details &rarr;
                         </a>
                     </div>

@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Competition;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Competition>
@@ -22,7 +21,6 @@ class CompetitionFactory extends Factory
 
         return [
             'name' => ucfirst($name),
-            'slug' => Str::slug($name) . '-' . fake()->unique()->numberBetween(100, 999),
             'description' => fake()->paragraph(),
             'season' => '2025/2026',
             'status' => fake()->randomElement(['draft', 'upcoming', 'ongoing', 'completed', 'cancelled']),

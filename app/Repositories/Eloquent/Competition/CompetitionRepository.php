@@ -4,40 +4,78 @@ namespace App\Repositories\Eloquent\Competition;
 
 use App\Data\Competition\CreateCompetitionData;
 use App\Data\Competition\UpdateCompetitionData;
-use App\Models\Competition;
+use App\Models\Competition as CompetitionModel;
 use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CompetitionRepository implements CompetitionRepositoryInterface
 {
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return Competition::paginate($perPage);
+        return CompetitionModel::paginate($perPage);
     }
 
     public function all(): Collection
     {
-        return Competition::all();
+        return CompetitionModel::all();
     }
 
-    public function find(int $id): ?Competition
+    public function find(string|int $id): ?CompetitionModel
     {
-        return Competition::with(['teams', 'groups.teams'])->findOrFail($id);
+        $query = CompetitionModel::with([
+            'teams',
+            'groups.teams',
+            'groups.standings' => function ($q) {
+                $q->orderBy('points', 'desc')->orderBy('goal_difference', 'desc')->orderBy('goals_for', 'desc');
+            },
+            'groups.standings.team',
+            'statistics' => function ($q) {
+                $q->orderBy('points', 'desc')->orderBy('goal_difference', 'desc');
+            },
+            'statistics.team',
+            'matches.homeTeam',
+            'matches.awayTeam',
+            'matches.winnerTeam',
+            'matches.group',
+        ]);
+
+        // DB::listen(function ($query) {
+        //     dump($query->sql , $query->bindings, $query->time);
+        // });
+
+        return $query->where('id', $id)->first();
     }
 
-    public function create(CreateCompetitionData $data): Competition
+    public function findBySlug(string $slug): ?CompetitionModel
     {
-        return Competition::create($data->toArray());
+        $competitionId = CompetitionModel::query()
+            ->select(['id', 'name'])
+            ->orderBy('id')
+            ->cursor()
+            ->first(fn (CompetitionModel $competition) => $competition->slug === $slug)?->id;
+
+        if (! $competitionId) {
+            return null;
+        }
+
+        return $this->find($competitionId);
     }
 
-    public function update(Competition $competition, UpdateCompetitionData $data): Competition
+    public function create(CreateCompetitionData $data): CompetitionModel
+    {
+        return CompetitionModel::create($data->toArray());
+    }
+
+    public function update(CompetitionModel $competition, UpdateCompetitionData $data): CompetitionModel
     {
         $competition->update($data->toArray());
+
         return $competition;
     }
 
-    public function delete(Competition $competition): bool
+    public function delete(CompetitionModel $competition): bool
     {
         return $competition->delete();
     }

@@ -21,11 +21,6 @@
                 <input id="name" name="name" class="form-control" type="text" value="{{ old('name') }}" placeholder="e.g. African Handball Champions League 2026" required>
             </div>
 
-            <div class="form-group">
-                <label class="font-weight-bold" for="slug">Slug</label>
-                <input id="slug" name="slug" class="form-control" type="text" value="{{ old('slug') }}" placeholder="e.g. african-handball-champions-league-2026" required>
-            </div>
-
             <div class="form-row mb-3">
                 <div class="col-md-6">
                     <label class="font-weight-bold" for="season">Season</label>
