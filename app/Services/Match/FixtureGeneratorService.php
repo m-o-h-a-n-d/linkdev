@@ -5,7 +5,7 @@ namespace App\Services\Match;
 use App\Models\CompetitionGroup;
 use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class FixtureGeneratorService
 {
@@ -21,7 +21,7 @@ class FixtureGeneratorService
         $teams = $group->teams;
 
         if ($teams->count() < 2) {
-            return collect();
+            return new Collection();
         }
 
         $startDate = $startDate ?? Carbon::now()->addDays(1)->setHour(17)->setMinute(0);
@@ -36,7 +36,7 @@ class FixtureGeneratorService
         $numRounds = $numTeams - 1;
         $halfSize = $numTeams / 2;
 
-        $createdMatches = collect();
+        $createdMatches = new Collection();
         $matchDate = $startDate->copy();
 
         for ($round = 0; $round < $numRounds; $round++) {

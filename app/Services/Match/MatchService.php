@@ -10,8 +10,8 @@ use App\Repositories\Contracts\CompetitionGroup\CompetitionGroupRepositoryInterf
 use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 
 class MatchService
 {
@@ -222,4 +222,20 @@ class MatchService
 
         return $match->fresh();
     }
+
+    public function getGroupsByCompetition(int $competitionId): Collection
+    {
+        return $this->groupRepository->getGroupsByCompetitionId($competitionId);
+    }
+
+    public function getTeamsByGroup(int $groupId): Collection
+    {
+        return $this->groupRepository->getTeamsByGroupId($groupId);
+    }
+
+    public function getTeamsByCompetition(int $competitionId): Collection
+    {
+        return $this->competitionRepository->getTeamsByCompetitionId($competitionId);
+    }
 }
+

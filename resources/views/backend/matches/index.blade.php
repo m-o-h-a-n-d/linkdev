@@ -35,9 +35,9 @@
 <!-- Filters Bar -->
 <div class="card mb-4">
     <div class="card-body">
-        <form method="GET" action="{{ route('admin.matches.index') }}" class="form-inline">
+        <form method="GET" action="{{ route('admin.matches.index') }}" class="form-inline" id="matchesFilterForm">
             <label class="mr-2 font-weight-bold text-gray-700">Filter By:</label>
-            <select name="competition_id" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+            <select name="competition_id" id="filter_competition_id" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
                 <option value="">All Competitions</option>
                 @foreach($competitions as $comp)
                     <option value="{{ $comp->id }}" {{ request('competition_id') == $comp->id ? 'selected' : '' }}>
@@ -46,12 +46,14 @@
                 @endforeach
             </select>
 
-            <select name="group_id" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+            <select name="group_id" id="filter_group_id" class="form-control form-control-sm mr-2" onchange="this.form.submit()" style="{{ !request('competition_id') ? 'display: none;' : '' }}">
                 <option value="">All Groups</option>
                 @foreach($groups as $grp)
-                    <option value="{{ $grp->id }}" {{ request('group_id') == $grp->id ? 'selected' : '' }}>
-                        {{ $grp->name }}
-                    </option>
+                    @if(!request('competition_id') || $grp->competition_id == request('competition_id'))
+                        <option value="{{ $grp->id }}" {{ request('group_id') == $grp->id ? 'selected' : '' }}>
+                            {{ $grp->name }}
+                        </option>
+                    @endif
                 @endforeach
             </select>
 

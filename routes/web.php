@@ -158,6 +158,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/{id}', [AdminMatchController::class, 'destroy'])->name('destroy');
         });
 
+        // Dynamic API Endpoints for Cascading Selects
+        Route::get('/api/competitions/{id}/groups', [AdminMatchController::class, 'getGroupsByCompetition'])->name('api.competitions.groups');
+        Route::get('/api/groups/{id}/teams', [AdminMatchController::class, 'getTeamsByGroup'])->name('api.groups.teams');
+        Route::get('/api/competitions/{id}/teams', [AdminMatchController::class, 'getTeamsByCompetition'])->name('api.competitions.teams');
+
+
         // 5. Standings
         Route::prefix('standings')->name('standings.')->group(function () {
             Route::get('/', [AdminStandingController::class, 'index'])->name('index');

@@ -31,4 +31,9 @@ interface CompetitionGroupRepositoryInterface
     public function getAvailableTeamsForGroup(CompetitionGroup $group): Collection;
 
     public function isTeamInCompetitionGroup(int $competitionId, int $teamId): bool;
+
+    public function getGroupsByCompetitionId(int $competitionId): Collection;
+
+    public function getTeamsByGroupId(int $groupId): Collection;
 }
+

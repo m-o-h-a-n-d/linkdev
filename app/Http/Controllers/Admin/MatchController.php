@@ -101,4 +101,27 @@ class MatchController extends Controller
 
         return redirect()->back()->with('success', 'Match updated successfully!');
     }
+
+    public function getGroupsByCompetition(int $id): \Illuminate\Http\JsonResponse
+    {
+        $groups = $this->matchService->getGroupsByCompetition($id);
+
+        return response()->json($groups);
+    }
+
+    public function getTeamsByGroup(int $id): \Illuminate\Http\JsonResponse
+    {
+        $teams = $this->matchService->getTeamsByGroup($id);
+
+        return response()->json($teams);
+    }
+
+    public function getTeamsByCompetition(int $id): \Illuminate\Http\JsonResponse
+    {
+        $teams = $this->matchService->getTeamsByCompetition($id);
+
+        return response()->json($teams);
+    }
 }
+
+

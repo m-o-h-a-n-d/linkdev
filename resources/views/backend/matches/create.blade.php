@@ -29,7 +29,7 @@
             <div class="row">
                 <div class="col-md-6 form-group">
                     <label class="font-weight-bold text-gray-700">Competition <span class="text-danger">*</span></label>
-                    <select name="competition_id" class="form-control" required>
+                    <select name="competition_id" id="competition_id" class="form-control" required>
                         <option value="">-- Select Competition --</option>
                         @foreach($competitions as $comp)
                             <option value="{{ $comp->id }}" {{ old('competition_id') == $comp->id ? 'selected' : '' }}>
@@ -39,41 +39,26 @@
                     </select>
                 </div>
 
-                <div class="col-md-6 form-group">
+                <div class="col-md-6 form-group" id="group_container" style="display: none;">
                     <label class="font-weight-bold text-gray-700">Group Stage (Optional)</label>
-                    <select name="group_id" class="form-control">
+                    <select name="group_id" id="group_id" class="form-control">
                         <option value="">-- Select Group (None for Knockout) --</option>
-                        @foreach($groups as $grp)
-                            <option value="{{ $grp->id }}" {{ old('group_id') == $grp->id ? 'selected' : '' }}>
-                                {{ $grp->name }}
-                            </option>
-                        @endforeach
                     </select>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" id="teams_container" style="display: none;">
                 <div class="col-md-6 form-group">
                     <label class="font-weight-bold text-gray-700">Home Team <span class="text-danger">*</span></label>
-                    <select name="home_team_id" class="form-control" required>
+                    <select name="home_team_id" id="home_team_id" class="form-control" required>
                         <option value="">-- Select Home Team --</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}" {{ old('home_team_id') == $team->id ? 'selected' : '' }}>
-                                {{ $team->name }} ({{ $team->short_name }})
-                            </option>
-                        @endforeach
                     </select>
                 </div>
 
                 <div class="col-md-6 form-group">
                     <label class="font-weight-bold text-gray-700">Away Team <span class="text-danger">*</span></label>
-                    <select name="away_team_id" class="form-control" required>
+                    <select name="away_team_id" id="away_team_id" class="form-control" required>
                         <option value="">-- Select Away Team --</option>
-                        @foreach($teams as $team)
-                            <option value="{{ $team->id }}" {{ old('away_team_id') == $team->id ? 'selected' : '' }}>
-                                {{ $team->name }} ({{ $team->short_name }})
-                            </option>
-                        @endforeach
                     </select>
                 </div>
             </div>
@@ -102,3 +87,125 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    const $competitionSelect = $('#competition_id');
+    const $groupSelect = $('#group_id');
+    const $homeTeamSelect = $('#home_team_id');
+    const $awayTeamSelect = $('#away_team_id');
+
+    const $groupContainer = $('#group_container');
+    const $teamsContainer = $('#teams_container');
+
+    const oldGroupId = "{{ old('group_id') }}";
+    const oldHomeTeamId = "{{ old('home_team_id') }}";
+    const oldAwayTeamId = "{{ old('away_team_id') }}";
+
+    function populateTeams(teams) {
+        $homeTeamSelect.empty().append('<option value="">-- Select Home Team --</option>');
+        $awayTeamSelect.empty().append('<option value="">-- Select Away Team --</option>');
+
+        if (teams && teams.length > 0) {
+            teams.forEach(team => {
+                const shortNameStr = team.short_name ? ` (${team.short_name})` : '';
+                const homeSelected = (oldHomeTeamId == team.id) ? 'selected' : '';
+                const awaySelected = (oldAwayTeamId == team.id) ? 'selected' : '';
+
+                $homeTeamSelect.append(`<option value="${team.id}" ${homeSelected}>${team.name}${shortNameStr}</option>`);
+                $awayTeamSelect.append(`<option value="${team.id}" ${awaySelected}>${team.name}${shortNameStr}</option>`);
+            });
+            $teamsContainer.fadeIn();
+        } else {
+            $teamsContainer.fadeOut();
+        }
+    }
+
+    $competitionSelect.on('change', function() {
+        const compId = $(this).val();
+
+        // Clear downstream selects
+        $groupSelect.empty().append('<option value="">-- Select Group (None for Knockout) --</option>');
+        $homeTeamSelect.empty().append('<option value="">-- Select Home Team --</option>');
+        $awayTeamSelect.empty().append('<option value="">-- Select Away Team --</option>');
+
+        $groupContainer.hide();
+        $teamsContainer.hide();
+
+        if (!compId) {
+            return;
+        }
+
+        // Fetch Groups for selected competition
+        $.ajax({
+            url: `{{ url('/admin/api/competitions') }}/${compId}/groups`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(groups) {
+                if (groups && groups.length > 0) {
+                    groups.forEach(grp => {
+                        const isSelected = (oldGroupId == grp.id) ? 'selected' : '';
+                        $groupSelect.append(`<option value="${grp.id}" ${isSelected}>${grp.name}</option>`);
+                    });
+                    $groupContainer.fadeIn();
+
+                    // If an old group was selected, trigger change to load teams
+                    if (oldGroupId) {
+                        $groupSelect.trigger('change');
+                    }
+                } else {
+                    // Knockout / No groups: fetch competition teams directly
+                    $.ajax({
+                        url: `{{ url('/admin/api/competitions') }}/${compId}/teams`,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(teams) {
+                            populateTeams(teams);
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+    $groupSelect.on('change', function() {
+        const groupId = $(this).val();
+        const compId = $competitionSelect.val();
+
+        if (!groupId) {
+            if (compId) {
+                // If group unselected but competition chosen, fetch competition teams
+                $.ajax({
+                    url: `{{ url('/admin/api/competitions') }}/${compId}/teams`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(teams) {
+                        populateTeams(teams);
+                    }
+                });
+            } else {
+                $teamsContainer.fadeOut();
+            }
+            return;
+        }
+
+        // Fetch teams for selected group
+        $.ajax({
+            url: `{{ url('/admin/api/groups') }}/${groupId}/teams`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(teams) {
+                populateTeams(teams);
+            }
+        });
+    });
+
+    // Initial check if competition already selected (e.g., page reload on error)
+    if ($competitionSelect.val()) {
+        $competitionSelect.trigger('change');
+    }
+});
+</script>
+@endpush
+

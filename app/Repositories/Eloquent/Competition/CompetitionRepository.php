@@ -19,7 +19,7 @@ class CompetitionRepository implements CompetitionRepositoryInterface
 
     public function all(): Collection
     {
-        return CompetitionModel::all();
+        return CompetitionModel::with(['groups', 'groups.teams'])->get();
     }
 
     public function allWithRelations(array $relations = []): Collection
@@ -84,4 +84,12 @@ class CompetitionRepository implements CompetitionRepositoryInterface
     {
         return $competition->delete();
     }
+
+    public function getTeamsByCompetitionId(int $competitionId): Collection
+    {
+        $competition = CompetitionModel::with('teams')->find($competitionId);
+
+        return $competition ? $competition->teams : new Collection();
+    }
 }
+

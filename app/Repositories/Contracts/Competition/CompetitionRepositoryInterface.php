@@ -25,4 +25,7 @@ interface CompetitionRepositoryInterface
     public function update(CompetitionModel $competition, UpdateCompetitionData $data): CompetitionModel;
 
     public function delete(CompetitionModel $competition): bool;
+
+    public function getTeamsByCompetitionId(int $competitionId): Collection;
 }
+

@@ -92,4 +92,17 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
             ->where('group_team.team_id', $teamId)
             ->exists();
     }
+
+    public function getGroupsByCompetitionId(int $competitionId): Collection
+    {
+        return CompetitionGroup::where('competition_id', $competitionId)->get(['id', 'name']);
+    }
+
+    public function getTeamsByGroupId(int $groupId): Collection
+    {
+        $group = CompetitionGroup::with('teams')->find($groupId);
+
+        return $group ? $group->teams : new Collection();
+    }
 }
+
