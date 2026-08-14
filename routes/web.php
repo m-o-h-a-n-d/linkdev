@@ -106,9 +106,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Protected Admin Dashboard Routes
     Route::middleware(['auth:admin', 'permission:dashboard.access'])->group(function () {
         // 1. Dashboard
-        Route::prefix('dashboard')->name('dashboard.')->group(function () {
-            Route::get('/', [DashboardController::class, 'index'])->name('index');
-        });
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         // 2. Competitions
