@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGro
 use App\Http\Controllers\Admin\MatchController as AdminMatchController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StandingController as AdminStandingController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
 use App\Http\Controllers\Viewer\Auth\LoginController;
@@ -106,13 +107,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth:admin', 'permission:dashboard.access'])->group(function () {
         // 1. Dashboard
         Route::prefix('dashboard')->name('dashboard.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.dashboard.index');
-            })->name('index');
+            Route::get('/', [DashboardController::class, 'index'])->name('index');
         });
-        Route::get('/', function () {
-            return view('backend.dashboard.index');
-        })->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         // 2. Competitions
         Route::prefix('competitions')->name('competitions.')->group(function () {
