@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\GroupStanding;
 use App\Models\TeamStatistic;
 use App\Services\HomeService\HomeService;
 use Illuminate\View\View;
@@ -24,10 +23,18 @@ class DashboardController extends Controller
 
         $upcomingMatches = $this->homeService->getUpcomingMatches();
 
-        $liveMatches = $this->homeService->getLiveMatches();
-
         $selectedCompetitionId = request()->get('competition_id', $competitions->first()?->id);
         $selectedCompetition = $competitions->firstWhere('id', $selectedCompetitionId);
+
+        $liveMatches = $this->homeService->getLiveMatches()
+            ->filter(function ($match) use ($selectedCompetitionId) {
+                if (! $selectedCompetitionId) {
+                    return true;
+                }
+
+                return (int) $match->competition_id === (int) $selectedCompetitionId;
+            })
+            ->take(2);
 
         $teamStatistics = TeamStatistic::with('team')
             ->when($selectedCompetitionId, function ($query) use ($selectedCompetitionId) {
