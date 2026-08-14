@@ -20,6 +20,7 @@ use App\Repositories\Eloquent\Standing\GroupStandingRepository;
 use App\Repositories\Eloquent\Standing\TeamStatisticRepository;
 use App\Repositories\Eloquent\Team\TeamRepository;
 use App\Repositories\Eloquent\User\UserRepository;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,6 +46,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Paginator::useBootstrapFour();
     }
 }

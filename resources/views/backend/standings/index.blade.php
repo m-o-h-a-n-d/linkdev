@@ -1,11 +1,11 @@
 @extends('backend.layouts.app')
 
-@section('title', 'Group Standings & Team Statistics | Handball System')
+@section('title', 'Group Standings | Handball System')
 
 @section('content')
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800 font-weight-bold">
-        <i class="fas fa-list-ol text-primary mr-2"></i>Group Standings & Team Statistics
+        <i class="fas fa-list-ol text-primary mr-2"></i>Competition Group Standings
     </h1>
     <div>
         <a href="{{ route('admin.matches.index') }}" class="btn btn-primary btn-sm shadow-sm">
@@ -106,53 +106,4 @@
         <p>Standings will be calculated automatically once matches in the group are finished.</p>
     </div>
 @endif
-
-<!-- Overall Competition Team Statistics Table -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-primary text-white">
-        <h6 class="m-0 font-weight-bold"><i class="fas fa-chart-bar mr-1"></i> Competition Overall Team Statistics</h6>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 text-center">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="text-left">Team Name</th>
-                        <th>Matches Played</th>
-                        <th>Wins</th>
-                        <th>Draws</th>
-                        <th>Losses</th>
-                        <th>Goals For</th>
-                        <th>Goals Against</th>
-                        <th>Goal Difference</th>
-                        <th class="text-primary font-weight-bold">Total Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($teamStatistics as $stat)
-                        <tr>
-                            <td class="text-left font-weight-bold text-white">
-                                {{ $stat->team->name ?? 'Team' }}
-                            </td>
-                            <td>{{ $stat->matches_played }}</td>
-                            <td class="text-success font-weight-bold">{{ $stat->wins }}</td>
-                            <td class="text-warning font-weight-bold">{{ $stat->draws }}</td>
-                            <td class="text-danger font-weight-bold">{{ $stat->losses }}</td>
-                            <td>{{ $stat->goals_for }}</td>
-                            <td>{{ $stat->goals_against }}</td>
-                            <td class="font-weight-bold {{ $stat->goal_difference >= 0 ? 'text-success' : 'text-danger' }}">
-                                {{ $stat->goal_difference > 0 ? '+' : '' }}{{ $stat->goal_difference }}
-                            </td>
-                            <td class="font-weight-bold text-primary">{{ $stat->points }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="9" class="text-muted py-4">No team statistics recorded yet.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 @endsection

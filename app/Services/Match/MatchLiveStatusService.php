@@ -29,6 +29,10 @@ class MatchLiveStatusService
                 'started_at' => $match->started_at ?? $match->scheduled_at ?? $now,
             ]);
 
+            if ($match->competition && $match->competition->status !== 'ongoing') {
+                $match->competition->update(['status' => 'ongoing']);
+            }
+
             $this->sendLiveNotification($match);
         }
 

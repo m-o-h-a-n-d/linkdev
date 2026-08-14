@@ -14,19 +14,44 @@ class CompetitionSeeder extends Seeder
      */
     public function run(): void
     {
-        $creator = User::first() ?? User::factory()->create();
-        $teams = Team::all();
-
-        if ($teams->isEmpty()) {
-            $teams = Team::factory(16)->create();
-        }
-
-        $competitions = Competition::factory(2)->create([
-            'created_by_user_id' => $creator->id,
+        $creator = User::first() ?? User::factory()->create([
+            'email' => 'admin@example.test',
+            'name' => 'Super Admin',
         ]);
 
-        foreach ($competitions as $competition) {
-            $competition->teams()->attach($teams->random(8)->pluck('id'));
+        $allTeams = Team::all();
+
+        $competitionsData = [
+            [
+                'name' => 'دوري المحترفين المصري لكرة اليد 2026/2027',
+                'description' => 'البطولة الرسمية الأولى لكرة اليد في مصر بمشاركة نخبة أندية الدوري الممتاز بنظام المجموعات والمرحلة النهائية لحسم اللقب.',
+                'season' => '2026/2027',
+                'status' => 'upcoming',
+                'start_date' => now()->addDays(2)->toDateString(),
+                'end_date' => now()->addMonths(4)->toDateString(),
+                'created_by_user_id' => $creator->id,
+            ],
+            [
+                'name' => 'كأس مصر لكرة اليد 2026',
+                'description' => 'بطولة كأس مصر السنوية لكرة اليد بمشاركة جميع أندية المحترفين والممتاز للمنافسة على الكأس الفضية.',
+                'season' => '2025/2026',
+                'status' => 'upcoming',
+                'start_date' => now()->addDays(5)->toDateString(),
+                'end_date' => now()->addMonths(2)->toDateString(),
+                'created_by_user_id' => $creator->id,
+            ],
+        ];
+
+        foreach ($competitionsData as $data) {
+            $competition = Competition::updateOrCreate(
+                ['name' => $data['name']],
+                $data
+            );
+
+            // Attach all active teams to the main league
+            if ($allTeams->isNotEmpty()) {
+                $competition->teams()->sync($allTeams->pluck('id'));
+            }
         }
     }
 }

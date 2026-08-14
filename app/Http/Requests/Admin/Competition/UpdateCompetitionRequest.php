@@ -38,7 +38,12 @@ class UpdateCompetitionRequest extends FormRequest
             'end_date' => [
                 'nullable',
                 'date',
-                'after_or_equal:start_date',
+                function ($attribute, $value, $fail) {
+                    $startDate = $this->start_date ?? \App\Models\Competition::find($this->route('id'))?->start_date;
+                    if ($startDate && $value && \Carbon\Carbon::parse($value)->lt(\Carbon\Carbon::parse($startDate)->addWeek())) {
+                        $fail('The end date must be at least 1 week (7 days) after the start date.');
+                    }
+                },
             ],
 
             'winner_team_id' => [

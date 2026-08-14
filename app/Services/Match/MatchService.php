@@ -25,16 +25,21 @@ class MatchService
         protected TeamRepositoryInterface $teamRepository
     ) {}
 
+
+    //  All Of matches
     public function all(): Collection
     {
         return $this->matchRepository->all();
     }
 
+    // Paginate matches with optional filters
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
         return $this->matchRepository->paginate($perPage);
     }
 
+
+    // Paginate matches with filters and update live statuses
     public function getPaginatedMatches(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $this->liveStatusService->checkAndUpdateLiveStatuses();
@@ -42,6 +47,8 @@ class MatchService
         return $this->matchRepository->paginateWithFilters($filters, $perPage);
     }
 
+
+    // Get match by ID or throw exception if not found
     public function findOrFail(int $id): GameMatch
     {
         $match = $this->matchRepository->find($id);
@@ -52,6 +59,9 @@ class MatchService
 
         return $match;
     }
+
+
+    // Get match with relations by ID or throw exception if not found
 
     public function findWithRelations(int $id, array $relations = []): GameMatch
     {
@@ -64,6 +74,8 @@ class MatchService
         return $match;
     }
 
+    // Get match details for show view
+
     public function getFormData(): array
     {
         return [
@@ -73,6 +85,8 @@ class MatchService
         ];
     }
 
+
+    // Get filter data for matches
     public function getFilterData(): array
     {
         return [
@@ -81,6 +95,8 @@ class MatchService
         ];
     }
 
+
+    // Get match details for show view
     public function getShowDetails(int $id): array
     {
         $match = $this->findWithRelations($id, ['competition', 'group', 'homeTeam', 'awayTeam', 'winnerTeam']);
@@ -89,11 +105,19 @@ class MatchService
         return compact('match', 'elapsedMinutes');
     }
 
+    // Store a new match
     public function store(CreateMatchData $data): GameMatch
     {
-        return $this->matchRepository->create($data);
+        $match = $this->matchRepository->create($data);
+
+        if ($match->competition) {
+            $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
+        }
+
+        return $match;
     }
 
+    // Generate fixtures for a group in a competition
     public function generateFixtures(int $groupId): Collection
     {
         $group = $this->groupRepository->find($groupId);
@@ -102,9 +126,16 @@ class MatchService
             throw new ModelNotFoundException('Group not found.');
         }
 
-        return $this->fixtureGeneratorService->generateGroupFixtures($group);
+        $createdMatches = $this->fixtureGeneratorService->generateGroupFixtures($group);
+
+        if ($group->competition) {
+            $this->standingsService->syncCompetitionDatesAndStatus($group->competition);
+        }
+
+        return $createdMatches;
     }
 
+    // Update an existing match and recalculate standings if necessary
     public function updateMatch(int $id, UpdateMatchData $data): GameMatch
     {
         $match = $this->findOrFail($id);
@@ -139,15 +170,17 @@ class MatchService
         }
         if ($updatedMatch->competition) {
             $this->standingsService->recalculateTeamStatistics($updatedMatch->competition);
-        }
-
-        if ($updatedMatch->status === 'finished') {
-            $this->standingsService->advanceKnockoutWinner($updatedMatch);
+            if ($updatedMatch->status === 'finished') {
+                $this->standingsService->checkAndGenerateKnockoutFromGroups($updatedMatch->competition);
+                $this->standingsService->advanceKnockoutWinner($updatedMatch);
+            }
+            $this->standingsService->syncCompetitionDatesAndStatus($updatedMatch->competition);
         }
 
         return $updatedMatch;
     }
 
+    // Delete a match and recalculate standings if necessary
     public function destroyMatch(int $id): bool
     {
         $match = $this->findOrFail($id);
@@ -161,11 +194,13 @@ class MatchService
         }
         if ($competition) {
             $this->standingsService->recalculateTeamStatistics($competition);
+            $this->standingsService->syncCompetitionDatesAndStatus($competition);
         }
 
         return $deleted;
     }
 
+    // Get live and scheduled matches for the live center view
     public function getLiveCenterMatches(): Collection
     {
         $this->liveStatusService->checkAndUpdateLiveStatuses();
@@ -173,6 +208,7 @@ class MatchService
         return $this->matchRepository->getLiveAndScheduledMatches();
     }
 
+    // Update match score and handle live status changes
     public function updateScore(int $id, string $action): GameMatch
     {
         $match = $this->findOrFail($id);
@@ -185,6 +221,9 @@ class MatchService
                 'started_at' => $now,
             ]);
             $this->liveStatusService->sendLiveNotification($match);
+            if ($match->competition) {
+                $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
+            }
         } elseif ($action === 'increment_home') {
             $this->matchRepository->incrementScore($match, 'home_score');
         } elseif ($action === 'decrement_home' && $match->home_score > 0) {
@@ -203,35 +242,43 @@ class MatchService
 
             $startedAt = $match->started_at ?? $match->scheduled_at ?? now();
 
-            $this->matchRepository->update($match, [
+            $updated = $this->matchRepository->update($match, [
                 'status' => 'finished',
                 'winner_team_id' => $winnerId,
                 'started_at' => $startedAt,
                 'ended_at' => now(),
             ]);
 
-            if ($match->group) {
-                $this->standingsService->recalculateGroupStandings($match->group);
+            if ($updated->group) {
+                $this->standingsService->recalculateGroupStandings($updated->group);
             }
-            if ($match->competition) {
-                $this->standingsService->recalculateTeamStatistics($match->competition);
+            if ($updated->competition) {
+                $this->standingsService->recalculateTeamStatistics($updated->competition);
+                $this->standingsService->checkAndGenerateKnockoutFromGroups($updated->competition);
+                $this->standingsService->advanceKnockoutWinner($updated);
+                $this->standingsService->syncCompetitionDatesAndStatus($updated->competition);
             }
-
-            $this->standingsService->advanceKnockoutWinner($match);
         }
 
         return $match->fresh();
     }
+
+
+    // Get groups by competition ID
 
     public function getGroupsByCompetition(int $competitionId): Collection
     {
         return $this->groupRepository->getGroupsByCompetitionId($competitionId);
     }
 
+    // Get teams by group ID
+
     public function getTeamsByGroup(int $groupId): Collection
     {
         return $this->groupRepository->getTeamsByGroupId($groupId);
     }
+
+    // Get teams by competition ID
 
     public function getTeamsByCompetition(int $competitionId): Collection
     {

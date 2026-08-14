@@ -6,6 +6,7 @@ use App\Data\Competition\CreateCompetitionData;
 use App\Data\Competition\UpdateCompetitionData;
 use App\Models\Competition as CompetitionModel;
 use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
+use App\Utility\Enums\TeamStatus;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -14,12 +15,12 @@ class CompetitionRepository implements CompetitionRepositoryInterface
 {
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return CompetitionModel::paginate($perPage);
+        return CompetitionModel::with(['winnerTeam'])->paginate($perPage);
     }
 
     public function all(): Collection
     {
-        return CompetitionModel::with(['groups', 'groups.teams'])->get();
+        return CompetitionModel::with(['groups', 'groups.teams', 'winnerTeam'])->get();
     }
 
     public function allWithRelations(array $relations = []): Collection
@@ -30,6 +31,7 @@ class CompetitionRepository implements CompetitionRepositoryInterface
     public function find(string|int $id): ?CompetitionModel
     {
         $query = CompetitionModel::with([
+            'winnerTeam',
             'teams',
             'groups.teams',
             'groups.standings' => function ($q) {
@@ -87,7 +89,9 @@ class CompetitionRepository implements CompetitionRepositoryInterface
 
     public function getTeamsByCompetitionId(int $competitionId): Collection
     {
-        $competition = CompetitionModel::with('teams')->find($competitionId);
+        $competition = CompetitionModel::with(['teams' => function ($query) {
+            $query->where('status', TeamStatus::ACCEPTED);
+        }])->find($competitionId);
 
         return $competition ? $competition->teams : new Collection();
     }

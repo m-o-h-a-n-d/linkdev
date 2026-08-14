@@ -55,7 +55,7 @@
                         <div class="col-2 text-center">
                             <div class="h4 font-weight-bold text-gray-400">VS</div>
                             <div class="small text-muted font-weight-bold mt-2">
-                                {{ $match->group->name ?? 'Round ' . $match->round_number }}
+                                {{ $match->group->name ?? ($match->notes ?? 'الأدوار الإقصائية (Knockout)') }}
                             </div>
                             @if($match->status === 'live')
                                 <div class="badge badge-dark text-warning font-weight-bold mt-2 px-2 py-1" style="font-size: 0.9rem;" data-match-timer="{{ $match->started_at ? $match->started_at->toIso8601String() : now()->toIso8601String() }}">

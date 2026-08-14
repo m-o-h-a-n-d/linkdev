@@ -105,8 +105,15 @@
                         @endphp
                         <tr>
                             <td class="font-weight-bold text-gray-800">{{ $match->competition->name ?? 'N/A' }}</td>
-                            <td class="text-muted">
-                                {{ $match->group->name ?? 'Round ' . $match->round_number }}
+                            <td>
+                                @if($match->group)
+                                    <span class="text-muted">{{ $match->group->name }}</span>
+                                    <small class="d-block text-muted">الجولة {{ $match->round_number }}</small>
+                                @else
+                                    <span class="badge badge-warning text-dark font-weight-bold">
+                                        <i class="fas fa-trophy mr-1"></i> {{ $match->notes ?? 'الأدوار الإقصائية (Knockout)' }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="text-muted">
                                 {{ $match->scheduled_at ? $match->scheduled_at->format('M d, Y • H:i') : 'TBD' }}
@@ -145,11 +152,15 @@
                 </tbody>
             </table>
         </div>
-    </div>
     @if($matches->hasPages())
-        <div class="card-footer">
-            {{ $matches->links() }}
+    <div class="card-footer py-3 d-flex justify-content-between align-items-center" style="background: #162238; border-top: 1px solid #1e293b;">
+        <div class="small text-muted">
+            Showing {{ $matches->firstItem() }} to {{ $matches->lastItem() }} of {{ $matches->total() }} matches
         </div>
+        <div>
+            {{ $matches->withQueryString()->links('pagination::bootstrap-4') }}
+        </div>
+    </div>
     @endif
 </div>
 

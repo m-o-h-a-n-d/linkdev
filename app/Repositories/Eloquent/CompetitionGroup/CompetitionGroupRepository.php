@@ -100,7 +100,9 @@ class CompetitionGroupRepository implements CompetitionGroupRepositoryInterface
 
     public function getTeamsByGroupId(int $groupId): Collection
     {
-        $group = CompetitionGroup::with('teams')->find($groupId);
+        $group = CompetitionGroup::with(['teams' => function ($query) {
+            $query->where('status', TeamStatus::ACCEPTED);
+        }])->find($groupId);
 
         return $group ? $group->teams : new Collection();
     }

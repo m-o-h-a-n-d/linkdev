@@ -13,7 +13,7 @@
 
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">{{ $match->competition->name ?? 'Competition' }} - {{ $match->group->name ?? 'Round ' . $match->round_number }}</h6>
+        <h6 class="m-0 font-weight-bold text-primary">{{ $match->competition->name ?? 'Competition' }} - {{ $match->group->name ?? ($match->notes ?? 'الأدوار الإقصائية (Knockout)') }}</h6>
         <span class="badge badge-dark px-3 py-2 text-uppercase">{{ $match->status }}</span>
     </div>
     <div class="card-body">

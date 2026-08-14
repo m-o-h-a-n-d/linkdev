@@ -176,7 +176,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 7. Team Statistics
         Route::prefix('statistics')->name('statistics.')->group(function () {
-            Route::get('/', [AdminStandingController::class, 'index'])->name('index');
+            Route::get('/', [AdminStandingController::class, 'statistics'])->name('index');
         });
 
         // 8. Users Directory

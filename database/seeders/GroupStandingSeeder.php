@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\CompetitionGroup;
-use App\Models\GroupStanding;
+use App\Services\Match\MatchStandingsService;
 use Illuminate\Database\Seeder;
 
 class GroupStandingSeeder extends Seeder
@@ -13,16 +13,11 @@ class GroupStandingSeeder extends Seeder
      */
     public function run(): void
     {
+        $standingsService = app(MatchStandingsService::class);
         $groups = CompetitionGroup::all();
 
         foreach ($groups as $group) {
-            foreach ($group->teams as $index => $team) {
-                GroupStanding::factory()->create([
-                    'group_id' => $group->id,
-                    'team_id' => $team->id,
-                    'position_rank' => $index + 1,
-                ]);
-            }
+            $standingsService->recalculateGroupStandings($group);
         }
     }
 }

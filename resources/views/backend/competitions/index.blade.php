@@ -37,6 +37,13 @@
                                         class="text-primary font-weight-bold">
                                         {{ $competition->name }}
                                     </a>
+                                    @if ($competition->winnerTeam)
+                                        <div class="mt-1">
+                                            <span class="badge badge-warning text-dark font-weight-bold" style="font-size: 0.8rem;">
+                                                <i class="fas fa-crown mr-1"></i> Champion: {{ $competition->winnerTeam->name }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="font-weight-medium">{{ $competition->season }}</td>
                                 <td>
@@ -84,5 +91,15 @@
                 </table>
             </div>
         </div>
+        @if(method_exists($competitions, 'hasPages') && $competitions->hasPages())
+            <div class="card-footer py-3 d-flex justify-content-between align-items-center" style="background: #162238; border-top: 1px solid #1e293b;">
+                <div class="small text-muted">
+                    Showing {{ $competitions->firstItem() }} to {{ $competitions->lastItem() }} of {{ $competitions->total() }} competitions
+                </div>
+                <div>
+                    {{ $competitions->withQueryString()->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        @endif
     </div>
 @endsection

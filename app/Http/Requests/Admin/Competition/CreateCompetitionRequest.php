@@ -50,12 +50,17 @@ class CreateCompetitionRequest extends FormRequest
             'start_date' => [
                 'required',
                 'date',
+                'after:today',
             ],
 
             'end_date' => [
                 'required',
                 'date',
-                'after_or_equal:start_date',
+                function ($attribute, $value, $fail) {
+                    if ($this->start_date && \Carbon\Carbon::parse($value)->lt(\Carbon\Carbon::parse($this->start_date)->addWeek())) {
+                        $fail('The end date must be at least 1 week (7 days) after the start date.');
+                    }
+                },
             ],
 
             'created_by_user_id' => [
@@ -63,6 +68,14 @@ class CreateCompetitionRequest extends FormRequest
                 'integer',
                 'exists:users,id',
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'start_date.after' => 'The start date must be a date after today (starting from tomorrow or later).',
+            'end_date.after_or_equal' => 'The end date must be at least 1 week after the start date.',
         ];
     }
 }

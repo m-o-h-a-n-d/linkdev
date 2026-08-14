@@ -41,11 +41,11 @@
             <div class="form-row mb-3">
                 <div class="col-md-6">
                     <label class="font-weight-bold" for="start_date">Start Date</label>
-                    <input id="start_date" name="start_date" class="form-control" type="date" value="{{ old('start_date') }}" required>
+                    <input id="start_date" name="start_date" class="form-control" type="date" value="{{ old('start_date') }}" min="{{ now()->addDay()->format('Y-m-d') }}" required>
                 </div>
                 <div class="col-md-6">
-                    <label class="font-weight-bold" for="end_date">End Date</label>
-                    <input id="end_date" name="end_date" class="form-control" type="date" value="{{ old('end_date') }}" required>
+                    <label class="font-weight-bold" for="end_date">End Date <small class="text-muted font-weight-normal">(At least 1 week after start date)</small></label>
+                    <input id="end_date" name="end_date" class="form-control" type="date" value="{{ old('end_date') }}" min="{{ now()->addDays(8)->format('Y-m-d') }}" required>
                 </div>
             </div>
 
@@ -59,4 +59,33 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+
+    function updateEndDateMin() {
+        if (!startDateInput.value) return;
+
+        const startDate = new Date(startDateInput.value);
+        // Add 7 days (1 week)
+        startDate.setDate(startDate.getDate() + 7);
+
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+        const day = String(startDate.getDate()).padStart(2, '0');
+        const minEndDate = `${year}-${month}-${day}`;
+
+        endDateInput.min = minEndDate;
+
+        if (endDateInput.value && endDateInput.value < minEndDate) {
+            endDateInput.value = minEndDate;
+        }
+    }
+
+    startDateInput.addEventListener('change', updateEndDateMin);
+    updateEndDateMin();
+});
+</script>
 @endsection

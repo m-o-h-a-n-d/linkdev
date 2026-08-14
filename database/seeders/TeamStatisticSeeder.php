@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Competition;
-use App\Models\TeamStatistic;
+use App\Services\Match\MatchStandingsService;
 use Illuminate\Database\Seeder;
 
 class TeamStatisticSeeder extends Seeder
@@ -13,15 +13,11 @@ class TeamStatisticSeeder extends Seeder
      */
     public function run(): void
     {
+        $standingsService = app(MatchStandingsService::class);
         $competitions = Competition::all();
 
         foreach ($competitions as $competition) {
-            foreach ($competition->teams as $team) {
-                TeamStatistic::factory()->create([
-                    'team_id' => $team->id,
-                    'competition_id' => $competition->id,
-                ]);
-            }
+            $standingsService->recalculateTeamStatistics($competition);
         }
     }
 }
