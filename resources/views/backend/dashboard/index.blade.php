@@ -88,8 +88,9 @@
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Registered Teams</div>
-                            <div class="h4 mb-1 font-weight-bold text-gray-800">{{ $teams->count() }}</div>
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Accepted Teams</div>
+                            <div class="h4 mb-1 font-weight-bold text-gray-800">
+                                {{ $teams->where('status', 'accepted')->count() }}</div>
                             <span class="badge badge-warning"><i class="fas fa-shield-alt mr-1"></i>Registered Clubs</span>
                         </div>
                         <div class="col-auto">
@@ -153,7 +154,8 @@
                                         {{ $match->group->name ?? 'Match Group' }}
                                     </span>
                                     <span
-                                        class="badge {{ $match->status === 'live' ? 'badge-danger animate-pulse' : 'badge-secondary' }}">
+                                        class="badge {{ $match->status === 'live' ? 'badge-danger animate-pulse' : 'badge-secondary' }}"
+                                        @if ($match->status === 'live') data-match-timer="{{ $match->started_at ? $match->started_at->toIso8601String() : now()->toIso8601String() }}" @endif>
                                         {{ $match->status === 'live' ? $match->formatted_timer ?? 'LIVE' : ($match->scheduled_at ? $match->scheduled_at->format('H:i') : 'Scheduled') }}
                                     </span>
                                 </div>
