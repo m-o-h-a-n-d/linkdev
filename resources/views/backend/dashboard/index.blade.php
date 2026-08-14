@@ -108,63 +108,103 @@
         <!-- Active Live Matches Card -->
         <div class="col-lg-7 mb-4">
             <div class="card mb-4">
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between text-white"
-                    style="background: #162238 !important; border-bottom: 1px solid #1e293b !important;">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between flex-wrap text-white"
+                    style="background: #162238 !important; border-bottom: 1px solid #1e293b !important; gap: 10px;">
                     <h6 class="m-0 font-weight-bold text-white"><i
                             class="fas fa-broadcast-tower mr-2 text-danger animate-pulse"></i>Active Live Handball
                         Scoreboard</h6>
-                    <a class="btn btn-sm font-weight-bold text-white" href="{{ route('admin.matches.live-center') }}"
-                        style="background: #ea580c; border: none; border-radius: 8px;">Live Center <i
-                            class="fas fa-chevron-right ml-1"></i></a>
+
+                    <div class="d-flex align-items-center flex-wrap" style="gap: 8px;">
+                        <form method="GET" class="m-0">
+                            <select name="competition_id" class="form-control form-control-sm" onchange="this.form.submit()"
+                                style="min-width: 170px; background: #fff; border: none; border-radius: 6px; color: #212529;">
+                                @foreach ($competitions as $competition)
+                                    <option value="{{ $competition->id }}"
+                                        {{ (string) $selectedCompetitionId === (string) $competition->id ? 'selected' : '' }}>
+                                        {{ $competition->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+
+                        <a class="btn btn-sm font-weight-bold text-white" href="{{ route('admin.matches.live-center') }}"
+                            style="background: #ea580c; border: none; border-radius: 8px;">Live Center <i
+                                class="fas fa-chevron-right ml-1"></i></a>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <!-- Live Match 1 -->
-                    <div class="p-3 mb-3 rounded" style="background: #070c14; border: 1px solid #1e293b;">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="badge badge-primary"><i class="fas fa-trophy mr-1"></i>Egyptian Premier League •
-                                Group A</span>
-                            <span class="badge badge-danger animate-pulse">2nd Half - 48:15</span>
-                        </div>
-                        <div class="row align-items-center text-center my-2">
-                            <div class="col-4">
-                                <div class="p-1 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center shadow-sm"
-                                    style="width: 48px; height: 48px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
-                                    <img src="{{ asset('backend/img/ahly.svg') }}" alt="Al Ahly SC"
-                                        style="width: 100%; height: 100%; object-fit: contain;">
-                                </div>
-                                <div class="font-weight-bold text-white">Al Ahly SC</div>
-                                <span class="small text-muted">Egypt</span>
-                            </div>
-                            <div class="col-4">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <span class="live-score-text text-white mr-2" id="homeScore1"
-                                        style="font-size: 32px; font-weight: 800;">26</span>
-                                    <span class="h4 text-muted mb-0">:</span>
-                                    <span class="live-score-text text-white ml-2" id="awayScore1"
-                                        style="font-size: 32px; font-weight: 800;">24</span>
-                                </div>
-                                <span class="badge badge-success mt-2"><i class="fas fa-bolt mr-1"></i>Live Action</span>
-                            </div>
-                            <div class="col-4">
-                                <div class="p-1 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center shadow-sm"
-                                    style="width: 48px; height: 48px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
-                                    <img src="{{ asset('backend/img/zamalek.svg') }}" alt="Zamalek SC"
-                                        style="width: 100%; height: 100%; object-fit: contain;">
-                                </div>
-                                <div class="font-weight-bold text-white">Zamalek SC</div>
-                                <span class="small text-muted">Egypt</span>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-3 pt-3" style="border-top: 1px solid #1e293b;">
-                            <button class="btn btn-primary btn-sm mr-2 font-weight-bold" data-score-btn="homeScore1"
-                                data-action="plus" style="background: #ea580c; border-color: #ea580c;"><i
-                                    class="fas fa-plus mr-1"></i> Goal Ahly</button>
-                            <button class="btn btn-danger btn-sm mr-2 font-weight-bold" data-score-btn="awayScore1"
-                                data-action="plus"><i class="fas fa-plus mr-1"></i> Goal Zamalek</button>
-                            <a class="btn btn-secondary btn-sm" href="{{ route('admin.matches.index') }}"><i
-                                    class="fas fa-eye mr-1"></i> Details</a>
-                        </div>
+                    <div class="mb-3 small text-muted">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Preview only: this panel shows the latest 2 live matches for the selected competition.
                     </div>
+                    @if ($liveMatches->isEmpty())
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-broadcast-tower fa-2x mb-3 d-block"></i>
+                            <div class="font-weight-bold">No live or scheduled matches</div>
+                            <small>There are no active games to display right now.</small>
+                        </div>
+                    @else
+                        @foreach ($liveMatches->take(2) as $match)
+                            <div class="p-3 mb-3 rounded" style="background: #070c14; border: 1px solid #1e293b;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge badge-primary">
+                                        <i class="fas fa-trophy mr-1"></i>
+                                        {{ $match->competition->name ?? 'Competition' }} •
+                                        {{ $match->group->name ?? 'Match Group' }}
+                                    </span>
+                                    <span
+                                        class="badge {{ $match->status === 'live' ? 'badge-danger animate-pulse' : 'badge-secondary' }}">
+                                        {{ $match->status === 'live' ? $match->formatted_timer ?? 'LIVE' : ($match->scheduled_at ? $match->scheduled_at->format('H:i') : 'Scheduled') }}
+                                    </span>
+                                </div>
+
+                                <div class="row align-items-center text-center my-2">
+                                    <div class="col-4">
+                                        <div class="p-1 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width: 48px; height: 48px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
+                                            <span class="text-white font-weight-bold">
+                                                {{ strtoupper(substr($match->homeTeam->name ?? 'Home', 0, 2)) }}
+                                            </span>
+                                        </div>
+                                        <div class="font-weight-bold text-white">
+                                            {{ $match->homeTeam->name ?? 'Home Team' }}</div>
+                                        <span class="small text-muted">Home</span>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <span class="live-score-text text-white mr-2"
+                                                style="font-size: 32px; font-weight: 800;">{{ $match->home_score }}</span>
+                                            <span class="h4 text-muted mb-0">:</span>
+                                            <span class="live-score-text text-white ml-2"
+                                                style="font-size: 32px; font-weight: 800;">{{ $match->away_score }}</span>
+                                        </div>
+                                        <span class="badge badge-success mt-2"><i
+                                                class="fas fa-bolt mr-1"></i>{{ $match->status === 'live' ? 'Live Action' : 'Scheduled' }}</span>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <div class="p-1 rounded-circle mx-auto mb-2 d-flex align-items-center justify-content-center shadow-sm"
+                                            style="width: 48px; height: 48px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
+                                            <span class="text-white font-weight-bold">
+                                                {{ strtoupper(substr($match->awayTeam->name ?? 'Away', 0, 2)) }}
+                                            </span>
+                                        </div>
+                                        <div class="font-weight-bold text-white">
+                                            {{ $match->awayTeam->name ?? 'Away Team' }}</div>
+                                        <span class="small text-muted">Away</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-center mt-3 pt-3"
+                                    style="border-top: 1px solid #1e293b;">
+                                    <a class="btn btn-secondary btn-sm" href="{{ route('admin.matches.live-center') }}">
+                                        <i class="fas fa-eye mr-1"></i> Details
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>
@@ -229,6 +269,11 @@
 
                 <!-- Body -->
                 <div class="card-body p-0">
+
+                    <div class="px-3 pt-3 small text-muted">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Preview only: this table shows the first 4 teams in the standings, not the full competition table.
+                    </div>
 
                     @if ($teamStatistics->isEmpty())
 
