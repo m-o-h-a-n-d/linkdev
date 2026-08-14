@@ -1,10 +1,15 @@
 <?php
 
+use Illuminate\Support\Facades\Mail;
+
 it('registers a new user and authenticates them', function () {
+    Mail::fake();
+
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password123',
+        'password_confirmation' => 'password123',
         'phone' => '+201234567890',
         'status' => 'active',
     ]);
@@ -13,3 +18,4 @@ it('registers a new user and authenticates them', function () {
     $this->assertAuthenticated();
     $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
 });
+

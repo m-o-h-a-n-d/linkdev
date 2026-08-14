@@ -25,20 +25,10 @@ class OtpService
         // Create Spatie OneTimePassword (10 minutes expiry)
         $otp = $user->createOneTimePassword(10);
 
-        // Send notification via SendOtpNotify
-        try {
-            $user->notify(new SendOtpNotify($otp->password));
+        // Dispatch SendOtpNotificationJob asynchronously
+        \App\Jobs\SendOtpNotificationJob::dispatch($user, $otp->password);
 
-            return true;
-        } catch (\Throwable $e) {
-            logger()->error('Failed to send OTP notification.', [
-                'user_id' => $user->id,
-                'email' => $email,
-                'exception' => $e,
-            ]);
-
-            return false;
-        }
+        return true;
     }
 
     public function verifyOtp(string $email, string $otp): ?string

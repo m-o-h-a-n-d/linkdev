@@ -30,12 +30,8 @@ class EmailVerificationService
         // Create Spatie OneTimePassword (10 minutes expiry)
         $otp = $user->createOneTimePassword(10);
 
-        // Send Email Verification Notification
-        try {
-            $user->notify(new SendEmailVerificationOtpNotify($otp->password));
-        } catch (\Throwable $e) {
-            logger()->error('Failed to send email verification OTP: ' . $e->getMessage());
-        }
+        // Dispatch SendEmailVerificationOtpJob asynchronously
+        \App\Jobs\SendEmailVerificationOtpJob::dispatch($user, $otp->password);
 
         return true;
     }

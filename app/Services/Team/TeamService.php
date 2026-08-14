@@ -95,11 +95,7 @@ class TeamService
         );
 
         if ($team->email) {
-            try {
-                Mail::to($team->email)->send(new TeamAcceptedMail($team));
-            } catch (\Exception $e) {
-                Log::error('Failed to send TeamAcceptedMail: ' . $e->getMessage());
-            }
+            \App\Jobs\SendTeamAcceptedEmailJob::dispatch($team);
         }
 
         return $team;
@@ -119,11 +115,7 @@ class TeamService
         );
 
         if ($team->email) {
-            try {
-                Mail::to($team->email)->send(new TeamRejectedMail($team, $reason));
-            } catch (\Exception $e) {
-                Log::error('Failed to send TeamRejectedMail: ' . $e->getMessage());
-            }
+            \App\Jobs\SendTeamRejectedEmailJob::dispatch($team, $reason);
         }
 
         return $team;
