@@ -32,12 +32,14 @@ class MatchRepository implements MatchRepositoryInterface
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('scheduled_at', 'desc')->paginate($perPage);
+        return $query->orderBy('scheduled_at', 'asc')->paginate($perPage);
     }
 
     public function all(): Collection
     {
-        return GameMatch::with(['group', 'homeTeam', 'awayTeam', 'competition', 'winnerTeam'])->get();
+        return GameMatch::with(['group', 'homeTeam', 'awayTeam', 'competition', 'winnerTeam'])
+            ->orderBy('scheduled_at', 'asc')
+            ->get();
     }
 
     public function find(int $id): ?GameMatch

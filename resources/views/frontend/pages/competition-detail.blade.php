@@ -72,8 +72,9 @@
                     @forelse($competition->teams ?? [] as $team)
                         <div class="team-card">
                             <div class="team-card-header">
-                                <img src="{{ $team->logo }}" alt="{{ $team->name }}" referrerpolicy="no-referrer"
-                                    style="width: 52px; height: 52px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 4px;">
+                                <img src="{{ $team->logo_url }}" alt="{{ $team->name }}" referrerpolicy="no-referrer"
+                                    style="width: 52px; height: 52px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 4px;"
+                                    onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                                 <div>
                                     <div class="team-name">{{ $team->name }}</div>
                                     <div class="team-location">{{ $team->city ?? 'Cairo' }} &middot;

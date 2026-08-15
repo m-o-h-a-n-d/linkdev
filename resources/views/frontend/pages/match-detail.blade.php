@@ -55,8 +55,9 @@
 
                     <!-- Home Team -->
                     <div style="flex: 1;">
-                        <img src="{{ $match->homeTeam?->logo }}" alt="{{ $match->homeTeam->name ?? 'Home' }}" referrerpolicy="no-referrer"
-                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;">
+                        <img src="{{ $match->homeTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" alt="{{ $match->homeTeam->name ?? 'Home' }}" referrerpolicy="no-referrer"
+                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;"
+                            onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                         <h2 style="font-size: 1.3rem; color: #fff; margin: 0 0 6px 0;">
                             {{ $match->homeTeam->name ?? 'Home Team' }}
                         </h2>
@@ -84,8 +85,9 @@
 
                     <!-- Away Team -->
                     <div style="flex: 1;">
-                        <img src="{{ $match->awayTeam?->logo }}" alt="{{ $match->awayTeam->name ?? 'Away' }}" referrerpolicy="no-referrer"
-                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;">
+                        <img src="{{ $match->awayTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" alt="{{ $match->awayTeam->name ?? 'Away' }}" referrerpolicy="no-referrer"
+                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;"
+                            onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                         <h2 style="font-size: 1.3rem; color: #fff; margin: 0 0 6px 0;">
                             {{ $match->awayTeam->name ?? 'Away Team' }}
                         </h2>

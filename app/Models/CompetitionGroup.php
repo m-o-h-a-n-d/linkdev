@@ -40,7 +40,7 @@ class CompetitionGroup extends Model
      */
     public function matches(): HasMany
     {
-        return $this->hasMany(GameMatch::class, 'group_id');
+        return $this->hasMany(GameMatch::class, 'group_id')->orderBy('scheduled_at', 'asc');
     }
 
     /**

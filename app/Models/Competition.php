@@ -150,7 +150,7 @@ class Competition extends Model
      */
     public function matches(): HasMany
     {
-        return $this->hasMany(GameMatch::class);
+        return $this->hasMany(GameMatch::class)->orderBy('scheduled_at', 'asc');
     }
 
     /**

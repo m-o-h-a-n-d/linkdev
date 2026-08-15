@@ -24,6 +24,7 @@ class TeamController extends Controller
     {
         // Fetch strictly single Team model data
         $team = $this->teamService->findOrFail($id);
+        $team->loadMissing('competitions');
 
         return view('frontend.pages.team-detail', compact('team'));
     }
