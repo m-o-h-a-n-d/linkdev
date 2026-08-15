@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CompetitionController as AdminCompetitionControll
 use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGroupController;
 use App\Http\Controllers\Admin\MatchController as AdminMatchController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\StandingController as AdminStandingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
@@ -197,6 +198,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
             Route::get('/', [ActivityLogController::class, 'index'])->name('index');
             Route::delete('/clear-all', [ActivityLogController::class, 'destroyAll'])->name('clear-all');
+        });
+
+        // 11. System Settings
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('/', [SettingController::class, 'edit'])->middleware('permission:settings.view')->name('edit');
+            Route::put('/', [SettingController::class, 'update'])->middleware('permission:settings.edit')->name('update');
         });
     });
 

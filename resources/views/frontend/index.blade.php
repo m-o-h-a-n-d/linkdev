@@ -6,11 +6,10 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <span class="hero-label">Season 2025/26</span>
-            <h1>Every throw, every save, every point.</h1>
+            <span class="hero-label">{{ $siteSettings->session ?? 'Season 2025/26' }}</span>
+            <h1>{{ $siteSettings->header ?? 'Every throw, every save, every point.' }}</h1>
             <p class="hero-description">
-                The public portal for handball competitions &mdash; follow live matches, group standings, and team form as
-                the season unfolds.
+                {{ $siteSettings->description ?? 'The public portal for handball competitions — follow live matches, group standings, and team form as the season unfolds.' }}
             </p>
             <div class="stats">
                 <div class="stat-item">

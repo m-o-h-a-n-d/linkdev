@@ -113,6 +113,14 @@ return [
             ],
         ],
 
+        'settings' => [
+            'label' => 'System Settings',
+            'permissions' => [
+                'settings.view',
+                'settings.edit',
+            ],
+        ],
+
     ],
 
 ];

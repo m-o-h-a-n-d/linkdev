@@ -14,15 +14,23 @@ class RoleAndPermissionSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // 1. Super Admin (Full Control)
+        $permissions = collect(config('permissions.modules'))
+            ->flatMap(fn (array $module) => $module['permissions'] ?? [])
+            ->unique()
+            ->values();
+
+        foreach ($permissions as $permissionName) {
+            \Spatie\Permission\Models\Permission::firstOrCreate([
+                'name' => $permissionName,
+                'guard_name' => 'admin',
+            ]);
+        }
+
         $superAdmin = User::where('email', 'admin@example.test')->first();
         if (! $superAdmin) {
             User::factory()->asSuperAdmin()->create();
         } else {
             $role = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'admin']);
-            $permissions = collect(config('permissions.modules'))
-                ->flatMap(fn (array $module) => $module['permissions'] ?? [])
-                ->unique()
-                ->values();
             $role->syncPermissions($permissions->all());
             $superAdmin->assignRole($role);
         }

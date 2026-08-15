@@ -6,6 +6,9 @@
     <meta name="author" content="Handball Admin">
 
     <title>@yield('title', 'Backend | Handball Competition Management System')</title>
+    @if(isset($siteSettings) && $siteSettings->favicon)
+        <link rel="icon" href="{{ $siteSettings->favicon_url }}">
+    @endif
 
     <!-- Custom fonts for SB Admin 2 -->
     <link href="{{ asset('backend/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
@@ -41,4 +44,5 @@
             }
         })();
     </script>
+    @stack('styles')
 </head>

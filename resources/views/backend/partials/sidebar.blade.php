@@ -3,8 +3,12 @@
 
     <!-- Sidebar - Brand (Matching Login Page) -->
     <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
-        <div class="login-brand-icon">
-            <i class="fas fa-volleyball-ball"></i>
+        <div class="login-brand-icon d-flex align-items-center justify-content-center" style="overflow: hidden; padding: 2px;">
+            @if(isset($siteSettings) && $siteSettings->icon)
+                <img src="{{ $siteSettings->icon_url }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+            @else
+                <i class="fas fa-volleyball-ball"></i>
+            @endif
         </div>
         <div class="login-brand-text">Admina</div>
     </a>
@@ -106,7 +110,7 @@
     @endcanany
 
     <!-- Divider & Heading: USERS & SYSTEM -->
-    @canany(['users.view', 'roles.view', 'admins.view', 'activity-logs.view'])
+    @canany(['users.view', 'roles.view', 'admins.view', 'activity-logs.view', 'settings.view'])
     <hr class="sidebar-divider">
 
     <div class="sidebar-heading">
@@ -145,6 +149,15 @@
         <a class="nav-link" href="{{ route('admin.activity-logs.index') }}">
             <i class="fas fa-fw fa-history"></i>
             <span>Activity Logs</span>
+        </a>
+    </li>
+    @endcan
+
+    @can('settings.view')
+    <li class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.settings.edit') }}">
+            <i class="fas fa-fw fa-cogs"></i>
+            <span>System Settings</span>
         </a>
     </li>
     @endcan

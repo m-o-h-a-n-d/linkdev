@@ -1,7 +1,11 @@
 <nav class="navbar">
     <div class="container navbar-container">
         <a href="{{ url('/') }}" class="navbar-brand">
-            <div class="logo-circle">H</div>
+            @if(isset($siteSettings) && $siteSettings->icon)
+                <img src="{{ $siteSettings->icon_url }}" alt="Logo" style="height: 38px; width: 38px; object-fit: cover; border-radius: 8px;">
+            @else
+                <div class="logo-circle">H</div>
+            @endif
             <span>HANDBALL HUB</span>
         </a>
         <div class="navbar-nav">

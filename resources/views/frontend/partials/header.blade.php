@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Handball Hub - Sports Competition & Tournament Management System">
+    <meta name="description" content="{{ $siteSettings->description ?? 'Handball Hub - Sports Competition & Tournament Management System' }}">
     <title>@yield('title', 'Handball Hub — Sports Competition')</title>
+    @if(isset($siteSettings) && $siteSettings->favicon)
+        <link rel="icon" href="{{ $siteSettings->favicon_url }}">
+    @endif
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -22,7 +22,11 @@ use App\Repositories\Eloquent\Standing\GroupStandingRepository;
 use App\Repositories\Eloquent\Standing\TeamStatisticRepository;
 use App\Repositories\Eloquent\Team\TeamRepository;
 use App\Repositories\Eloquent\User\UserRepository;
+use App\Repositories\Contracts\Setting\SettingRepositoryInterface;
+use App\Repositories\Eloquent\Setting\SettingRepository;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -42,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(GroupStandingRepositoryInterface::class, GroupStandingRepository::class);
         $this->app->bind(TeamStatisticRepositoryInterface::class, TeamStatisticRepository::class);
         $this->app->bind(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
+        $this->app->bind(SettingRepositoryInterface::class, SettingRepository::class);
     }
 
     /**
@@ -51,7 +56,16 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFour();
 
-        // Implicitly grant 'super-admin' role all permissions
-      
+        // Share site settings globally with all views
+        View::composer('*', function ($view) {
+            try {
+                if (Schema::hasTable('settings')) {
+                    $view->with('siteSettings', app(SettingRepositoryInterface::class)->getSettings());
+                }
+            } catch (\Throwable $e) {
+                // Prevent database errors during artisan setup/migration
+            }
+        });
     }
 }
+

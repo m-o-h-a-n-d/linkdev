@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             GameMatchSeeder::class,
             GroupStandingSeeder::class,
             TeamStatisticSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }
