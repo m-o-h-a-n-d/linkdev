@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CompetitionGroupController as AdminCompetitionGro
 use App\Http\Controllers\Admin\MatchController as AdminMatchController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\StandingController as AdminStandingController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
 use App\Http\Controllers\Viewer\Auth\LoginController;
@@ -174,19 +175,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // 8. Users Directory
-        Route::prefix('users')->name('users.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.users.index');
-            })->name('index');
-
-            Route::get('/create', function () {
-                return view('backend.users.create');
-            })->name('create');
-
-            Route::get('/edit', function () {
-                return view('backend.users.edit');
-            })->name('edit');
-        });
+modified:   routes/web.php
 
         // Dynamic Roles & Permissions Management
         Route::resource('roles', RoleController::class);
