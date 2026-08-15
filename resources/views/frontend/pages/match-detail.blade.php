@@ -45,7 +45,7 @@
                         </span>
                     </div>
 
-                    <span class="status-pill {{ $pillClass }}" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 20px;">
+                    <span id="detail-status-{{ $match->id }}" class="status-pill {{ $pillClass }}" style="font-size: 0.85rem; padding: 6px 14px; border-radius: 20px;">
                         {{ $statusDisplay }}
                     </span>
                 </div>
@@ -57,7 +57,11 @@
                     <div style="flex: 1;">
                         @if (!empty($match->homeTeam->logo))
                             <img src="{{ asset($match->homeTeam->logo) }}" alt="{{ $match->homeTeam->name }}"
+                                onerror="this.style.display='none'; document.getElementById('home-fallback-logo-{{ $match->id }}').style.display='flex';"
                                 style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block;">
+                            <div id="home-fallback-logo-{{ $match->id }}" style="display: none; width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
+                                {{ strtoupper(substr($match->homeTeam->short_name ?? $match->homeTeam->name ?? 'HOM', 0, 3)) }}
+                            </div>
                         @else
                             <div style="width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
                                 {{ strtoupper(substr($match->homeTeam->short_name ?? $match->homeTeam->name ?? 'HOM', 0, 3)) }}
@@ -71,15 +75,17 @@
 
                     <!-- Score / VS Center Area -->
                     <div style="padding: 0 20px;">
-                        @if(in_array($rawStatus, ['finished', 'live']))
-                            <div style="font-size: 3rem; font-weight: 900; color: #fff; letter-spacing: 2px; line-height: 1;">
-                                {{ $match->home_score }} <span style="color: #ea580c;">:</span> {{ $match->away_score }}
-                            </div>
-                        @else
-                            <div style="font-size: 2rem; font-weight: 900; color: #ea580c; background: rgba(234, 88, 12, 0.1); border: 1px solid rgba(234, 88, 12, 0.2); padding: 10px 24px; border-radius: 12px; display: inline-block;">
-                                VS
-                            </div>
-                        @endif
+                        <div id="detail-score-box-{{ $match->id }}">
+                            @if(in_array($rawStatus, ['finished', 'live']))
+                                <div id="detail-score-{{ $match->id }}" class="match-score-text" style="font-size: 3rem; font-weight: 900; color: #fff; letter-spacing: 2px; line-height: 1;">
+                                    <span id="detail-home-score-{{ $match->id }}">{{ $match->home_score }}</span> <span style="color: #ea580c;">:</span> <span id="detail-away-score-{{ $match->id }}">{{ $match->away_score }}</span>
+                                </div>
+                            @else
+                                <div id="detail-score-{{ $match->id }}" style="font-size: 2rem; font-weight: 900; color: #ea580c; background: rgba(234, 88, 12, 0.1); border: 1px solid rgba(234, 88, 12, 0.2); padding: 10px 24px; border-radius: 12px; display: inline-block;">
+                                    VS
+                                </div>
+                            @endif
+                        </div>
 
                         <div style="color: #94a3b8; font-size: 0.85rem; margin-top: 12px; font-weight: 600;">
                             {{ $match->scheduled_at ? $match->scheduled_at->format('D d M Y, H:i') : 'TBD' }}
@@ -90,7 +96,11 @@
                     <div style="flex: 1;">
                         @if (!empty($match->awayTeam->logo))
                             <img src="{{ asset($match->awayTeam->logo) }}" alt="{{ $match->awayTeam->name }}"
+                                onerror="this.style.display='none'; document.getElementById('away-fallback-logo-{{ $match->id }}').style.display='flex';"
                                 style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block;">
+                            <div id="away-fallback-logo-{{ $match->id }}" style="display: none; width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
+                                {{ strtoupper(substr($match->awayTeam->short_name ?? $match->awayTeam->name ?? 'AWY', 0, 3)) }}
+                            </div>
                         @else
                             <div style="width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
                                 {{ strtoupper(substr($match->awayTeam->short_name ?? $match->awayTeam->name ?? 'AWY', 0, 3)) }}
@@ -120,7 +130,7 @@
                         <div style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">
                             Winner Team
                         </div>
-                        <div style="font-size: 1.2rem; color: #ea580c; font-weight: 800; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <div id="detail-winner-{{ $match->id }}" style="font-size: 1.2rem; color: #ea580c; font-weight: 800; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             {{ $match->winnerTeam->name ?? ($rawStatus === 'finished' ? 'Draw / None' : 'Pending') }}
                         </div>
                     </div>
@@ -129,7 +139,7 @@
                         <div style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">
                             Start Time
                         </div>
-                        <div style="font-size: 1.1rem; color: #fff; font-weight: 800; margin-top: 4px;">
+                        <div id="detail-started-{{ $match->id }}" style="font-size: 1.1rem; color: #fff; font-weight: 800; margin-top: 4px;">
                             {{ $match->started_at ? $match->started_at->format('H:i') : 'Not Started' }}
                         </div>
                     </div>
@@ -152,3 +162,94 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const matchId = {{ $match->id }};
+
+    function updateScore(home, away) {
+        var scoreBox = document.getElementById('detail-score-box-' + matchId);
+        if (scoreBox) {
+            scoreBox.innerHTML = '<div id="detail-score-' + matchId + '" class="match-score-text score-flash" style="font-size: 3rem; font-weight: 900; color: #fff; letter-spacing: 2px; line-height: 1;">' +
+                                 '<span id="detail-home-score-' + matchId + '">' + home + '</span> <span style="color: #ea580c;">:</span> <span id="detail-away-score-' + matchId + '">' + away + '</span>' +
+                                 '</div>';
+        }
+    }
+
+    function updateStatus(status) {
+        var statusEl = document.getElementById('detail-status-' + matchId);
+        if (statusEl) {
+            var s = status.toLowerCase();
+            if (s === 'live') {
+                statusEl.className = 'status-pill pill-live';
+                statusEl.innerText = 'LIVE';
+            } else if (s === 'finished') {
+                statusEl.className = 'status-pill pill-fulltime';
+                statusEl.innerText = 'FULL TIME';
+            } else if (s === 'postponed') {
+                statusEl.className = 'status-pill pill-postponed';
+                statusEl.innerText = 'POSTPONED';
+            } else {
+                statusEl.className = 'status-pill pill-upcoming';
+                statusEl.innerText = status.toUpperCase();
+            }
+        }
+    }
+
+    if (window.Echo && typeof window.Echo.channel === 'function') {
+        // Listen on specific match channel
+        window.Echo.channel('match.' + matchId)
+            .listen('.MatchScoreUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    updateScore(data.home_score, data.away_score);
+                    if (data.status) {
+                        updateStatus(data.status);
+                    }
+                }
+            })
+            .listen('.MatchStartedLive', function (data) {
+                var m = data.match || data;
+                if (m.id == matchId) {
+                    updateStatus('live');
+                    updateScore(m.home_score ?? 0, m.away_score ?? 0);
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    updateStatus(data.status);
+                    if (data.home_score !== undefined && data.away_score !== undefined) {
+                        updateScore(data.home_score, data.away_score);
+                    }
+                    if (data.winner_name) {
+                        var winnerEl = document.getElementById('detail-winner-' + matchId);
+                        if (winnerEl) {
+                            winnerEl.innerText = data.winner_name;
+                        }
+                    }
+                }
+            });
+
+        // Also listen on global live-matches channel
+        window.Echo.channel('live-matches')
+            .listen('.MatchScoreUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    updateScore(data.home_score, data.away_score);
+                }
+            })
+            .listen('.MatchStartedLive', function (data) {
+                var m = data.match || data;
+                if (m.id == matchId) {
+                    updateStatus('live');
+                    updateScore(m.home_score ?? 0, m.away_score ?? 0);
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    updateStatus(data.status);
+                }
+            });
+    }
+});
+</script>
+@endpush

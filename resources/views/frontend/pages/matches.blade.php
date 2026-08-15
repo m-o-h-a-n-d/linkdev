@@ -39,7 +39,7 @@
                         default => strtoupper($rawStatus),
                     };
                 @endphp
-                <a href="{{ route('matches.show', $match->id) }}" class="match-card-item match-card-link" data-status="{{ $rawStatus }}" style="text-decoration: none;">
+                <a href="{{ route('matches.show', $match->id) }}" id="viewer-match-{{ $match->id }}" class="match-card-item match-card-link" data-status="{{ $rawStatus }}" style="text-decoration: none;">
                     <div class="match-card">
                         <div class="match-meta">
                             <div class="match-date-str">
@@ -53,7 +53,7 @@
                         <div class="match-center">
                             <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
 
-                            <div class="score-badge">
+                            <div class="score-badge" id="viewer-score-{{ $match->id }}">
                                 @if(in_array($rawStatus, ['finished', 'live']))
                                     {{ $match->home_score }} : {{ $match->away_score }}
                                 @else
@@ -65,7 +65,7 @@
                         </div>
 
                         <div class="match-badge-wrap">
-                            <span class="status-pill {{ $pillClass }}">
+                            <span class="status-pill {{ $pillClass }}" id="viewer-status-{{ $match->id }}">
                                 {{ $statusDisplay }}
                             </span>
                         </div>
@@ -83,6 +83,7 @@
     </div>
 </section>
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const tabs = document.querySelectorAll('.filter-tab');
@@ -130,6 +131,69 @@ document.addEventListener('DOMContentLoaded', function () {
     if (activeTab) {
         filterMatches(activeTab.getAttribute('data-filter'));
     }
+
+    // Real-Time Echo Listeners
+    if (window.Echo && typeof window.Echo.channel === 'function') {
+        window.Echo.channel('live-matches')
+            .listen('.MatchScoreUpdated', function (data) {
+                var scoreEl = document.getElementById('viewer-score-' + data.match_id);
+                if (scoreEl) {
+                    scoreEl.innerText = data.home_score + ' : ' + data.away_score;
+                    scoreEl.classList.remove('score-flash');
+                    void scoreEl.offsetWidth;
+                    scoreEl.classList.add('score-flash');
+                }
+            })
+            .listen('.MatchStartedLive', function (data) {
+                var match = data.match || data;
+                var card = document.getElementById('viewer-match-' + match.id);
+                if (card) {
+                    card.setAttribute('data-status', 'live');
+                    var statusEl = document.getElementById('viewer-status-' + match.id);
+                    if (statusEl) {
+                        statusEl.className = 'status-pill pill-live';
+                        statusEl.innerText = 'LIVE';
+                    }
+                    var scoreEl = document.getElementById('viewer-score-' + match.id);
+                    if (scoreEl) {
+                        scoreEl.innerText = (match.home_score ?? 0) + ' : ' + (match.away_score ?? 0);
+                        scoreEl.classList.remove('score-flash');
+                        void scoreEl.offsetWidth;
+                        scoreEl.classList.add('score-flash');
+                    }
+                    // Re-apply active tab filter so live matches appear immediately if LIVE tab is active
+                    var activeTab = document.querySelector('.filter-tab.active');
+                    if (activeTab) {
+                        filterMatches(activeTab.getAttribute('data-filter'));
+                    }
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                var card = document.getElementById('viewer-match-' + data.match_id);
+                if (card) {
+                    card.setAttribute('data-status', data.status);
+                    var statusEl = document.getElementById('viewer-status-' + data.match_id);
+                    if (statusEl) {
+                        if (data.status === 'finished') {
+                            statusEl.className = 'status-pill pill-fulltime';
+                            statusEl.innerText = 'FULL TIME';
+                        } else if (data.status === 'live') {
+                            statusEl.className = 'status-pill pill-live';
+                            statusEl.innerText = 'LIVE';
+                        }
+                    }
+                    var scoreEl = document.getElementById('viewer-score-' + data.match_id);
+                    if (scoreEl && data.home_score !== undefined && data.away_score !== undefined) {
+                        scoreEl.innerText = data.home_score + ' : ' + data.away_score;
+                    }
+                    var activeTab = document.querySelector('.filter-tab.active');
+                    if (activeTab) {
+                        filterMatches(activeTab.getAttribute('data-filter'));
+                    }
+                }
+            });
+    }
 });
 </script>
+@endpush
 @endsection

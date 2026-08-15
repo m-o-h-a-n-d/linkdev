@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "all": "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan reverb:start\" \"php artisan queue:listen\" \"vite\" --names=\"reverb,queue,vite\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

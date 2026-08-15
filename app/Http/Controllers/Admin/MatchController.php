@@ -95,9 +95,23 @@ class MatchController extends Controller
         return view('backend.matches.live-center', compact('liveMatches'));
     }
 
-    public function updateScore(UpdateMatchScoreRequest $request, int $id): RedirectResponse
+    public function updateScore(UpdateMatchScoreRequest $request, int $id): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
-        $this->matchService->updateScore($id, $request->action);
+        $match = $this->matchService->updateScore($id, $request->action);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Match updated successfully!',
+                'match' => [
+                    'id' => $match->id,
+                    'status' => $match->status,
+                    'home_score' => (int) $match->home_score,
+                    'away_score' => (int) $match->away_score,
+                    'formatted_timer' => $match->formatted_timer,
+                ],
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Match updated successfully!');
     }

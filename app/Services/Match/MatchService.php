@@ -114,6 +114,10 @@ class MatchService
             $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
         }
 
+        if ($match->status === 'live') {
+            $this->liveStatusService->sendLiveNotification($match);
+        }
+
         return $match;
     }
 
@@ -139,10 +143,11 @@ class MatchService
     public function updateMatch(int $id, UpdateMatchData $data): GameMatch
     {
         $match = $this->findOrFail($id);
+        $wasLive = $match->status === 'live';
         $updatePayload = array_filter($data->toArray(), fn ($value) => $value !== null);
 
         if (isset($updatePayload['status'])) {
-            if ($updatePayload['status'] === 'live' && $match->status !== 'live') {
+            if ($updatePayload['status'] === 'live' && ! $wasLive) {
                 $now = now()->toDateTimeString();
                 $updatePayload['scheduled_at'] = $now;
                 $updatePayload['started_at'] = $now;
@@ -175,6 +180,14 @@ class MatchService
                 $this->standingsService->advanceKnockoutWinner($updatedMatch);
             }
             $this->standingsService->syncCompetitionDatesAndStatus($updatedMatch->competition);
+        }
+
+        if ($updatedMatch->status === 'live' && ! $wasLive) {
+            $this->liveStatusService->sendLiveNotification($updatedMatch);
+        } elseif ($updatedMatch->status === 'finished') {
+            \App\Jobs\Match\BroadcastMatchStatusJob::dispatch($updatedMatch);
+        } elseif ($updatedMatch->status === 'live') {
+            \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($updatedMatch, 'score_update');
         }
 
         return $updatedMatch;
@@ -220,19 +233,48 @@ class MatchService
                 'scheduled_at' => $now,
                 'started_at' => $now,
             ]);
-            $this->liveStatusService->sendLiveNotification($match);
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            $this->liveStatusService->sendLiveNotification($freshMatch);
             if ($match->competition) {
                 $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
             }
-        } elseif ($action === 'increment_home') {
+
+            return $freshMatch;
+        }
+
+        if ($action === 'increment_home') {
             $this->matchRepository->incrementScore($match, 'home_score');
-        } elseif ($action === 'decrement_home' && $match->home_score > 0) {
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($freshMatch, $action);
+
+            return $freshMatch;
+        }
+
+        if ($action === 'decrement_home' && $match->home_score > 0) {
             $this->matchRepository->decrementScore($match, 'home_score');
-        } elseif ($action === 'increment_away') {
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($freshMatch, $action);
+
+            return $freshMatch;
+        }
+
+        if ($action === 'increment_away') {
             $this->matchRepository->incrementScore($match, 'away_score');
-        } elseif ($action === 'decrement_away' && $match->away_score > 0) {
-            $match = $this->matchRepository->decrementScore($match, 'away_score');
-        } elseif ($action === 'finish_match') {
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($freshMatch, $action);
+
+            return $freshMatch;
+        }
+
+        if ($action === 'decrement_away' && $match->away_score > 0) {
+            $this->matchRepository->decrementScore($match, 'away_score');
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($freshMatch, $action);
+
+            return $freshMatch;
+        }
+
+        if ($action === 'finish_match') {
             $winnerId = null;
             if ($match->home_score > $match->away_score) {
                 $winnerId = $match->home_team_id;
@@ -258,9 +300,14 @@ class MatchService
                 $this->standingsService->advanceKnockoutWinner($updated);
                 $this->standingsService->syncCompetitionDatesAndStatus($updated->competition);
             }
+
+            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+            \App\Jobs\Match\BroadcastMatchStatusJob::dispatch($freshMatch);
+
+            return $freshMatch;
         }
 
-        return $match->fresh();
+        return $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
     }
 
 

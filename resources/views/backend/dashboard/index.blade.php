@@ -175,13 +175,13 @@
 
                                     <div class="col-4">
                                         <div class="d-flex align-items-center justify-content-center">
-                                            <span class="live-score-text text-white mr-2"
+                                            <span id="dash-home-score-{{ $match->id }}" class="live-score-text text-white mr-2"
                                                 style="font-size: 32px; font-weight: 800;">{{ $match->home_score }}</span>
                                             <span class="h4 text-muted mb-0">:</span>
-                                            <span class="live-score-text text-white ml-2"
+                                            <span id="dash-away-score-{{ $match->id }}" class="live-score-text text-white ml-2"
                                                 style="font-size: 32px; font-weight: 800;">{{ $match->away_score }}</span>
                                         </div>
-                                        <span class="badge badge-success mt-2"><i
+                                        <span id="dash-match-status-{{ $match->id }}" class="badge badge-success mt-2"><i
                                                 class="fas fa-bolt mr-1"></i>{{ $match->status === 'live' ? 'Live Action' : 'Scheduled' }}</span>
                                     </div>
 
@@ -350,3 +350,52 @@
 
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (window.Echo && typeof window.Echo.channel === 'function') {
+        window.Echo.channel('live-matches')
+            .listen('.MatchScoreUpdated', function (data) {
+                var homeScoreEl = document.getElementById('dash-home-score-' + data.match_id);
+                var awayScoreEl = document.getElementById('dash-away-score-' + data.match_id);
+                if (homeScoreEl && awayScoreEl) {
+                    homeScoreEl.innerText = data.home_score;
+                    awayScoreEl.innerText = data.away_score;
+                    homeScoreEl.style.color = '#f97316';
+                    awayScoreEl.style.color = '#f97316';
+                    setTimeout(function() {
+                        homeScoreEl.style.color = '#ffffff';
+                        awayScoreEl.style.color = '#ffffff';
+                    }, 1200);
+                }
+                var statusEl = document.getElementById('dash-match-status-' + data.match_id);
+                if (statusEl && data.status) {
+                    if (data.status === 'live') {
+                        statusEl.className = 'badge badge-danger mt-2 animate-pulse';
+                        statusEl.innerHTML = '<i class="fas fa-bolt mr-1"></i>Live Action';
+                    } else if (data.status === 'finished') {
+                        statusEl.className = 'badge badge-secondary mt-2';
+                        statusEl.innerHTML = '<i class="fas fa-flag-checkered mr-1"></i>Full Time';
+                    }
+                }
+            })
+            .listen('.MatchStartedLive', function (data) {
+                var match = data.match || data;
+                var statusEl = document.getElementById('dash-match-status-' + match.id);
+                if (statusEl) {
+                    statusEl.className = 'badge badge-danger mt-2 animate-pulse';
+                    statusEl.innerHTML = '<i class="fas fa-bolt mr-1"></i>Live Action';
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                var statusEl = document.getElementById('dash-match-status-' + data.match_id);
+                if (statusEl && data.status === 'finished') {
+                    statusEl.className = 'badge badge-secondary mt-2';
+                    statusEl.innerHTML = '<i class="fas fa-flag-checkered mr-1"></i>Full Time';
+                }
+            });
+    }
+});
+</script>
+@endpush

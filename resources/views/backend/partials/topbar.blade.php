@@ -37,38 +37,207 @@
             </div>
         </li>
 
+        @php
+            $topbarLiveMatches = \App\Models\GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
+                ->where('status', 'live')
+                ->latest('started_at')
+                ->take(5)
+                ->get();
+        @endphp
+
         <!-- Notifications Dropdown -->
-        <li class="nav-item dropdown no-arrow mx-1">
+        <li class="nav-item dropdown no-arrow mx-1" id="adminNotificationsDropdownWrapper">
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
-                <span class="badge badge-danger badge-counter">2</span>
+                <span class="badge badge-danger badge-counter" id="adminNotificationCounter" style="display: {{ $topbarLiveMatches->count() > 0 ? 'inline-block' : 'none' }};">
+                    {{ $topbarLiveMatches->count() }}
+                </span>
             </a>
-            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-                <h6 class="dropdown-header bg-primary border-0">Live Match Alerts</h6>
-                <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.matches.live-center') }}">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-danger text-white animate-pulse">
-                            <i class="fas fa-running"></i>
-                        </div>
-                    </div>
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown" style="min-width: 320px;">
+                <h6 class="dropdown-header bg-primary border-0 d-flex justify-content-between align-items-center">
+                    <span>Live Match Alerts</span>
                     <div>
-                        <div class="small text-gray-500">LIVE NOW</div>
-                        <span class="font-weight-bold">Al Ahly SC vs Zamalek SC (26 - 24)</span>
+                        <button type="button" class="btn btn-sm btn-link text-white p-0 mr-2" style="font-size: 0.7rem; text-decoration: underline;" onclick="clearAllNotifications(); event.stopPropagation();">Clear All</button>
+                        <span class="badge badge-light text-primary" style="font-size: 0.7rem;">Real-Time</span>
                     </div>
-                </a>
-                <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.matches.index') }}">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-warning text-white">
-                            <i class="fas fa-exclamation"></i>
+                </h6>
+                <div id="adminNotificationsList">
+                    @forelse($topbarLiveMatches as $liveMatch)
+                        <div class="dropdown-item d-flex align-items-center justify-content-between notification-item" id="notif-match-{{ $liveMatch->id }}" data-notif-id="match_{{ $liveMatch->id }}">
+                            <a href="{{ route('admin.matches.show', $liveMatch->id) }}" onclick="dismissNotification('match_{{ $liveMatch->id }}');" class="d-flex align-items-center text-decoration-none text-dark flex-grow-1 mr-2">
+                                <div class="mr-3">
+                                    <div class="icon-circle bg-danger text-white animate-pulse">
+                                        <i class="fas fa-broadcast-tower"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="small text-danger font-weight-bold">🔴 LIVE NOW ({{ $liveMatch->home_score }} - {{ $liveMatch->away_score }})</div>
+                                    <span class="font-weight-bold" style="font-size: 0.85rem;">{{ $liveMatch->homeTeam->name ?? 'Home' }} vs {{ $liveMatch->awayTeam->name ?? 'Away' }}</span>
+                                    <div class="small text-muted">{{ $liveMatch->competition->name ?? 'Competition' }}</div>
+                                </div>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-light text-muted p-1 rounded-circle" title="Dismiss" onclick="dismissNotification('match_{{ $liveMatch->id }}'); event.stopPropagation();" style="width: 24px; height: 24px; line-height: 1;">
+                                &times;
+                            </button>
                         </div>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">2 hours ago</div>
-                        Barcelona vs THW Kiel match postponed.
-                    </div>
+                    @empty
+                        <div id="noNotificationsMsg" class="text-center py-3 text-muted small">
+                            <i class="fas fa-bell-slash mr-1"></i> No active notifications
+                        </div>
+                    @endforelse
+                </div>
+                <a class="dropdown-item text-center small text-primary font-weight-bold" href="{{ route('admin.matches.live-center') }}" onclick="clearAllNotifications();">
+                    <i class="fas fa-broadcast-tower mr-1 text-danger"></i> View All Live Matches
                 </a>
             </div>
         </li>
+
+        <!-- Floating Live Toast Alert Container -->
+        <div id="realtimeToastContainer" style="position: fixed; top: 20px; right: 20px; z-index: 99999; width: 340px; pointer-events: none;"></div>
+
+        <script>
+            function updateNotifBadge() {
+                var listEl = document.getElementById('adminNotificationsList');
+                var counterEl = document.getElementById('adminNotificationCounter');
+                if (!listEl || !counterEl) return;
+                
+                var items = listEl.querySelectorAll('.notification-item');
+                var count = items.length;
+                
+                if (count > 0) {
+                    counterEl.innerText = count;
+                    counterEl.style.display = 'inline-block';
+                } else {
+                    counterEl.innerText = '0';
+                    counterEl.style.display = 'none';
+                    if (!document.getElementById('noNotificationsMsg')) {
+                        listEl.innerHTML = '<div id="noNotificationsMsg" class="text-center py-3 text-muted small"><i class="fas fa-bell-slash mr-1"></i> No active notifications</div>';
+                    }
+                }
+            }
+
+            function dismissNotification(notifId) {
+                var el = document.querySelector('[data-notif-id="' + notifId + '"]');
+                if (el) {
+                    el.style.transition = 'all 0.3s ease';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateX(20px)';
+                    setTimeout(function () {
+                        el.remove();
+                        updateNotifBadge();
+                    }, 300);
+                }
+                // Save dismissed state in sessionStorage so user doesn't see it again during session
+                try {
+                    var dismissed = JSON.parse(sessionStorage.getItem('dismissed_notifs') || '[]');
+                    if (!dismissed.includes(notifId)) {
+                        dismissed.push(notifId);
+                        sessionStorage.setItem('dismissed_notifs', JSON.stringify(dismissed));
+                    }
+                } catch(e){}
+            }
+
+            function clearAllNotifications() {
+                var listEl = document.getElementById('adminNotificationsList');
+                if (listEl) {
+                    var items = listEl.querySelectorAll('.notification-item');
+                    items.forEach(function(item) {
+                        var id = item.getAttribute('data-notif-id');
+                        if (id) dismissNotification(id);
+                    });
+                    listEl.innerHTML = '<div id="noNotificationsMsg" class="text-center py-3 text-muted small"><i class="fas fa-bell-slash mr-1"></i> No active notifications</div>';
+                    updateNotifBadge();
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Filter out already dismissed items on page load
+                try {
+                    var dismissed = JSON.parse(sessionStorage.getItem('dismissed_notifs') || '[]');
+                    dismissed.forEach(function (id) {
+                        var el = document.querySelector('[data-notif-id="' + id + '"]');
+                        if (el) el.remove();
+                    });
+                    updateNotifBadge();
+                } catch(e){}
+
+                if (window.Echo && typeof window.Echo.channel === 'function') {
+                    window.Echo.channel('admin-notifications')
+                        .listen('.AdminLiveMatchNotification', function (data) {
+                            var notif = data.notification || data;
+                            var notifId = notif.id || ('match_' + (notif.match_id || Date.now()));
+                            var matchUrl = notif.url || ('/admin/matches/' + notif.match_id);
+
+                            // 1. Remove empty placeholder if present
+                            var noMsg = document.getElementById('noNotificationsMsg');
+                            if (noMsg) noMsg.remove();
+
+                            // 2. Prepend item to dropdown with dismiss button
+                            var listEl = document.getElementById('adminNotificationsList');
+                            if (listEl) {
+                                var existing = document.querySelector('[data-notif-id="' + notifId + '"]');
+                                if (existing) existing.remove();
+
+                                var itemHtml = '<div class="dropdown-item d-flex align-items-center justify-content-between notification-item bg-light border-left-danger" data-notif-id="' + notifId + '" style="animation: fadeIn 0.3s ease;">' +
+                                    '<a href="' + matchUrl + '" onclick="dismissNotification(\'' + notifId + '\');" class="d-flex align-items-center text-decoration-none text-dark flex-grow-1 mr-2">' +
+                                        '<div class="mr-3">' +
+                                            '<div class="icon-circle bg-danger text-white animate-pulse">' +
+                                                '<i class="fas fa-broadcast-tower"></i>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div>' +
+                                            '<div class="small text-danger font-weight-bold">⚡ JUST STARTED LIVE</div>' +
+                                            '<span class="font-weight-bold text-dark" style="font-size: 0.85rem;">' + (notif.home_team || 'Home') + ' vs ' + (notif.away_team || 'Away') + '</span>' +
+                                            '<div class="small text-muted">' + (notif.competition || 'Handball') + '</div>' +
+                                        '</div>' +
+                                    '</a>' +
+                                    '<button type="button" class="btn btn-sm btn-light text-muted p-1 rounded-circle" title="Dismiss" onclick="dismissNotification(\'' + notifId + '\'); event.stopPropagation();" style="width: 24px; height: 24px; line-height: 1;">' +
+                                        '&times;' +
+                                    '</button>' +
+                                '</div>';
+                                listEl.insertAdjacentHTML('afterbegin', itemHtml);
+                                updateNotifBadge();
+                            }
+
+                            // 3. Show Interactive Toast Popup
+                            var toastContainer = document.getElementById('realtimeToastContainer');
+                            if (toastContainer) {
+                                var toastId = 'toast_' + Date.now();
+                                var toastHtml = '<div id="' + toastId + '" class="alert shadow-lg text-white border-0 d-flex align-items-center justify-content-between p-3 mb-2" ' +
+                                    'style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-left: 5px solid #ef4444 !important; border-radius: 12px; pointer-events: auto; animation: slideInRight 0.3s ease-out; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);">' +
+                                    '<div class="d-flex align-items-center">' +
+                                        '<div class="mr-3">' +
+                                            '<span class="badge badge-danger p-2 rounded-circle animate-pulse"><i class="fas fa-broadcast-tower fa-lg"></i></span>' +
+                                        '</div>' +
+                                        '<div>' +
+                                            '<div class="font-weight-bold text-danger text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Live Match Alert</div>' +
+                                            '<div class="font-weight-bold" style="font-size: 0.9rem;">' + (notif.home_team || 'Home') + ' vs ' + (notif.away_team || 'Away') + '</div>' +
+                                            '<div class="small text-light opacity-75">' + (notif.competition || '') + ' is live now</div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    '<div class="ml-3 d-flex flex-column align-items-end">' +
+                                        '<a href="' + matchUrl + '" onclick="dismissNotification(\'' + notifId + '\');" class="btn btn-danger btn-sm font-weight-bold mb-1 shadow-sm px-2 py-1" style="font-size: 0.75rem;">' +
+                                            '<i class="fas fa-eye fa-xs mr-1"></i> Details' +
+                                        '</a>' +
+                                        '<button type="button" class="btn btn-link text-light p-0" onclick="document.getElementById(\'' + toastId + '\').remove();" style="font-size: 0.75rem; text-decoration: none;">&times;</button>' +
+                                    '</div>' +
+                                '</div>';
+                                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+                                setTimeout(function () {
+                                    var el = document.getElementById(toastId);
+                                    if (el) {
+                                        el.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                                        el.style.opacity = '0';
+                                        el.style.transform = 'translateX(100%)';
+                                        setTimeout(function() { el.remove(); }, 500);
+                                    }
+                                }, 8000);
+                            }
+                        });
+                }
+            });
+        </script>
 
         <div class="topbar-divider d-none d-sm-block"></div>
 

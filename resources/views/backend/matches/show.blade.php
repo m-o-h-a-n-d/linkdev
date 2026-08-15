@@ -14,7 +14,7 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">{{ $match->competition->name ?? 'Competition' }} - {{ $match->group->name ?? ($match->notes ?? 'الأدوار الإقصائية (Knockout)') }}</h6>
-        <span class="badge badge-dark px-3 py-2 text-uppercase">{{ $match->status }}</span>
+        <span id="admin-show-status-{{ $match->id }}" class="badge badge-dark px-3 py-2 text-uppercase">{{ $match->status }}</span>
     </div>
     <div class="card-body">
         <div class="row align-items-center text-center my-4">
@@ -23,7 +23,7 @@
                 <span class="badge badge-primary font-weight-bold">HOME TEAM</span>
             </div>
             <div class="col-md-2 my-3 my-md-0">
-                <div class="display-4 font-weight-bold text-danger">{{ $match->home_score }} - {{ $match->away_score }}</div>
+                <div id="admin-show-score-{{ $match->id }}" class="display-4 font-weight-bold text-danger">{{ $match->home_score }} - {{ $match->away_score }}</div>
                 <div class="small text-muted font-weight-bold mt-1">
                     Scheduled: {{ $match->scheduled_at ? $match->scheduled_at->format('M d, Y H:i') : 'TBD' }}
                 </div>
@@ -41,12 +41,48 @@
                 <strong>Venue / Notes:</strong> {{ $match->notes ?? 'Cairo Indoor Sports Hall' }}
             </div>
             <div class="col-md-4">
-                <strong>Started At:</strong> {{ $match->started_at ? $match->started_at->format('H:i:s') : 'N/A' }}
+                <strong>Started At:</strong> <span id="admin-show-started-{{ $match->id }}">{{ $match->started_at ? $match->started_at->format('H:i:s') : 'N/A' }}</span>
             </div>
             <div class="col-md-4">
-                <strong>Winner:</strong> {{ $match->winnerTeam->name ?? 'None / Draw' }}
+                <strong>Winner:</strong> <span id="admin-show-winner-{{ $match->id }}">{{ $match->winnerTeam->name ?? 'None / Draw' }}</span>
             </div>
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const matchId = {{ $match->id }};
+    if (window.Echo && typeof window.Echo.channel === 'function') {
+        window.Echo.channel('match.' + matchId)
+            .listen('.MatchScoreUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    var scoreEl = document.getElementById('admin-show-score-' + matchId);
+                    if (scoreEl) {
+                        scoreEl.innerText = data.home_score + ' - ' + data.away_score;
+                    }
+                    var statusEl = document.getElementById('admin-show-status-' + matchId);
+                    if (statusEl && data.status) {
+                        statusEl.innerText = data.status;
+                    }
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                if (data.match_id == matchId) {
+                    var statusEl = document.getElementById('admin-show-status-' + matchId);
+                    if (statusEl && data.status) {
+                        statusEl.innerText = data.status;
+                    }
+                    if (data.winner_name) {
+                        var winnerEl = document.getElementById('admin-show-winner-' + matchId);
+                        if (winnerEl) {
+                            winnerEl.innerText = data.winner_name;
+                        }
+                    }
+                }
+            });
+    }
+});
+</script>
+@endpush
 @endsection

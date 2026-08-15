@@ -40,11 +40,15 @@ class MatchLiveStatusService
     }
 
     /**
-     * Dispatch live email notification job to queue.
+     * Dispatch live email notification job and real-time broadcast job to queue.
      */
     public function sendLiveNotification(GameMatch $match): void
     {
         try {
+            // Real-time WebSocket broadcasting to screens and all admins
+            \App\Jobs\Match\BroadcastMatchLiveJob::dispatch($match);
+
+            // Async Email notifications
             \App\Jobs\SendMatchLiveNotificationJob::dispatch($match);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('Live match notification dispatch failed: ' . $e->getMessage());

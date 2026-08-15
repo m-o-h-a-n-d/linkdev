@@ -120,13 +120,13 @@
                             </td>
                             <td class="font-weight-bold text-primary">{{ $match->homeTeam->name ?? 'TBD' }}</td>
                             <td class="text-center">
-                                <span class="badge badge-dark font-weight-bold px-3 py-2" style="font-size: 0.95rem;">
+                                <span id="admin-match-score-{{ $match->id }}" class="badge badge-dark font-weight-bold px-3 py-2" style="font-size: 0.95rem;">
                                     {{ $match->home_score }} - {{ $match->away_score }}
                                 </span>
                             </td>
                             <td class="font-weight-bold text-gray-800">{{ $match->awayTeam->name ?? 'TBD' }}</td>
                             <td>
-                                <span class="badge {{ $badgeClass }} text-uppercase px-2 py-1">
+                                <span id="admin-match-status-{{ $match->id }}" class="badge {{ $badgeClass }} text-uppercase px-2 py-1">
                                     {{ $match->status }}
                                 </span>
                             </td>
@@ -196,4 +196,55 @@
         </form>
     </div>
 </div>
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (window.Echo && typeof window.Echo.channel === 'function') {
+        window.Echo.channel('live-matches')
+            .listen('.MatchScoreUpdated', function (data) {
+                var scoreEl = document.getElementById('admin-match-score-' + data.match_id);
+                if (scoreEl) {
+                    scoreEl.innerText = data.home_score + ' - ' + data.away_score;
+                    scoreEl.classList.remove('badge-dark');
+                    scoreEl.classList.add('badge-danger');
+                    setTimeout(function() {
+                        scoreEl.classList.remove('badge-danger');
+                        scoreEl.classList.add('badge-dark');
+                    }, 1200);
+                }
+                var statusEl = document.getElementById('admin-match-status-' + data.match_id);
+                if (statusEl && data.status) {
+                    statusEl.innerText = data.status;
+                    if (data.status === 'live') {
+                        statusEl.className = 'badge badge-danger animated pulse infinite text-uppercase px-2 py-1';
+                    }
+                }
+            })
+            .listen('.MatchStartedLive', function (data) {
+                var match = data.match || data;
+                var statusEl = document.getElementById('admin-match-status-' + match.id);
+                if (statusEl) {
+                    statusEl.className = 'badge badge-danger animated pulse infinite text-uppercase px-2 py-1';
+                    statusEl.innerText = 'live';
+                }
+                var scoreEl = document.getElementById('admin-match-score-' + match.id);
+                if (scoreEl) {
+                    scoreEl.innerText = (match.home_score ?? 0) + ' - ' + (match.away_score ?? 0);
+                }
+            })
+            .listen('.MatchStatusUpdated', function (data) {
+                var statusEl = document.getElementById('admin-match-status-' + data.match_id);
+                if (statusEl && data.status === 'finished') {
+                    statusEl.className = 'badge badge-success text-uppercase px-2 py-1';
+                    statusEl.innerText = 'finished';
+                }
+                var scoreEl = document.getElementById('admin-match-score-' + data.match_id);
+                if (scoreEl && data.home_score !== undefined && data.away_score !== undefined) {
+                    scoreEl.innerText = data.home_score + ' - ' + data.away_score;
+                }
+            });
+    }
+});
+</script>
+@endpush
 @endsection
