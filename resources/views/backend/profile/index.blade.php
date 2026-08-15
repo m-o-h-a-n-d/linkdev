@@ -303,7 +303,7 @@
                                 <hr class="my-4">
 
                                 <div class="d-flex justify-content-end">
-                                    <a href="{{ route('admin.dashboard.index') }}"
+                                    <a href="{{ route('admin.dashboard') }}"
                                         class="btn btn-light rounded-pill px-4 mr-2 font-weight-bold">Cancel</a>
                                     <button type="submit" class="btn btn-primary rounded-pill px-4 font-weight-bold"
                                         style="background: #ea580c; border: none;">
