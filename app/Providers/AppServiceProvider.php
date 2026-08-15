@@ -47,5 +47,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFour();
+
+        // Implicitly grant 'super-admin' role all permissions
+      
     }
 }

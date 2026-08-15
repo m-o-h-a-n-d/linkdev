@@ -15,10 +15,12 @@
                 </ol>
             </nav>
         </div>
+        @can('admins.create')
         <a href="{{ route('admin.admins.create') }}" class="btn btn-primary shadow-sm px-4 font-weight-bold"
             style="border-radius: 10px;">
             <i class="fas fa-plus mr-2"></i>Add New Admin
         </a>
+        @endcan
     </div>
 
     @if (session('success'))
@@ -82,15 +84,21 @@
                 <div class="admin-card">
                     <div class="admin-card-header {{ $gradientClass }}">
                         <div class="dropdown">
+                            @canany(['admins.view', 'admins.edit', 'admins.delete'])
                             <button class="admin-card-options" type="button" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in">
+                                @can('admins.view')
                                 <a class="dropdown-item" href="{{ route('admin.admins.show', $admin->id) }}"><i
                                         class="fas fa-user text-primary mr-2"></i>View Profile</a>
+                                @endcan
+                                @can('admins.edit')
                                 <a class="dropdown-item" href="{{ route('admin.admins.edit', $admin->id) }}"><i
                                         class="fas fa-edit text-warning mr-2"></i>Edit Profile</a>
+                                @endcan
+                                @can('admins.delete')
                                 <div class="dropdown-divider"></div>
                                 <form action="{{ route('admin.admins.destroy', $admin->id) }}" method="POST"
                                     onsubmit="return confirm('Are you sure you want to delete this admin?');">
@@ -101,7 +109,9 @@
                                         <i class="fas fa-trash mr-2"></i>Delete
                                     </button>
                                 </form>
+                                @endcan
                             </div>
+                            @endcanany
                         </div>
                     </div>
                     <div class="admin-avatar-wrapper">
@@ -125,9 +135,11 @@
                             </div>
                         </div>
 
+                        @can('admins.view')
                         <a href="{{ route('admin.admins.show', $admin->id) }}" class="admin-view-link">
                             View Profile <i class="fas fa-chevron-right ml-1"></i>
                         </a>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -138,10 +150,12 @@
                         <i class="fas fa-user-shield fa-4x text-gray-300 mb-3"></i>
                         <h5 class="font-weight-bold text-gray-800">No Admins Found</h5>
                         <p class="text-muted small">No admin users are registered in the system yet.</p>
+                        @can('admins.create')
                         <a href="{{ route('admin.admins.create') }}"
                             class="btn btn-primary font-weight-bold rounded-pill px-4 mt-2">
                             <i class="fas fa-plus mr-1"></i> Create First Admin
                         </a>
+                        @endcan
                     </div>
                 </div>
             </div>

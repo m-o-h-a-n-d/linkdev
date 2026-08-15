@@ -6,7 +6,9 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-shield-alt text-primary mr-2"></i>Team Profile & Details</h1>
     <div>
+        @can('teams.edit')
         <a href="{{ route('admin.teams.edit', $team->id) }}" class="btn btn-warning btn-sm font-weight-bold mr-2"><i class="fas fa-edit mr-1"></i> Edit Team</a>
+        @endcan
         <a href="{{ route('admin.teams.index') }}" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left mr-1"></i> Back to Teams</a>
     </div>
 </div>
@@ -34,6 +36,7 @@
             </div>
 
             <!-- Quick Status Change Actions -->
+            @can('teams.edit')
             <div class="mt-3 mt-md-0 d-flex align-items-center" style="gap: 8px;">
                 @if(!$team->isAccepted())
                     <form action="{{ route('admin.teams.accept', $team->id) }}" method="POST" class="d-inline">
@@ -51,6 +54,7 @@
                     </button>
                 @endif
             </div>
+            @endcan
         </div>
     </div>
 </div>
@@ -141,6 +145,7 @@
 </div>
 
 <!-- Modal Reject -->
+@can('teams.edit')
 <div class="modal fade" id="rejectModalShow" tabindex="-1" role="dialog" aria-labelledby="rejectModalShowLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -168,4 +173,5 @@
         </div>
     </div>
 </div>
+@endcan
 @endsection

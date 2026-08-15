@@ -62,6 +62,7 @@
                                 </td>
                                 <td class="text-right">
                                     <div class="d-flex justify-content-end align-items-center" style="gap: 8px;">
+                                        @can('users.edit')
                                         <form action="{{ route('admin.users.toggle-admin', $user->id) }}" method="POST"
                                             class="d-inline">
                                             @csrf
@@ -73,7 +74,9 @@
                                                 {{ $user->hasRole('super-admin') ? 'Remove Admin' : 'Make Admin' }}
                                             </button>
                                         </form>
+                                        @endcan
 
+                                        @can('users.delete')
                                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                             class="d-inline"
                                             onsubmit="return confirm('Are you sure you want to delete this user permanently from all related tables?');">
@@ -84,6 +87,7 @@
                                                 Delete
                                             </button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

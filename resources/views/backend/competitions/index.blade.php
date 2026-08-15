@@ -6,8 +6,10 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-trophy text-primary mr-2"></i>Competitions
             Directory</h1>
+        @can('competitions.create')
         <a href="{{ route('admin.competitions.create') }}" class="btn btn-primary btn-sm shadow-sm"><i
                 class="fas fa-plus mr-1"></i> Create Competition</a>
+        @endcan
     </div>
 
     <!-- Competitions Table -->
@@ -33,10 +35,14 @@
                         @forelse ($competitions as $competition)
                             <tr>
                                 <td class="font-weight-bold">
+                                    @can('competitions.view')
                                     <a href="{{ route('admin.competitions.show', $competition->id) }}"
                                         class="text-primary font-weight-bold">
                                         {{ $competition->name }}
                                     </a>
+                                    @else
+                                        {{ $competition->name }}
+                                    @endcan
                                     @if ($competition->winnerTeam)
                                         <div class="mt-1">
                                             <span class="badge badge-warning text-dark font-weight-bold" style="font-size: 0.8rem;">
@@ -65,20 +71,26 @@
                                 </td>
                                 <td class="text-right">
                                     <div class="d-inline-flex align-items-center" style="gap: 6px;">
+                                        @can('competitions.view')
                                         <a class="btn btn-primary btn-sm"
                                             href="{{ route('admin.competitions.show', $competition->id) }}"><i
                                                 class="fas fa-eye mr-1"></i> View</a>
+                                        @endcan
+                                        @can('competitions.edit')
                                         <a class="btn btn-warning btn-sm"
                                             href="{{ route('admin.competitions.edit', $competition->id) }}"><i
                                                 class="fas fa-edit mr-1"></i> Edit</a>
+                                        @endcan
+                                        @can('competitions.delete')
                                         <form action="{{ route('admin.competitions.destroy', $competition->id) }}"
                                             method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm"
                                                 onclick="return confirm('Are you sure you want to delete this competition?')"><i
-                                                    class="fas fa-trash-alt mr-1"></i> Delete</button>
+                                                class="fas fa-trash-alt mr-1"></i> Delete</button>
                                         </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

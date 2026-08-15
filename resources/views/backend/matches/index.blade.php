@@ -6,11 +6,15 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-running text-primary mr-2"></i>Match Fixtures & Results Table</h1>
     <div>
+        @can('matches.create')
         <button type="button" class="btn btn-success btn-sm shadow-sm mr-1" data-toggle="modal" data-target="#generateFixturesModal">
             <i class="fas fa-magic mr-1"></i> Auto-Generate Fixtures
         </button>
         <a href="{{ route('admin.matches.create') }}" class="btn btn-primary btn-sm shadow-sm mr-1"><i class="fas fa-plus mr-1"></i> Schedule Match</a>
+        @endcan
+        @can('matches.live-center')
         <a href="{{ route('admin.matches.live-center') }}" class="btn btn-danger btn-sm shadow-sm"><i class="fas fa-broadcast-tower mr-1"></i> Live Score Engine</a>
+        @endcan
     </div>
 </div>
 
@@ -132,13 +136,19 @@
                             </td>
                             <td class="text-right">
                                 <div class="d-inline-flex align-items-center" style="gap: 6px;">
+                                    @can('matches.view')
                                     <a class="btn btn-info btn-sm" href="{{ route('admin.matches.show', $match->id) }}"><i class="fas fa-eye"></i></a>
+                                    @endcan
+                                    @can('matches.edit')
                                     <a class="btn btn-warning btn-sm" href="{{ route('admin.matches.edit', $match->id) }}"><i class="fas fa-edit"></i></a>
+                                    @endcan
+                                    @can('matches.delete')
                                     <form action="{{ route('admin.matches.destroy', $match->id) }}" method="POST" onsubmit="return confirm('Delete this match?');" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
                                     </form>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>
@@ -164,6 +174,7 @@
     @endif
 </div>
 
+@can('matches.create')
 <!-- Modal for Auto-generating Fixtures -->
 <div class="modal fade" id="generateFixturesModal" tabindex="-1" role="dialog" aria-labelledby="generateFixturesModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -179,23 +190,34 @@
                 <div class="modal-body">
                     <p class="text-muted">Select a competition group to generate Round-Robin match fixtures automatically for all assigned teams.</p>
                     <div class="form-group">
-                        <label class="font-weight-bold text-gray-700">Select Group:</label>
-                        <select name="group_id" class="form-control" required>
-                            <option value="">-- Choose Competition Group --</option>
-                            @foreach($groups as $grp)
-                                <option value="{{ $grp->id }}">{{ $grp->competition->name ?? '' }} - {{ $grp->name }} ({{ $grp->teams_count ?? count($grp->teams) }} Teams)</option>
+                        <label class="font-weight-bold">Select Competition</label>
+                        <select name="competition_id" id="modal_competition_id" class="form-control" required>
+                            <option value="">-- Choose Competition --</option>
+                            @foreach($competitions as $comp)
+                                <option value="{{ $comp->id }}">{{ $comp->name }} ({{ $comp->season }})</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Select Competition Group</label>
+                        <select name="group_id" id="modal_group_id" class="form-control" required disabled>
+                            <option value="">-- Select Competition First --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold">Start Date & First Match Time</label>
+                        <input type="datetime-local" name="start_datetime" class="form-control" value="{{ now()->addDay()->format('Y-m-d\T18:00') }}" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-play mr-1"></i> Generate Fixtures</button>
+                    <button type="submit" class="btn btn-success font-weight-bold"><i class="fas fa-cogs mr-1"></i> Generate Fixtures Now</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+@endcan
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {

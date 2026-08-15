@@ -9,6 +9,9 @@
             <a href="{{ url('/matches') }}" class="{{ request()->is('matches*') ? 'active' : '' }}">Matches</a>
             <a href="{{ url('/teams') }}" class="{{ request()->is('teams*') ? 'active' : '' }}">Teams</a>
             @auth
+                @can('dashboard.access')
+                    <a href="{{ route('admin.dashboard') }}" style="color: #ea580c; font-weight: 700;">ADMIN PANEL</a>
+                @endcan
                 <a href="{{ route('account.index') }}" class="btn-nav-account {{ request()->routeIs('account.*') ? 'active' : '' }}">ACCOUNT</a>
             @else
                 <a href="{{ route('login') }}" class="btn-nav-signin {{ request()->routeIs('login') ? 'active' : '' }}">SIGN IN</a>

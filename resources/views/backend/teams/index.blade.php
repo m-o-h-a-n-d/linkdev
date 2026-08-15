@@ -6,7 +6,9 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-shield-alt text-primary mr-2"></i>Handball Teams Directory</h1>
     <div class="d-flex align-items-center" style="gap: 8px;">
+        @can('teams.create')
         <a href="{{ route('admin.teams.create') }}" class="btn btn-success btn-sm shadow-sm font-weight-bold"><i class="fas fa-plus mr-1"></i> Register Team</a>
+        @endcan
         <button type="button" class="btn btn-primary btn-sm shadow-sm font-weight-bold" onclick="copyPublicTeamRegistrationLink()" id="linkFormBtn">
             <i class="fas fa-link mr-1"></i> Copy Form Link
         </button>
@@ -98,30 +100,37 @@
                         <td class="py-3 text-right">
                             <div class="d-inline-flex align-items-center" style="gap: 6px;">
                                 <!-- Accept / Reject Status Actions -->
-                                @if(!$team->isAccepted())
-                                    <form action="{{ route('admin.teams.accept', $team->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn btn-success btn-sm font-weight-bold px-2 py-1" title="Accept Team & Send Email">
-                                            <i class="fas fa-check"></i> Accept
+                                @can('teams.edit')
+                                    @if(!$team->isAccepted())
+                                        <form action="{{ route('admin.teams.accept', $team->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-success btn-sm font-weight-bold px-2 py-1" title="Accept Team & Send Email">
+                                                <i class="fas fa-check"></i> Accept
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if(!$team->isRejected())
+                                        <button type="button" class="btn btn-danger btn-sm font-weight-bold px-2 py-1" data-toggle="modal" data-target="#rejectModal{{ $team->id }}" title="Reject Team & Send Email">
+                                            <i class="fas fa-times"></i> Reject
                                         </button>
-                                    </form>
-                                @endif
+                                    @endif
+                                @endcan
 
-                                @if(!$team->isRejected())
-                                    <button type="button" class="btn btn-danger btn-sm font-weight-bold px-2 py-1" data-toggle="modal" data-target="#rejectModal{{ $team->id }}" title="Reject Team & Send Email">
-                                        <i class="fas fa-times"></i> Reject
-                                    </button>
-                                @endif
-
+                                @can('teams.view')
                                 <a class="btn btn-info btn-sm rounded-lg font-weight-bold px-2 py-1" href="{{ route('admin.teams.show', $team->id) }}" title="View Profile">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @endcan
 
+                                @can('teams.edit')
                                 <a class="btn btn-warning btn-sm rounded-lg font-weight-bold px-2 py-1" href="{{ route('admin.teams.edit', $team->id) }}" title="Edit Details">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                @endcan
 
+                                @can('teams.delete')
                                 <form action="{{ route('admin.teams.destroy', $team->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this team?');">
                                     @csrf
                                     @method('DELETE')
@@ -129,9 +138,11 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
+                                @endcan
                             </div>
 
                             <!-- Reject Reason Modal -->
+                            @can('teams.edit')
                             <div class="modal fade text-left" id="rejectModal{{ $team->id }}" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel{{ $team->id }}" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content" style="background: #0e1626; border: 1px solid #1e293b;">
@@ -160,6 +171,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endcan
 
                         </td>
                     </tr>

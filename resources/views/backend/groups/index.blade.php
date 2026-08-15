@@ -11,9 +11,11 @@
             </span>
             Groups Directory Table
         </h1>
+        @can('groups.create')
         <a href="{{ route('admin.groups.create') }}" class="btn btn-primary btn-sm shadow-sm font-weight-bold px-3 py-2" style="border-radius: 8px;">
             <i class="fas fa-plus mr-1"></i> Add Group
         </a>
+        @endcan
     </div>
 
     <!-- Alert Messages -->
@@ -44,17 +46,28 @@
                     <div class="card-header border-0 d-flex align-items-center justify-content-between px-4 py-3" style="background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important; color: #ffffff !important;">
                         <div class="d-flex align-items-center overflow-hidden mr-2">
                             <i class="fas fa-layer-group text-white mr-2" style="font-size: 1.1rem; flex-shrink: 0;"></i>
+                            @can('groups.view')
                             <a href="{{ route('admin.groups.show', $group->id) }}" class="h5 mb-0 font-weight-bold text-white text-truncate text-decoration-none" title="{{ $group->name }} • {{ $group->competition?->name ?? 'No Competition' }}">
                                 {{ $group->name }} <span style="opacity: 0.9; font-weight: 500;">• {{ $group->competition?->name ?? 'No Competition' }}</span>
                             </a>
+                            @else
+                            <span class="h5 mb-0 font-weight-bold text-white text-truncate" title="{{ $group->name }} • {{ $group->competition?->name ?? 'No Competition' }}">
+                                {{ $group->name }} <span style="opacity: 0.9; font-weight: 500;">• {{ $group->competition?->name ?? 'No Competition' }}</span>
+                            </span>
+                            @endcan
                         </div>
                         <div class="d-flex align-items-center" style="gap: 8px; flex-shrink: 0;">
+                            @can('groups.edit')
                             <a href="{{ route('admin.groups.edit', $group->id) }}" class="btn btn-sm btn-outline-light font-weight-bold shadow-sm px-3" style="border-radius: 8px; background: rgba(0, 0, 0, 0.15) !important; border-color: rgba(255, 255, 255, 0.4) !important; color: #ffffff !important;">
                                 <i class="fas fa-edit mr-1"></i> Edit
                             </a>
+                            @endcan
+                            @can('groups.view')
                             <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-light font-weight-bold shadow-sm px-3 py-1" style="border-radius: 20px; font-size: 0.85rem; background-color: #ffffff !important; color: #0f172a !important; border: none !important;">
                                 <i class="fas fa-users mr-1" style="color: #ea580c !important;"></i> {{ $group->teams->count() }} Teams
                             </a>
+                            @endcan
+                            @can('groups.delete')
                             <form action="{{ route('admin.groups.destroy', $group->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this group?');">
                                 @csrf
                                 @method('DELETE')
@@ -62,6 +75,7 @@
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
+                            @endcan
                         </div>
                     </div>
 
@@ -85,7 +99,9 @@
                             <div class="text-center py-4 text-muted" style="background-color: #070d18; border-radius: 12px; border: 1px dashed #1e293b;">
                                 <i class="fas fa-folder-open fa-2x mb-2 text-gray-600 d-block"></i>
                                 No teams added to this group yet.
+                                @can('groups.view')
                                 <a href="{{ route('admin.groups.show', $group->id) }}" class="text-primary font-weight-bold ml-1">Manage Teams</a>
+                                @endcan
                             </div>
                         @endif
                     </div>
@@ -98,13 +114,16 @@
                     <h5 class="text-white font-weight-bold">No Groups Found</h5>
                     <p class="mb-3">Get started by creating your first competition group.</p>
                     <div>
+                        @can('groups.create')
                         <a href="{{ route('admin.groups.create') }}" class="btn btn-primary font-weight-bold px-4 py-2" style="border-radius: 8px;">
                             <i class="fas fa-plus mr-1"></i> Add New Group
                         </a>
+                        @endcan
                     </div>
                 </div>
             </div>
         @endforelse
+    </div>
     </div>
 
     <!-- Pagination Links if available -->

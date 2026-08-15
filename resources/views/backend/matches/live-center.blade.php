@@ -99,59 +99,65 @@
 
                         <!-- Action Control Buttons -->
                         <div class="border-top pt-3" id="match-actions-{{ $match->id }}">
-                            @if ($match->status === 'scheduled')
-                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="ajax-match-action">
-                                    @csrf
-                                    <input type="hidden" name="action" value="start_live">
-                                    <button type="submit" class="btn btn-success btn-block font-weight-bold shadow-sm">
-                                        <i class="fas fa-play mr-1"></i> Start Match Now (Go LIVE)
-                                    </button>
-                                </form>
-                            @elseif($match->status === 'live')
-                                <div class="row mb-3">
-                                    <div class="col-6">
-                                        <div class="btn-group w-100" role="group">
-                                            <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
-                                                @csrf
-                                                <input type="hidden" name="action" value="decrement_home">
-                                                <button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>
-                                            </form>
-                                            <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
-                                                @csrf
-                                                <input type="hidden" name="action" value="increment_home">
-                                                <button type="submit" class="btn btn-primary btn-block font-weight-bold">+ Goal</button>
-                                            </form>
+                            @can('matches.live-center')
+                                @if ($match->status === 'scheduled')
+                                    <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="ajax-match-action">
+                                        @csrf
+                                        <input type="hidden" name="action" value="start_live">
+                                        <button type="submit" class="btn btn-success btn-block font-weight-bold shadow-sm">
+                                            <i class="fas fa-play mr-1"></i> Start Match Now (Go LIVE)
+                                        </button>
+                                    </form>
+                                @elseif($match->status === 'live')
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <div class="btn-group w-100" role="group">
+                                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="decrement_home">
+                                                    <button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>
+                                                </form>
+                                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="increment_home">
+                                                    <button type="submit" class="btn btn-primary btn-block font-weight-bold">+ Goal</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="btn-group w-100" role="group">
+                                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="decrement_away">
+                                                    <button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>
+                                                </form>
+                                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
+                                                    @csrf
+                                                    <input type="hidden" name="action" value="increment_away">
+                                                    <button type="submit" class="btn btn-danger btn-block font-weight-bold">+ Goal</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="btn-group w-100" role="group">
-                                            <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
-                                                @csrf
-                                                <input type="hidden" name="action" value="decrement_away">
-                                                <button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>
-                                            </form>
-                                            <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="w-50 ajax-match-action">
-                                                @csrf
-                                                <input type="hidden" name="action" value="increment_away">
-                                                <button type="submit" class="btn btn-danger btn-block font-weight-bold">+ Goal</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="ajax-match-action"
-                                    onsubmit="return confirm('Finish this match and recalculate standings?');">
-                                    @csrf
-                                    <input type="hidden" name="action" value="finish_match">
-                                    <button type="submit" class="btn btn-dark btn-block font-weight-bold shadow-sm">
-                                        <i class="fas fa-flag-checkered mr-1"></i> End Match & Recalculate Standings
-                                    </button>
-                                </form>
+                                    <form action="{{ route('admin.matches.update-score', $match->id) }}" method="POST" class="ajax-match-action"
+                                        onsubmit="return confirm('Finish this match and recalculate standings?');">
+                                        @csrf
+                                        <input type="hidden" name="action" value="finish_match">
+                                        <button type="submit" class="btn btn-dark btn-block font-weight-bold shadow-sm">
+                                            <i class="fas fa-flag-checkered mr-1"></i> End Match & Recalculate Standings
+                                        </button>
+                                    </form>
+                                @else
+                                    <div class="text-center text-muted font-weight-bold py-2">
+                                        <i class="fas fa-check-circle text-success mr-1"></i> Match Finished
+                                    </div>
+                                @endif
                             @else
-                                <div class="text-center text-muted font-weight-bold py-2">
-                                    <i class="fas fa-check-circle text-success mr-1"></i> Match Finished
+                                <div class="text-center text-muted small py-2">
+                                    <i class="fas fa-lock mr-1"></i> View Only (No Live Score Permissions)
                                 </div>
-                            @endif
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -163,7 +169,9 @@
                     <h4 class="font-weight-bold">No Active or Scheduled Matches</h4>
                     <p>Schedule new matches or generate group fixtures to use the Live Engine.</p>
                     <div>
+                        @can('matches.create')
                         <a href="{{ route('admin.matches.create') }}" class="btn btn-primary btn-sm">Schedule Match Now</a>
+                        @endcan
                     </div>
                 </div>
             </div>

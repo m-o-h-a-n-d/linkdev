@@ -20,10 +20,12 @@
         </div>
         <div>
             @if (!in_array($role->name, $protectedRoleNames, true))
+                @can('roles.edit')
                 <a href="{{ route('admin.roles.edit', $role->id) }}"
                     class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
                     <i class="fas fa-edit mr-1"></i> Edit Role
                 </a>
+                @endcan
             @endif
             <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-secondary shadow-sm font-weight-bold px-3"
                 style="border-radius: 10px;">

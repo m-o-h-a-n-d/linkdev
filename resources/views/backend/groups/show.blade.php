@@ -9,9 +9,11 @@
             <i class="fas fa-layer-group text-primary mr-2"></i>{{ $group->name }} Overview
         </h1>
         <div class="d-flex align-items-center" style="gap: 8px;">
+            @can('groups.edit')
             <a href="{{ route('admin.groups.edit', $group->id) }}" class="btn btn-warning btn-sm shadow-sm">
                 <i class="fas fa-edit mr-1"></i> Edit Group
             </a>
+            @endcan
             <a href="{{ route('admin.groups.index') }}" class="btn btn-secondary btn-sm shadow-sm">
                 <i class="fas fa-arrow-left mr-1"></i> Back
             </a>
@@ -62,6 +64,7 @@
         </div>
 
         <!-- Add Team Section with Searchable Select -->
+        @can('groups.edit')
         <div class="col-lg-8 mb-4">
             <div class="card shadow">
                 <div class="card-header py-3 bg-success text-white">
@@ -94,6 +97,7 @@
                 </div>
             </div>
         </div>
+        @endcan
     </div>
 
     <!-- Teams in Group List -->
@@ -133,6 +137,7 @@
                                     <td><span class="badge badge-primary px-2 py-1">{{ $team->short_name ?? '-' }}</span></td>
                                     <td class="text-muted">{{ $team->city ?? '-' }}, {{ $team->country ?? '-' }}</td>
                                     <td class="text-center">
+                                        @can('groups.edit')
                                         <form action="{{ route('admin.groups.detach-team', [$group->id, $team->id]) }}" method="POST" onsubmit="return confirm('Are you sure you want to remove {{ addslashes($team->name) }} from this group?');">
                                             @csrf
                                             @method('DELETE')
@@ -140,6 +145,9 @@
                                                 <i class="fas fa-trash-alt mr-1"></i> Remove
                                             </button>
                                         </form>
+                                        @else
+                                        <span class="badge badge-light text-muted">-</span>
+                                        @endcan
                                     </td>
                                 </tr>
                             @endforeach

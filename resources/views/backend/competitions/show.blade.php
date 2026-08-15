@@ -17,8 +17,10 @@
         <h1 class="h3 mb-0 text-gray-800 font-weight-bold"><i class="fas fa-trophy text-primary mr-2"></i>Competition Details
         </h1>
         <div class="d-flex align-items-center" style="gap: 8px;">
+            @can('competitions.edit')
             <a href="{{ route('admin.competitions.edit', $competition->id) }}" class="btn btn-warning btn-sm shadow-sm"><i
                     class="fas fa-edit mr-1"></i> Edit Settings</a>
+            @endcan
             <a href="{{ route('admin.competitions.index') }}" class="btn btn-secondary btn-sm"><i
                     class="fas fa-arrow-left mr-1"></i> Back to Competitions</a>
         </div>

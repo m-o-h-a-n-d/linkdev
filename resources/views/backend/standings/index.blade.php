@@ -8,9 +8,11 @@
         <i class="fas fa-list-ol text-primary mr-2"></i>Competition Group Standings
     </h1>
     <div>
+        @can('matches.view')
         <a href="{{ route('admin.matches.index') }}" class="btn btn-primary btn-sm shadow-sm">
             <i class="fas fa-running mr-1"></i> Match Fixtures
         </a>
+        @endcan
     </div>
 </div>
 

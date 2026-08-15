@@ -19,10 +19,12 @@
             </nav>
         </div>
         <div>
+            @can('admins.edit')
             <a href="{{ route('admin.admins.edit', $admin->id) }}"
                 class="btn btn-warning shadow-sm font-weight-bold px-3 mr-2" style="border-radius: 10px;">
                 <i class="fas fa-edit mr-1"></i> Edit Profile
             </a>
+            @endcan
             <a href="{{ route('admin.admins.index') }}" class="btn btn-outline-secondary shadow-sm font-weight-bold px-3"
                 style="border-radius: 10px;">
                 <i class="fas fa-arrow-left mr-1"></i> Back to Directory

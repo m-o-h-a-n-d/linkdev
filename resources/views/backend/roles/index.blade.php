@@ -56,10 +56,12 @@
                 </ol>
             </nav>
         </div>
+        @can('roles.create')
         <a href="{{ route('admin.roles.create') }}" class="btn btn-primary shadow-sm font-weight-bold px-4"
             style="border-radius: 10px;">
             <i class="fas fa-plus mr-2"></i>Create New Role
         </a>
+        @endcan
     </div>
 
     @if (session('success'))
@@ -141,11 +143,14 @@
                                 <td class="text-right align-middle">
                                     <div class="d-inline-flex align-items-center" style="gap: 6px;">
                                         @if (!in_array($role->name, $protectedRoleNames, true))
+                                            @can('roles.edit')
                                             <a class="btn btn-warning btn-sm font-weight-bold px-3"
                                                 style="border-radius: 8px;"
                                                 href="{{ route('admin.roles.edit', $role->id) }}">
                                                 <i class="fas fa-edit mr-1"></i> Edit
                                             </a>
+                                            @endcan
+                                            @can('roles.delete')
                                             <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST"
                                                 onsubmit="return confirm('Are you sure you want to delete this role?');"
                                                 class="d-inline">
@@ -156,6 +161,7 @@
                                                     <i class="fas fa-trash mr-1"></i> Delete
                                                 </button>
                                             </form>
+                                            @endcan
                                         @else
                                             <span class="badge badge-light text-muted px-3 py-2"
                                                 style="border-radius: 8px;">Protected Role</span>

@@ -8,9 +8,11 @@
         <i class="fas fa-chart-bar text-primary mr-2"></i>Competition Team Performance & Statistics
     </h1>
     <div>
+        @can('standings.view')
         <a href="{{ route('admin.standings.index') }}" class="btn btn-primary btn-sm shadow-sm">
             <i class="fas fa-list-ol mr-1"></i> Group Standings
         </a>
+        @endcan
     </div>
 </div>
 

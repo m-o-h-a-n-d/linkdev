@@ -22,20 +22,30 @@
     <ul class="navbar-nav ml-auto">
 
         <!-- Quick Actions Dropdown -->
+        @canany(['competitions.create', 'teams.create', 'matches.create', 'matches.live-center'])
         <li class="nav-item dropdown no-arrow mx-1 align-self-center mr-2">
             <div class="dropdown">
                 <button class="btn btn-primary btn-sm dropdown-toggle shadow-sm" type="button" id="quickActionBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-plus-circle mr-1"></i> Quick Action
                 </button>
                 <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="quickActionBtn">
+                    @can('competitions.create')
                     <a class="dropdown-item" href="{{ route('admin.competitions.create') }}"><i class="fas fa-trophy text-primary mr-2"></i>Create Competition</a>
+                    @endcan
+                    @can('teams.create')
                     <a class="dropdown-item" href="{{ route('admin.teams.create') }}"><i class="fas fa-shield-alt text-success mr-2"></i>Register Team</a>
+                    @endcan
+                    @can('matches.create')
                     <a class="dropdown-item" href="{{ route('admin.matches.create') }}"><i class="fas fa-calendar-plus text-info mr-2"></i>Schedule Match</a>
+                    @endcan
+                    @can('matches.live-center')
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item text-danger font-weight-bold" href="{{ route('admin.matches.live-center') }}"><i class="fas fa-broadcast-tower text-danger mr-2"></i>Live Match Center</a>
+                    @endcan
                 </div>
             </div>
         </li>
+        @endcanany
 
         @php
             $topbarLiveMatches = \App\Models\GameMatch::with(['homeTeam', 'awayTeam', 'competition'])

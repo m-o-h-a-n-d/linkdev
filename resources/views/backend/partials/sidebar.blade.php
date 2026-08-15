@@ -13,35 +13,42 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
+    @can('dashboard.access')
     <li class="nav-item {{ request()->routeIs('admin.dashboard*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
     </li>
+    @endcan
 
-    <!-- Divider -->
+    <!-- Divider & Heading: COMPETITIONS -->
+    @canany(['competitions.view', 'groups.view', 'matches.view', 'matches.live-center', 'standings.view'])
     <hr class="sidebar-divider">
 
-    <!-- Heading: COMPETITIONS -->
     <div class="sidebar-heading">
         COMPETITIONS
     </div>
 
+    @can('competitions.view')
     <li class="nav-item {{ request()->routeIs('admin.competitions*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.competitions.index') }}">
             <i class="fas fa-fw fa-trophy"></i>
             <span>Competitions</span>
         </a>
     </li>
+    @endcan
 
+    @can('groups.view')
     <li class="nav-item {{ request()->routeIs('admin.groups*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.groups.index') }}">
             <i class="fas fa-fw fa-layer-group"></i>
             <span>Groups</span>
         </a>
     </li>
+    @endcan
 
+    @can('matches.view')
     <li
         class="nav-item {{ request()->routeIs('admin.matches.index') || request()->routeIs('admin.matches.create') || request()->routeIs('admin.matches.edit') || request()->routeIs('admin.matches.show') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.matches.index') }}">
@@ -49,7 +56,9 @@
             <span>Matches</span>
         </a>
     </li>
+    @endcan
 
+    @can('matches.live-center')
     <li class="nav-item {{ request()->routeIs('admin.matches.live-center') ? 'active' : '' }}">
         <a class="nav-link text-danger font-weight-bold" href="{{ route('admin.matches.live-center') }}">
             <i class="fas fa-fw fa-broadcast-tower text-danger animate-pulse"></i>
@@ -57,71 +66,89 @@
             <span class="badge badge-danger badge-pill ml-1 animate-pulse">LIVE</span>
         </a>
     </li>
+    @endcan
 
+    @can('standings.view')
     <li class="nav-item {{ request()->routeIs('admin.standings*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.standings.index') }}">
             <i class="fas fa-fw fa-list-ol"></i>
             <span>Standings</span>
         </a>
     </li>
+    @endcan
+    @endcanany
 
-    <!-- Divider -->
+    <!-- Divider & Heading: TEAMS & STATS -->
+    @canany(['teams.view', 'statistics.view'])
     <hr class="sidebar-divider">
 
-    <!-- Heading: TEAMS & STATS -->
     <div class="sidebar-heading">
         TEAMS & STATS
     </div>
 
+    @can('teams.view')
     <li class="nav-item {{ request()->routeIs('admin.teams*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.teams.index') }}">
             <i class="fas fa-fw fa-shield-alt"></i>
             <span>Teams</span>
         </a>
     </li>
+    @endcan
 
+    @can('statistics.view')
     <li class="nav-item {{ request()->routeIs('admin.statistics*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.statistics.index') }}">
             <i class="fas fa-fw fa-chart-bar"></i>
             <span>Team Statistics</span>
         </a>
     </li>
+    @endcan
+    @endcanany
 
-    <!-- Divider -->
+    <!-- Divider & Heading: USERS & SYSTEM -->
+    @canany(['users.view', 'roles.view', 'admins.view', 'activity-logs.view'])
     <hr class="sidebar-divider">
 
-    <!-- Heading: USERS & SYSTEM -->
     <div class="sidebar-heading">
         USERS & SYSTEM
     </div>
 
+    @can('users.view')
     <li class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Users</span>
         </a>
     </li>
+    @endcan
 
+    @can('roles.view')
     <li class="nav-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.roles.index') }}">
             <i class="fas fa-fw fa-user-shield"></i>
             <span>Roles</span>
         </a>
     </li>
+    @endcan
 
+    @can('admins.view')
     <li class="nav-item {{ request()->routeIs('admin.admins*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.admins.index') }}">
             <i class="fas fa-fw fa-user-tie"></i>
             <span>Admin Management</span>
         </a>
     </li>
+    @endcan
 
+    @can('activity-logs.view')
     <li class="nav-item {{ request()->routeIs('admin.activity-logs*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.activity-logs.index') }}">
             <i class="fas fa-fw fa-history"></i>
             <span>Activity Logs</span>
         </a>
     </li>
+    @endcan
+    @endcanany
 
 
 </ul>

@@ -12,13 +12,17 @@
                 statistics.</p>
         </div>
         <div class="mt-3 mt-sm-0">
+            @can('matches.create')
             <a href="{{ route('admin.matches.create') }}"
                 class="d-none d-sm-inline-block btn btn-sm font-weight-bold shadow-sm mr-2 text-white"
                 style="background: #ea580c; border: none;"><i class="fas fa-calendar-plus fa-sm text-white-50 mr-1"></i>
                 Schedule Match</a>
+            @endcan
+            @can('matches.live-center')
             <a href="{{ route('admin.matches.live-center') }}"
                 class="d-none d-sm-inline-block btn btn-sm btn-danger font-weight-bold shadow-sm"><i
                     class="fas fa-broadcast-tower fa-sm text-white-50 mr-1"></i> Live Scoreboard</a>
+            @endcan
         </div>
     </div>
 
@@ -128,9 +132,11 @@
                             </select>
                         </form>
 
+                        @can('matches.live-center')
                         <a class="btn btn-sm font-weight-bold text-white" href="{{ route('admin.matches.live-center') }}"
                             style="background: #ea580c; border: none; border-radius: 8px;">Live Center <i
                                 class="fas fa-chevron-right ml-1"></i></a>
+                        @endcan
                     </div>
                 </div>
                 <div class="card-body">
@@ -198,12 +204,14 @@
                                     </div>
                                 </div>
 
+                                @can('matches.live-center')
                                 <div class="d-flex justify-content-center mt-3 pt-3"
                                     style="border-top: 1px solid #1e293b;">
                                     <a class="btn btn-secondary btn-sm" href="{{ route('admin.matches.live-center') }}">
                                         <i class="fas fa-eye mr-1"></i> Details
                                     </a>
                                 </div>
+                                @endcan
                             </div>
                         @endforeach
                     @endif
@@ -254,6 +262,7 @@
                         </form>
 
                         <!-- View All -->
+                        @can('standings.view')
                         <a href="{{ route('admin.standings.index') }}" class="btn btn-sm font-weight-bold text-white"
                             style="
                         background: #ea580c;
@@ -265,6 +274,7 @@
                             View All
                             <i class="fas fa-chevron-right ml-1"></i>
                         </a>
+                        @endcan
 
                     </div>
                 </div>
