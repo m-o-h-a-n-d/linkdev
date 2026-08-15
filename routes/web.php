@@ -175,7 +175,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         // 8. Users Directory
-modified:   routes/web.php
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserController::class, 'index'])->name('index');
+            Route::patch('/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('toggle-admin');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+        });
 
         // Dynamic Roles & Permissions Management
         Route::resource('roles', RoleController::class);
