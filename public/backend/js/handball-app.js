@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
   initScrollReveal();
   initParallaxCards();
   initQuickPulseUpdates();
+  initLiveMatchTimers();
 });
 
 // ═══════════════════════════════════════
@@ -166,7 +167,41 @@ function initQuickPulseUpdates() {
 }
 
 // ═══════════════════════════════════════
-// 7. TOAST NOTIFICATION HELPER
+// 7. LIVE MATCH TIMER UPDATES
+// ═══════════════════════════════════════
+
+function initLiveMatchTimers() {
+  const timerElements = document.querySelectorAll('[data-match-timer]');
+
+  if (!timerElements.length) {
+    return;
+  }
+
+  const updateTimers = function () {
+    timerElements.forEach(function (el) {
+      const startTimeStr = el.getAttribute('data-match-timer');
+
+      if (!startTimeStr) {
+        return;
+      }
+
+      const startTime = new Date(startTimeStr);
+      const now = new Date();
+      const diffSeconds = Math.max(0, Math.floor((now - startTime) / 1000));
+
+      const mins = String(Math.floor(diffSeconds / 60)).padStart(2, '0');
+      const secs = String(diffSeconds % 60).padStart(2, '0');
+
+      el.textContent = mins + ':' + secs;
+    });
+  };
+
+  updateTimers();
+  setInterval(updateTimers, 1000);
+}
+
+// ═══════════════════════════════════════
+// 8. TOAST NOTIFICATION HELPER
 // ═══════════════════════════════════════
 
 function showHandballToast(title, message, type = 'success') {
@@ -177,12 +212,12 @@ function showHandballToast(title, message, type = 'success') {
     document.body.appendChild(container);
   }
 
-  const bgStyle = type === 'success' 
-    ? 'background: #10b981;' 
-    : type === 'warning' 
-      ? 'background: #f59e0b;' 
-      : type === 'danger' 
-        ? 'background: #ef4444;' 
+  const bgStyle = type === 'success'
+    ? 'background: #10b981;'
+    : type === 'warning'
+      ? 'background: #f59e0b;'
+      : type === 'danger'
+        ? 'background: #ef4444;'
         : 'background: #ea580c;';
 
   const icon = type === 'success' ? 'fa-check-circle' : type === 'warning' ? 'fa-exclamation-triangle' : type === 'danger' ? 'fa-times-circle' : 'fa-info-circle';

@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand (Matching Login Page) -->
-    <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard.index') }}">
+    <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
         <div class="login-brand-icon">
             <i class="fas fa-volleyball-ball"></i>
         </div>
@@ -14,7 +14,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item {{ request()->routeIs('admin.dashboard*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.dashboard.index') }}">
+        <a class="nav-link" href="{{ route('admin.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
