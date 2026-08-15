@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('admin_profiles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained('users')->cascadeOnDelete();
-            $table->string('phone', 20)->unique();
+            $table->string('phone', 20);
             $table->string('image', 255);
             $table->enum('status', ['active', 'inactive', 'banned'])->default('active');
             $table->bigInteger('national_id');
