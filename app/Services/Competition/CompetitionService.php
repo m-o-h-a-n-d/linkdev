@@ -66,4 +66,9 @@ class CompetitionService
 
         return $this->competitionRepository->delete($competition);
     }
+
+    public function allWithRelations(array $relations): Collection
+    {
+        return $this->competitionRepository->allWithRelations($relations);
+    }
 }
