@@ -7,12 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Create Admin Account | Handball System</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="{{ asset('backend/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('backend/css/sb-admin-2.min.css') }}" rel="stylesheet">
 
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
             font-family: 'Inter', sans-serif;
@@ -195,12 +197,16 @@
         <!-- LEFT SIDE: VECTOR ILLUSTRATION -->
         <div class="login-illustration-side">
             <div class="illustration-wrapper">
-                <svg class="illustration-svg-box" viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="20" y="20" width="560" height="460" rx="24" fill="#0E1626" stroke="#1E293B" stroke-width="2"/>
-                    <circle cx="300" cy="200" r="80" fill="#EA580C" opacity="0.2"/>
-                    <path d="M300 130 C340 130, 370 160, 370 200 C370 240, 340 270, 300 270 C260 270, 230 240, 230 200 C230 160, 260 130, 300 130 Z" fill="#EA580C" opacity="0.3"/>
-                    <circle cx="300" cy="180" r="30" fill="#FFFFFF"/>
-                    <path d="M220 340 C220 290, 260 270, 300 270 C340 270, 380 290, 380 340" fill="#EA580C"/>
+                <svg class="illustration-svg-box" viewBox="0 0 600 500" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="20" width="560" height="460" rx="24" fill="#0E1626" stroke="#1E293B"
+                        stroke-width="2" />
+                    <circle cx="300" cy="200" r="80" fill="#EA580C" opacity="0.2" />
+                    <path
+                        d="M300 130 C340 130, 370 160, 370 200 C370 240, 340 270, 300 270 C260 270, 230 240, 230 200 C230 160, 260 130, 300 130 Z"
+                        fill="#EA580C" opacity="0.3" />
+                    <circle cx="300" cy="180" r="30" fill="#FFFFFF" />
+                    <path d="M220 340 C220 290, 260 270, 300 270 C340 270, 380 290, 380 340" fill="#EA580C" />
                 </svg>
             </div>
         </div>
@@ -219,7 +225,7 @@
                 <h2 class="login-title">Create Admin Account</h2>
                 <p class="login-subtitle">Register a new administrator account to manage handball competitions.</p>
 
-                <form action="{{ route('admin.dashboard.index') }}" method="GET">
+                <form action="{{ route('admin.dashboard') }}" method="GET">
                     <div class="row">
                         <div class="col-6">
                             <div class="input-group-custom">
@@ -257,4 +263,5 @@
     <script src="{{ asset('backend/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('backend/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 </body>
+
 </html>

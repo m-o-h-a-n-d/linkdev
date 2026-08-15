@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
     <!-- Sidebar - Brand (Matching Login Page) -->
-    <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard.index') }}">
+    <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
         <div class="login-brand-icon">
             <i class="fas fa-volleyball-ball"></i>
         </div>
@@ -14,7 +14,7 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item {{ request()->routeIs('admin.dashboard*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('admin.dashboard.index') }}">
+        <a class="nav-link" href="{{ route('admin.dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
@@ -42,7 +42,8 @@
         </a>
     </li>
 
-    <li class="nav-item {{ request()->routeIs('admin.matches.index') || request()->routeIs('admin.matches.create') || request()->routeIs('admin.matches.edit') || request()->routeIs('admin.matches.show') ? 'active' : '' }}">
+    <li
+        class="nav-item {{ request()->routeIs('admin.matches.index') || request()->routeIs('admin.matches.create') || request()->routeIs('admin.matches.edit') || request()->routeIs('admin.matches.show') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.matches.index') }}">
             <i class="fas fa-fw fa-running"></i>
             <span>Matches</span>
@@ -93,6 +94,13 @@
     <div class="sidebar-heading">
         USERS & SYSTEM
     </div>
+
+    <li class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.users.index') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Users</span>
+        </a>
+    </li>
 
     <li class="nav-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.roles.index') }}">

@@ -304,7 +304,7 @@ return [
         ],
 
         'ignore' => [
-            'TRUSS-INT-007' => ['competitions'],
+            // 'TRUSS-IDX-001' => ['audit_log.actor_id'],
         ],
 
         'fail_on' => env('TRUSS_DOCTOR_FAIL_ON', 'error'),
