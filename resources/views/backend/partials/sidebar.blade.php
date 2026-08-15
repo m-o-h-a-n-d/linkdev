@@ -42,7 +42,8 @@
         </a>
     </li>
 
-    <li class="nav-item {{ request()->routeIs('admin.matches.index') || request()->routeIs('admin.matches.create') || request()->routeIs('admin.matches.edit') || request()->routeIs('admin.matches.show') ? 'active' : '' }}">
+    <li
+        class="nav-item {{ request()->routeIs('admin.matches.index') || request()->routeIs('admin.matches.create') || request()->routeIs('admin.matches.edit') || request()->routeIs('admin.matches.show') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.matches.index') }}">
             <i class="fas fa-fw fa-running"></i>
             <span>Matches</span>
@@ -93,6 +94,13 @@
     <div class="sidebar-heading">
         USERS & SYSTEM
     </div>
+
+    <li class="nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('admin.users.index') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Users</span>
+        </a>
+    </li>
 
     <li class="nav-item {{ request()->routeIs('admin.roles*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin.roles.index') }}">
