@@ -106,12 +106,9 @@
             </div>
 
             <div class="form-group mb-4">
-                <label class="font-weight-bold text-gray-700">Update Team Logo / Crest</label>
-                @if($team->logo && $team->logo !== 'defaults/team-crest.png')
-                    <div class="mb-2">
-                        <img src="{{ asset('storage/' . $team->logo) }}" alt="Current Logo" style="height: 50px; object-fit: contain;" class="rounded border p-1">
-                    </div>
-                @endif
+                <div class="mb-2">
+                    <img src="{{ $team->logo_url }}" alt="Current Logo" style="height: 50px; object-fit: contain;" class="rounded border p-1" onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                </div>
                 <input type="file" name="logo" class="form-control-file @error('logo') is-invalid @enderror" accept="image/*">
                 @error('logo')
                     <div class="invalid-feedback d-block">{{ $message }}</div>

@@ -61,7 +61,7 @@
 
     <!-- ASSIGNED PERMISSIONS GRID -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-header bg-white py-3">
+        <div class="card-header py-3" style="border-bottom: 1px solid #1e293b;">
             <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-check-square mr-2"></i>Assigned Module
                 Permissions Matrix</h6>
         </div>
@@ -70,7 +70,7 @@
 
                 <!-- Competitions -->
                 <div class="col-md-6 mb-4">
-                    <div class="p-3 bg-light rounded-lg border h-100">
+                    <div class="p-3 rounded-lg border h-100" style="background-color: #0b1328 !important; border-color: #1e293b !important;">
                         <h6 class="font-weight-bold text-primary mb-3"><i class="fas fa-trophy mr-2"></i>Competitions Module
                         </h6>
                         <ul class="list-unstyled mb-0 small">
@@ -87,7 +87,7 @@
 
                 <!-- Matches -->
                 <div class="col-md-6 mb-4">
-                    <div class="p-3 bg-light rounded-lg border h-100">
+                    <div class="p-3 rounded-lg border h-100" style="background-color: #0b1328 !important; border-color: #1e293b !important;">
                         <h6 class="font-weight-bold text-info mb-3"><i class="fas fa-running mr-2"></i>Matches & Live Center
                         </h6>
                         <ul class="list-unstyled mb-0 small">

@@ -161,15 +161,17 @@ html.sidebar-init-expanded body.preload-sidebar .sidebar {
 
 /* === Brand Header === */
 .sidebar .sidebar-brand {
-  height: 72px;
-  padding: 14px 16px !important;
+  height: 72px !important;
+  padding: 16px 20px !important;
+  display: flex !important;
+  align-items: center !important;
   justify-content: flex-start !important;
   border-bottom: none !important;
   text-decoration: none !important;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  transition: padding 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  white-space: nowrap !important;
+  position: relative !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
 }
 
 .sidebar .sidebar-brand::after {
@@ -180,40 +182,48 @@ html.sidebar-init-expanded body.preload-sidebar .sidebar {
   right: 16px;
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(234, 88, 12, 0.3) 50%, transparent 100%);
-  transition: left 0.35s ease, right 0.35s ease;
 }
 
 .login-brand-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--login-gradient);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-size: 17px;
-  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.15);
-  flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  background: var(--login-gradient, linear-gradient(135deg, #ea580c 0%, #c2410c 100%)) !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4) !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
 }
 
 .sidebar-brand:hover .login-brand-icon {
-  transform: scale(1.08) rotate(5deg);
-  box-shadow: 0 8px 24px rgba(234, 88, 12, 0.55);
+  transform: scale(1.06) rotate(5deg) !important;
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.6) !important;
 }
 
 .login-brand-text {
-  font-size: 18px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-  display: flex;
-  align-items: center;
-  margin-left: 14px;
-  white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.2s ease 0.1s, margin-left 0.35s ease;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: 0.8px !important;
+  text-transform: uppercase !important;
+  margin-left: 12px !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+}
+
+.sidebar.toggled .sidebar-brand {
+  justify-content: center !important;
+  padding: 16px 0 !important;
+}
+
+.sidebar.toggled .login-brand-text {
+  display: none !important;
 }
 
 /* === Nav Items === */
@@ -1161,8 +1171,39 @@ footer.sticky-footer .copyright,
 
 .page-item.disabled .page-link {
   background-color: #0e1626 !important;
-  border-color: #1e293b !important;
+  border: 1px solid #1e293b !important;
   color: #475569 !important;
   opacity: 0.6;
 }
+
+/* ═══════════════════════════════════════
+   FIXED / STICKY SIDEBAR NAVIGATION
+   ═══════════════════════════════════════ */
+#accordionSidebar {
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 1020 !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+#accordionSidebar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ═══════════════════════════════════════
+   GLOBAL DARK CARD FOOTER
+   ═══════════════════════════════════════ */
+.card-footer {
+  background-color: var(--dark-card, #0e1626) !important;
+  border-top: 1px solid var(--dark-border, #1e293b) !important;
+}
+
+
 

@@ -22,5 +22,7 @@ interface UserRepositoryInterface
 
     public function delete(User $user): bool;
 
+    public function forceDelete(User $user): bool;
+
     public function findByEmail(string $email): ?User;
 }

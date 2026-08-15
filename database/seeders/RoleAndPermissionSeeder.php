@@ -4,62 +4,82 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class RoleAndPermissionSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
+        // 1. Reset cached roles and permissions
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        // 1. Super Admin (Full Control)
-        $permissions = collect(config('permissions.modules'))
+        // 2. Collect and create all permissions defined in config/permissions.php
+        $allPermissions = collect(config('permissions.modules'))
             ->flatMap(fn (array $module) => $module['permissions'] ?? [])
             ->unique()
             ->values();
 
-        foreach ($permissions as $permissionName) {
-            \Spatie\Permission\Models\Permission::firstOrCreate([
+        foreach ($allPermissions as $permissionName) {
+            Permission::firstOrCreate([
                 'name' => $permissionName,
                 'guard_name' => 'admin',
             ]);
         }
 
-        $superAdmin = User::where('email', 'admin@example.test')->first();
-        if (! $superAdmin) {
-            User::factory()->asSuperAdmin()->create();
+        // 3. Protected Role (ID 1): Super Admin (Full Access to all modules)
+        $superAdminRole = Role::firstOrCreate([
+            'name' => 'super-admin',
+            'guard_name' => 'admin',
+        ]);
+        $superAdminRole->syncPermissions($allPermissions->all());
+
+        $superAdminUser = User::where('email', 'admin@example.test')->first();
+        if ($superAdminUser) {
+            $superAdminUser->assignRole($superAdminRole);
         } else {
-            $role = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'admin']);
-            $role->syncPermissions($permissions->all());
-            $superAdmin->assignRole($role);
+            User::factory()->asSuperAdmin()->create();
         }
 
-        // 2. Competition & Tournament Manager
+        // 4. Default Role (ID 2): Default Admin Role
+        // Protected from deletion, customizable, default for any user promoted to admin
+        $defaultAdminRole = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'admin',
+        ]);
+        $defaultAdminRole->syncPermissions(['dashboard.access']);
+
+        // 5. Functional Specialized Roles
+        // Competition & Tournament Manager
         if (! User::where('email', 'competition.manager@example.test')->exists()) {
             User::factory()->asCompetitionManager()->create();
         }
 
-        // 3. Match Commissioner / Referee
+        // Match Commissioner / Referee
         if (! User::where('email', 'match.referee@example.test')->exists()) {
             User::factory()->asMatchCommissioner()->create();
         }
 
-        // 4. Teams Officer
+        // Teams Officer
         if (! User::where('email', 'teams.officer@example.test')->exists()) {
             User::factory()->asTeamsOfficer()->create();
         }
 
-        // 5. Statistics & Standings Analyst
+        // Statistics & Standings Analyst
         if (! User::where('email', 'analyst@example.test')->exists()) {
             User::factory()->asStatisticsAnalyst()->create();
         }
 
-        // 6. System Auditor
+        // System Auditor
         if (! User::where('email', 'auditor@example.test')->exists()) {
             User::factory()->asSystemAuditor()->create();
         }
 
+        // 6. Reset cached roles and permissions
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

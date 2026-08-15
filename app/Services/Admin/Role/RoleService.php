@@ -37,7 +37,12 @@ class RoleService
 
     public function isProtectedRole(Role $role): bool
     {
-        return in_array($role->name, $this->getProtectedRoleNames(), true);
+        return in_array($role->name, $this->getProtectedRoleNames(), true) || $role->id === 1;
+    }
+
+    public function isDeletableRole(Role $role): bool
+    {
+        return $role->id !== 1 && $role->id !== 2 && ! in_array($role->name, [self::SUPER_ADMIN_ROLE, 'admin'], true);
     }
 
     private function ensureRoleNameIsAllowed(string $name): void
@@ -107,7 +112,12 @@ class RoleService
     {
         $role = $this->roleRepository->findById($id);
 
-        $this->ensureRoleIsMutable($role);
+        if (! $this->isDeletableRole($role)) {
+            throw ValidationException::withMessages([
+                'name' => 'This role is protected and cannot be deleted.',
+            ]);
+        }
+
         $roleName = $role->name;
         $roleId = $role->id;
 

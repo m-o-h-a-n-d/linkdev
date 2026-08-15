@@ -61,12 +61,8 @@
                     <tr>
                         <td class="py-3">
                             <div class="d-flex align-items-center">
-                                <div class="team-crest-wrapper mr-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(234, 88, 12, 0.15); border: 1px solid rgba(234, 88, 12, 0.3);">
-                                    @if($team->logo && $team->logo !== 'defaults/team-crest.png')
-                                        <img src="{{ asset('storage/' . $team->logo) }}" alt="{{ $team->name }}" style="width: 32px; height: 32px; object-fit: contain;">
-                                    @else
-                                        <span class="font-weight-bold text-primary">{{ strtoupper(substr($team->short_name, 0, 3)) }}</span>
-                                    @endif
+                                <div class="team-crest-wrapper mr-3 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(234, 88, 12, 0.1); border: 1px solid rgba(234, 88, 12, 0.25); overflow: hidden; padding: 3px;">
+                                    <img src="{{ $team->logo_url }}" alt="{{ $team->name }}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                                 </div>
                                 <div>
                                     <a href="{{ route('admin.teams.show', $team->id) }}" class="font-weight-bold text-white h6 mb-0">{{ $team->name }}</a>

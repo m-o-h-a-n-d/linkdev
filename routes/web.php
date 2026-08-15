@@ -179,8 +179,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // 8. Users Directory
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
-            Route::patch('/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('toggle-admin');
-            Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+            Route::patch('/{id}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('toggle-admin');
+            Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         });
 
         // Dynamic Roles & Permissions Management

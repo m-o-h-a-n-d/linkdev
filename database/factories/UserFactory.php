@@ -271,4 +271,22 @@ class UserFactory extends Factory
             'statistics.view',
         ]);
     }
+
+    /**
+     * Functional State: Default Admin Role (ID 2 with dashboard.access)
+     */
+    public function asAdmin(array $userAttributes = [], array $profileAttributes = []): static
+    {
+        return $this->state(array_merge([
+            'name' => 'Default Admin',
+            'email' => 'default.admin@example.test',
+            'password' => Hash::make('123456789'),
+        ], $userAttributes))
+        ->withAdminProfile(array_merge([
+            'phone' => fake()->unique()->numerify('01#########'),
+            'address' => 'Cairo, Egypt',
+            'gender' => 'Male',
+        ], $profileAttributes))
+        ->withRole('admin', ['dashboard.access']);
+    }
 }

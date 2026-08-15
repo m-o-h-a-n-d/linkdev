@@ -72,13 +72,8 @@
                     @forelse($competition->teams ?? [] as $team)
                         <div class="team-card">
                             <div class="team-card-header">
-                                @if (!empty($team->logo))
-                                    <img src="{{ asset($team->logo) }}" alt="{{ $team->name }}"
-                                        style="width: 52px; height: 52px; object-fit: contain; border-radius: 8px;">
-                                @else
-                                    <div class="team-logo">{{ strtoupper(substr($team->short_name ?? $team->name, 0, 3)) }}
-                                    </div>
-                                @endif
+                                <img src="{{ $team->logo }}" alt="{{ $team->name }}" referrerpolicy="no-referrer"
+                                    style="width: 52px; height: 52px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 4px;">
                                 <div>
                                     <div class="team-name">{{ $team->name }}</div>
                                     <div class="team-location">{{ $team->city ?? 'Cairo' }} &middot;

@@ -8,11 +8,14 @@ use App\Data\User\UpdateUserData;
 use App\Models\User;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
 use App\Services\Admin\AdminServices;
+use App\Utility\ActivityLogger;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -54,14 +57,80 @@ class UserService
         return $this->userRepository->update($user, $data);
     }
 
+    public function toggleAdminRole(int $id): bool
+    {
+        $user = $this->findOrFail($id);
+        $defaultAdminRole = Role::find(2)
+            ?? Role::where('name', 'admin')->where('guard_name', 'admin')->first()
+            ?? Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'admin']);
+
+        return DB::transaction(function () use ($user, $defaultAdminRole) {
+            $hasAdminRole = $user->roles()->where('guard_name', 'admin')->exists() || $user->admin()->exists();
+
+            if ($hasAdminRole) {
+                $user->roles()->detach();
+                $this->adminServices->deleteAdminProfile($user);
+
+                ActivityLogger::log(
+                    action: 'STATUS_CHANGE',
+                    entityType: 'User',
+                    entityId: $user->id,
+                    description: "Removed admin role privileges from user '{$user->name}' ({$user->email})."
+                );
+
+                return false;
+            }
+
+            $user->assignRole($defaultAdminRole);
+
+            $user->admin()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'phone' => $user->admin?->phone ?? '0000000000',
+                    'national_id' => $user->admin?->national_id ?? 0,
+                    'address' => $user->admin?->address ?? 'Not provided',
+                    'gender' => $user->admin?->gender ?? 'Male',
+                    'status' => $user->admin?->status ?? 'active',
+                    'image' => $user->admin?->image ?? 'defaults/avatar.png',
+                ]
+            );
+
+            ActivityLogger::log(
+                action: 'STATUS_CHANGE',
+                entityType: 'User',
+                entityId: $user->id,
+                description: "Assigned default admin role '{$defaultAdminRole->name}' to user '{$user->name}' ({$user->email})."
+            );
+
+            return true;
+        });
+    }
+
     public function destroy(int $id): bool
     {
         $user = $this->findOrFail($id);
+        $userName = $user->name;
+        $userEmail = $user->email;
+        $userId = $user->id;
 
-        // delete admin profile if exists
-        $this->adminServices->deleteAdminProfile($user);
+        return DB::transaction(function () use ($user, $userName, $userEmail, $userId) {
+            $user->roles()->detach();
 
-        return $this->userRepository->delete($user);
+            $this->adminServices->deleteAdminProfile($user);
+
+            $deleted = $this->userRepository->forceDelete($user);
+
+            if ($deleted) {
+                ActivityLogger::log(
+                    action: 'DELETED',
+                    entityType: 'User',
+                    entityId: $userId,
+                    description: "Permanently deleted user account '{$userName}' ({$userEmail})."
+                );
+            }
+
+            return $deleted;
+        });
     }
 
     public function login(LoginData $data, string $guard = 'web', bool $remember = false): bool

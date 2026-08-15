@@ -5,15 +5,15 @@
 @push('styles')
     <style>
         .permission-module-box {
-            background-color: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
+            background-color: #0b1328 !important;
+            border: 1px solid #1e293b !important;
             border-radius: 14px !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
 
         .permission-card-item {
-            background-color: #ffffff !important;
-            border: 1px solid #cbd5e1 !important;
+            background-color: #111c38 !important;
+            border: 1px solid #1e293b !important;
             border-radius: 10px !important;
             padding: 10px 14px !important;
             transition: all 0.2s ease-in-out;
@@ -22,19 +22,20 @@
 
         .permission-card-item:hover {
             border-color: #f97316 !important;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
-            transform: translateY(-1px);
+            background-color: #18264c !important;
+            box-shadow: 0 4px 16px rgba(249, 115, 22, 0.2);
+            transform: translateY(-2px);
         }
 
         .permission-label-text {
-            color: #0f172a !important;
+            color: #ffffff !important;
             font-weight: 700 !important;
             font-size: 13px !important;
             cursor: pointer !important;
         }
 
         .permission-code-text {
-            color: #64748b !important;
+            color: #94a3b8 !important;
             font-weight: 500 !important;
             font-size: 11px !important;
             display: block !important;
@@ -42,13 +43,13 @@
         }
 
         .module-header-title {
-            color: #ea580c !important;
+            color: #f97316 !important;
             font-weight: 700 !important;
             font-size: 16px !important;
         }
 
         .select-all-label {
-            color: #334155 !important;
+            color: #cbd5e1 !important;
             font-weight: 600 !important;
             font-size: 12px !important;
             cursor: pointer !important;
@@ -110,8 +111,8 @@
         </div>
 
         <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center"
-                style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center"
+                style="border-top-left-radius: 16px; border-top-right-radius: 16px; border-bottom: 1px solid #1e293b;">
                 <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-key mr-2"></i>Assign Module Permissions</h6>
                 <div>
                     <button type="button" class="btn btn-sm btn-outline-primary rounded-pill font-weight-bold px-3 mr-2"
@@ -129,7 +130,7 @@
                 @foreach ($modules as $moduleKey => $moduleData)
                     <div class="permission-module-box mb-4 p-3">
                         <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom"
-                            style="border-color: #cbd5e1 !important;">
+                            style="border-color: #1e293b !important;">
                             <div class="module-header-title">
                                 <i
                                     class="fas fa-shield-alt mr-2 text-warning"></i>{{ $moduleData['label'] ?? ucfirst($moduleKey) }}
@@ -142,7 +143,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            @foreach ($moduleData['permissions'] ?? [] as $permKey => $permissionName)
+                            @foreach ($moduleData['permissions'] ?? [] as $permissionName)
                                 <div class="col-md-3 mb-3">
                                     <div class="permission-card-item">
                                         <div class="custom-control custom-checkbox">
@@ -152,7 +153,7 @@
                                                 {{ in_array($permissionName, $rolePermissions) ? 'checked' : '' }}>
                                             <label class="custom-control-label permission-label-text pl-1"
                                                 for="perm_{{ Str::slug($permissionName) }}">
-                                                {{ ucfirst(str_replace('_', ' ', $permKey)) }}
+                                                {{ ucwords(str_replace(['-', '_'], ' ', Str::afterLast($permissionName, '.'))) }}
                                                 <span class="permission-code-text">({{ $permissionName }})</span>
                                             </label>
                                         </div>
@@ -165,8 +166,8 @@
 
             </div>
 
-            <div class="card-footer bg-white py-3 border-top d-flex justify-content-end"
-                style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+            <div class="card-footer py-3 border-top d-flex justify-content-end"
+                style="background-color: #0e1626 !important; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; border-color: #1e293b !important;">
                 <a href="{{ route('admin.roles.index') }}"
                     class="btn btn-light rounded-pill font-weight-bold px-4 mr-2">Cancel</a>
                 <button type="submit" class="btn btn-primary rounded-pill font-weight-bold px-4">

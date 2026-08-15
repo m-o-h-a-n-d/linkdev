@@ -124,13 +124,7 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            @if($team->logo)
-                                                <img src="{{ asset('storage/' . $team->logo) }}" alt="{{ $team->name }}" class="rounded-circle mr-2" style="width: 32px; height: 32px; object-fit: cover;" onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
-                                            @else
-                                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-2" style="width: 32px; height: 32px; font-weight: bold; font-size: 12px;">
-                                                    {{ strtoupper(substr($team->name, 0, 2)) }}
-                                                </div>
-                                            @endif
+                                            <img src="{{ $team->logo_url }}" alt="{{ $team->name }}" referrerpolicy="no-referrer" class="rounded-circle mr-2" style="width: 32px; height: 32px; object-fit: contain; background: #ffffff; padding: 2px;" onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                                             <strong class="text-gray-800">{{ $team->name }}</strong>
                                         </div>
                                     </td>

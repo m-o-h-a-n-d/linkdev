@@ -3,14 +3,14 @@
 
     <!-- Sidebar - Brand (Matching Login Page) -->
     <a class="sidebar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
-        <div class="login-brand-icon d-flex align-items-center justify-content-center" style="overflow: hidden; padding: 2px;">
+        <div class="login-brand-icon">
             @if(isset($siteSettings) && $siteSettings->icon)
-                <img src="{{ $siteSettings->icon_url }}" alt="Logo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                <img src="{{ $siteSettings->icon_url }}" alt="Logo" style="width: 24px; height: 24px; object-fit: contain;">
             @else
                 <i class="fas fa-volleyball-ball"></i>
             @endif
         </div>
-        <div class="login-brand-text">Admina</div>
+        <div class="login-brand-text">ADMINA</div>
     </a>
 
     <!-- Divider -->
@@ -163,6 +163,20 @@
     @endcan
     @endcanany
 
+    <!-- Divider & Heading: WEBSITE PORTAL -->
+    <hr class="sidebar-divider">
+
+    <div class="sidebar-heading">
+        LIVE PORTAL
+    </div>
+
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('home') }}" target="_blank">
+            <i class="fas fa-fw fa-globe text-primary"></i>
+            <span>Front Website</span>
+            <i class="fas fa-external-link-alt ml-auto small text-muted" style="font-size: 11px;"></i>
+        </a>
+    </li>
 
 </ul>
 <!-- End of Sidebar -->

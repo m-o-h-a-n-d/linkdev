@@ -43,7 +43,9 @@
                                 </td>
                                 <td class="font-weight-medium text-gray-800">{{ $user->email }}</td>
                                 <td>
-                                    @if ($user->hasRole('super-admin'))
+                                    @if ($user->roles->where('guard_name', 'admin')->isNotEmpty())
+                                        <span class="badge badge-danger">{{ ucfirst($user->roles->where('guard_name', 'admin')->first()->name) }}</span>
+                                    @elseif ($user->admin)
                                         <span class="badge badge-danger">Admin</span>
                                     @else
                                         <span class="badge badge-secondary">User</span>
@@ -63,15 +65,18 @@
                                 <td class="text-right">
                                     <div class="d-flex justify-content-end align-items-center" style="gap: 8px;">
                                         @can('users.edit')
+                                        @php
+                                            $hasAdmin = $user->roles->where('guard_name', 'admin')->isNotEmpty() || (bool) $user->admin;
+                                        @endphp
                                         <form action="{{ route('admin.users.toggle-admin', $user->id) }}" method="POST"
                                             class="d-inline">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit"
-                                                class="btn btn-sm {{ $user->hasRole('super-admin') ? 'btn-outline-danger' : 'btn-success' }}">
+                                                class="btn btn-sm {{ $hasAdmin ? 'btn-outline-danger' : 'btn-success' }}">
                                                 <i
-                                                    class="fas {{ $user->hasRole('super-admin') ? 'fa-user-minus' : 'fa-user-plus' }} mr-1"></i>
-                                                {{ $user->hasRole('super-admin') ? 'Remove Admin' : 'Make Admin' }}
+                                                    class="fas {{ $hasAdmin ? 'fa-user-minus' : 'fa-user-plus' }} mr-1"></i>
+                                                {{ $hasAdmin ? 'Remove Admin' : 'Make Admin' }}
                                             </button>
                                         </form>
                                         @endcan

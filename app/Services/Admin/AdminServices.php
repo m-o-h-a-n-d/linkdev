@@ -12,6 +12,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
+use Spatie\Permission\Models\Role;
 
 class AdminServices
 {
@@ -79,17 +80,19 @@ class AdminServices
             $imagePath
         );
 
-        if (! empty($data->role)) {
-            $user->syncRoles([
-                $data->role,
-            ]);
-        }
+        $roleName = ! empty($data->role)
+            ? $data->role
+            : (Role::find(2)?->name ?? Role::where('name', 'admin')->where('guard_name', 'admin')->first()?->name ?? 'admin');
+
+        $user->syncRoles([
+            $roleName,
+        ]);
 
         ActivityLogger::log(
             action: 'CREATED',
             entityType: 'Admin',
             entityId: $user->id,
-            description: "Created admin user '{$user->name}' ({$user->email})" . (! empty($data->role) ? " with role '{$data->role}'" : '')
+            description: "Created admin user '{$user->name}' ({$user->email}) with role '{$roleName}'"
         );
 
         return $user->load([
@@ -175,7 +178,7 @@ class AdminServices
      */
     public function deleteAdminProfile(User $user): void
     {
-        $adminProfile = $user->admin;
+        $adminProfile = $user->admin()->withTrashed()->first() ?? $user->admin;
 
         if (! $adminProfile) {
             return;
@@ -187,7 +190,8 @@ class AdminServices
 
         if (
             $imagePath &&
-            $imagePath !== 'defaults/avatar.png'
+            ! str_starts_with($imagePath, 'defaults/') &&
+            ! str_starts_with($imagePath, 'http')
         ) {
             $this->imageManager->delete(
                 $imagePath,

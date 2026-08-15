@@ -55,18 +55,8 @@
 
                     <!-- Home Team -->
                     <div style="flex: 1;">
-                        @if (!empty($match->homeTeam->logo))
-                            <img src="{{ asset($match->homeTeam->logo) }}" alt="{{ $match->homeTeam->name }}"
-                                onerror="this.style.display='none'; document.getElementById('home-fallback-logo-{{ $match->id }}').style.display='flex';"
-                                style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block;">
-                            <div id="home-fallback-logo-{{ $match->id }}" style="display: none; width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
-                                {{ strtoupper(substr($match->homeTeam->short_name ?? $match->homeTeam->name ?? 'HOM', 0, 3)) }}
-                            </div>
-                        @else
-                            <div style="width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
-                                {{ strtoupper(substr($match->homeTeam->short_name ?? $match->homeTeam->name ?? 'HOM', 0, 3)) }}
-                            </div>
-                        @endif
+                        <img src="{{ $match->homeTeam?->logo }}" alt="{{ $match->homeTeam->name ?? 'Home' }}" referrerpolicy="no-referrer"
+                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;">
                         <h2 style="font-size: 1.3rem; color: #fff; margin: 0 0 6px 0;">
                             {{ $match->homeTeam->name ?? 'Home Team' }}
                         </h2>
@@ -94,18 +84,8 @@
 
                     <!-- Away Team -->
                     <div style="flex: 1;">
-                        @if (!empty($match->awayTeam->logo))
-                            <img src="{{ asset($match->awayTeam->logo) }}" alt="{{ $match->awayTeam->name }}"
-                                onerror="this.style.display='none'; document.getElementById('away-fallback-logo-{{ $match->id }}').style.display='flex';"
-                                style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block;">
-                            <div id="away-fallback-logo-{{ $match->id }}" style="display: none; width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
-                                {{ strtoupper(substr($match->awayTeam->short_name ?? $match->awayTeam->name ?? 'AWY', 0, 3)) }}
-                            </div>
-                        @else
-                            <div style="width: 72px; height: 72px; background: #070c14; border: 1px solid #1e293b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #ea580c; font-size: 1.2rem; margin: 0 auto 12px auto;">
-                                {{ strtoupper(substr($match->awayTeam->short_name ?? $match->awayTeam->name ?? 'AWY', 0, 3)) }}
-                            </div>
-                        @endif
+                        <img src="{{ $match->awayTeam?->logo }}" alt="{{ $match->awayTeam->name ?? 'Away' }}" referrerpolicy="no-referrer"
+                            style="width: 72px; height: 72px; object-fit: contain; margin: 0 auto 12px auto; display: block; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 12px;">
                         <h2 style="font-size: 1.3rem; color: #fff; margin: 0 0 6px 0;">
                             {{ $match->awayTeam->name ?? 'Away Team' }}
                         </h2>

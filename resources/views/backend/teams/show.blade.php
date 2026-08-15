@@ -18,12 +18,8 @@
     <div class="card-body">
         <div class="d-flex align-items-center justify-content-between flex-wrap">
             <div class="d-flex align-items-center">
-                <div class="team-crest-large bg-light border mr-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-                    @if($team->logo && $team->logo !== 'defaults/team-crest.png')
-                        <img src="{{ asset('storage/' . $team->logo) }}" alt="{{ $team->name }}" style="width: 50px; height: 50px; object-fit: contain;">
-                    @else
-                        <span class="font-weight-bold text-primary h4 mb-0">{{ strtoupper(substr($team->short_name, 0, 3)) }}</span>
-                    @endif
+                <div class="team-crest-large bg-light border mr-3 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; overflow: hidden; padding: 6px;">
+                    <img src="{{ $team->logo_url }}" alt="{{ $team->name }}" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                 </div>
                 <div>
                     <h2 class="h4 font-weight-bold text-gray-800 mb-1">{{ $team->name }}</h2>

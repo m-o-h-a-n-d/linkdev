@@ -6,20 +6,17 @@
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- Topbar Search -->
-    <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search teams, matches, competitions..." data-handball-search="mainMatchesTable" aria-label="Search">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
-                    <i class="fas fa-search fa-sm"></i>
-                </button>
-            </div>
-        </div>
-    </form>
-
     <!-- Topbar Navbar -->
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto align-items-center">
+
+        <!-- Live Website Button -->
+        <li class="nav-item mx-1 align-self-center mr-2">
+            <a href="{{ route('home') }}" target="_blank" class="btn btn-sm rounded-pill font-weight-bold px-3 d-flex align-items-center" style="background: rgba(234, 88, 12, 0.12); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3);" title="Visit Live Website">
+                <i class="fas fa-globe mr-2"></i>
+                <span class="d-none d-md-inline">Live Website</span>
+                <i class="fas fa-external-link-alt ml-2 small" style="font-size: 10px; opacity: 0.8;"></i>
+            </a>
+        </li>
 
         <!-- Quick Actions Dropdown -->
         @canany(['competitions.create', 'teams.create', 'matches.create', 'matches.live-center'])
@@ -253,7 +250,7 @@
 
         @php
             $authUser = auth('admin')->user() ?? auth()->user();
-            $authAvatarUrl = asset('assets/img/avatar-placeholder.png');
+            $authAvatarUrl = asset('backend/img/undraw_profile.svg');
             if (!empty($authUser?->admin?->image) && $authUser->admin->image !== 'defaults/avatar.png') {
                 $authAvatarUrl = filter_var($authUser->admin->image, FILTER_VALIDATE_URL)
                     ? $authUser->admin->image
@@ -263,8 +260,8 @@
         <!-- User Profile -->
         <li class="nav-item dropdown no-arrow">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small font-weight-bold">{{ $authUser?->name ?? 'Admin' }}</span>
-                <img class="img-profile rounded-circle" src="{{ $authAvatarUrl }}" style="width: 32px; height: 32px; object-fit: cover;">
+                <span class="mr-2 d-none d-lg-inline text-gray-400 small font-weight-bold">{{ $authUser?->name ?? 'Admin' }}</span>
+                <img class="img-profile rounded-circle" src="{{ $authAvatarUrl }}" style="width: 32px; height: 32px; object-fit: cover; background: #1e293b; border: 1px solid rgba(234, 88, 12, 0.4);">
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Profile</a>

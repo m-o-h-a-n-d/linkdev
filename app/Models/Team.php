@@ -31,6 +31,31 @@ class Team extends Model
         'status' => TeamStatus::class,
     ];
 
+    protected $appends = [
+        'logo_url',
+    ];
+
+    public function getLogoUrlAttribute(): string
+    {
+        if (empty($this->logo)) {
+            return asset('backend/img/undraw_profile.svg');
+        }
+
+        if (filter_var($this->logo, FILTER_VALIDATE_URL) || str_starts_with($this->logo, 'http://') || str_starts_with($this->logo, 'https://')) {
+            return $this->logo;
+        }
+
+        if (str_starts_with($this->logo, 'defaults/') || str_starts_with($this->logo, 'backend/') || str_starts_with($this->logo, 'assets/')) {
+            return asset($this->logo);
+        }
+
+        if (str_starts_with($this->logo, 'storage/')) {
+            return asset($this->logo);
+        }
+
+        return asset('storage/' . $this->logo);
+    }
+
     public function isPending(): bool
     {
         return $this->status === TeamStatus::PENDING;
