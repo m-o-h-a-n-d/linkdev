@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Utility\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -34,6 +35,13 @@ class UserController extends Controller
                 if ($profile) {
                     $profile->forceDelete();
                 }
+
+                ActivityLogger::log(
+                    action: 'STATUS_CHANGE',
+                    entityType: 'User',
+                    entityId: $user->id,
+                    description: "Removed admin role privileges from user '{$user->name}' ({$user->email})."
+                );
             });
 
             return back()->with('success', 'User removed from admin role successfully.');
@@ -53,6 +61,13 @@ class UserController extends Controller
                     'image' => $user->admin?->image ?? 'defaults/avatar.png',
                 ]
             );
+
+            ActivityLogger::log(
+                action: 'STATUS_CHANGE',
+                entityType: 'User',
+                entityId: $user->id,
+                description: "Promoted user '{$user->name}' ({$user->email}) to super-admin."
+            );
         });
 
         return back()->with('success', 'User assigned to admin role successfully.');
@@ -60,12 +75,23 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
-        DB::transaction(function () use ($user) {
+        $userName = $user->name;
+        $userEmail = $user->email;
+        $userId = $user->id;
+
+        DB::transaction(function () use ($user, $userName, $userEmail, $userId) {
             $user->roles()->detach();
 
             $user->admin()->withTrashed()->forceDelete();
 
             $user->forceDelete();
+
+            ActivityLogger::log(
+                action: 'DELETED',
+                entityType: 'User',
+                entityId: $userId,
+                description: "Permanently deleted user account '{$userName}' ({$userEmail})."
+            );
         });
 
         return back()->with('success', 'User deleted permanently from all related tables.');

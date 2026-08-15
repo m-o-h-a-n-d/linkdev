@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminProfile;
 use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
@@ -194,9 +195,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // 10. Activity Logs
         Route::prefix('activity-logs')->name('activity-logs.')->group(function () {
-            Route::get('/', function () {
-                return view('backend.activity-logs.index');
-            })->name('index');
+            Route::get('/', [ActivityLogController::class, 'index'])->name('index');
+            Route::delete('/clear-all', [ActivityLogController::class, 'destroyAll'])->name('clear-all');
         });
     });
 

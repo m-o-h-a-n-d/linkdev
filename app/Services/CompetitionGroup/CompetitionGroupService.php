@@ -10,6 +10,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+use App\Utility\ActivityLogger;
+
 class CompetitionGroupService
 {
     public function __construct(
@@ -39,21 +41,52 @@ class CompetitionGroupService
 
     public function store(CreateCompetitionGroupData $data): CompetitionGroup
     {
-        return $this->competitionGroupRepository->create($data);
+        $group = $this->competitionGroupRepository->create($data);
+
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'CompetitionGroup',
+            entityId: $group->id,
+            description: "Created group '{$group->name}' in competition #{$group->competition_id}."
+        );
+
+        return $group;
     }
 
     public function update(int $id, UpdateCompetitionGroupData $data): CompetitionGroup
     {
         $group = $this->findOrFail($id);
 
-        return $this->competitionGroupRepository->update($group, $data);
+        $updated = $this->competitionGroupRepository->update($group, $data);
+
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'CompetitionGroup',
+            entityId: $updated->id,
+            description: "Updated group '{$updated->name}'."
+        );
+
+        return $updated;
     }
 
     public function destroy(int $id): bool
     {
         $group = $this->findOrFail($id);
+        $name = $group->name;
+        $groupId = $group->id;
 
-        return $this->competitionGroupRepository->delete($group);
+        $deleted = $this->competitionGroupRepository->delete($group);
+
+        if ($deleted) {
+            ActivityLogger::log(
+                action: 'DELETED',
+                entityType: 'CompetitionGroup',
+                entityId: $groupId,
+                description: "Deleted group '{$name}'."
+            );
+        }
+
+        return $deleted;
     }
 
     public function attachTeam(int $groupId, int $teamId): void
@@ -74,13 +107,28 @@ class CompetitionGroupService
         }
 
         $this->competitionGroupRepository->attachTeam($group, $teamId);
+
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'CompetitionGroup',
+            entityId: $group->id,
+            description: "Assigned team '{$team->name}' to group '{$group->name}'."
+        );
     }
 
     public function detachTeam(int $groupId, int $teamId): void
     {
         $group = $this->findOrFail($groupId);
+        $team = \App\Models\Team::find($teamId);
 
         $this->competitionGroupRepository->detachTeam($group, $teamId);
+
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'CompetitionGroup',
+            entityId: $group->id,
+            description: "Removed team '" . ($team?->name ?? "#{$teamId}") . "' from group '{$group->name}'."
+        );
     }
 
     public function getAvailableTeams(int $groupId): Collection

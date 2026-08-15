@@ -5,6 +5,7 @@ namespace App\Services\Admin\Role;
 use App\Data\Admin\Role\RoleData;
 use App\Services\Admin\AdminServices;
 use App\Repositories\Contracts\Role\RoleRepositoryInterface;
+use App\Utility\ActivityLogger;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -70,6 +71,13 @@ class RoleService
             $this->roleRepository->syncPermissions($role, $data->permissions);
         }
 
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'Role',
+            entityId: $role->id,
+            description: "Created new role '{$role->name}' with " . count($data->permissions) . " permissions."
+        );
+
         return $role;
     }
 
@@ -85,6 +93,13 @@ class RoleService
 
         $this->roleRepository->syncPermissions($role, $data->permissions);
 
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'Role',
+            entityId: $role->id,
+            description: "Updated role '{$role->name}' with " . count($data->permissions) . " assigned permissions."
+        );
+
         return $role;
     }
 
@@ -93,15 +108,28 @@ class RoleService
         $role = $this->roleRepository->findById($id);
 
         $this->ensureRoleIsMutable($role);
+        $roleName = $role->name;
+        $roleId = $role->id;
 
-        return DB::transaction(function () use ($role) {
+        return DB::transaction(function () use ($role, $roleName, $roleId) {
             $users = $role->users()->with('admin')->get();
 
             foreach ($users as $user) {
                 $this->adminServices->deleteAdminProfile($user);
             }
 
-            return $this->roleRepository->delete($role);
+            $deleted = $this->roleRepository->delete($role);
+
+            if ($deleted) {
+                ActivityLogger::log(
+                    action: 'DELETED',
+                    entityType: 'Role',
+                    entityId: $roleId,
+                    description: "Deleted role '{$roleName}' and unassigned associated admin profiles."
+                );
+            }
+
+            return $deleted;
         });
     }
 }

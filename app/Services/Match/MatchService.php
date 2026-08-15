@@ -9,6 +9,7 @@ use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use App\Repositories\Contracts\CompetitionGroup\CompetitionGroupRepositoryInterface;
 use App\Repositories\Contracts\Match\MatchRepositoryInterface;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
+use App\Utility\ActivityLogger;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
@@ -118,6 +119,14 @@ class MatchService
             $this->liveStatusService->sendLiveNotification($match);
         }
 
+        $fresh = $match->load(['homeTeam', 'awayTeam']);
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'GameMatch',
+            entityId: $match->id,
+            description: "Scheduled fixture #{$match->id}: '{$fresh->homeTeam?->name}' vs '{$fresh->awayTeam?->name}'."
+        );
+
         return $match;
     }
 
@@ -135,6 +144,13 @@ class MatchService
         if ($group->competition) {
             $this->standingsService->syncCompetitionDatesAndStatus($group->competition);
         }
+
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'GameMatch',
+            entityId: $group->id,
+            description: "Generated {$createdMatches->count()} fixtures for group '{$group->name}'."
+        );
 
         return $createdMatches;
     }
@@ -190,6 +206,14 @@ class MatchService
             \App\Jobs\Match\BroadcastMatchScoreUpdateJob::dispatch($updatedMatch, 'score_update');
         }
 
+        $fresh = $updatedMatch->load(['homeTeam', 'awayTeam']);
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'GameMatch',
+            entityId: $updatedMatch->id,
+            description: "Updated match #{$updatedMatch->id} ('{$fresh->homeTeam?->name}' vs '{$fresh->awayTeam?->name}') - Status: {$updatedMatch->status} ({$updatedMatch->home_score}-{$updatedMatch->away_score})."
+        );
+
         return $updatedMatch;
     }
 
@@ -199,6 +223,7 @@ class MatchService
         $match = $this->findOrFail($id);
         $group = $match->group;
         $competition = $match->competition;
+        $matchId = $match->id;
 
         $deleted = $this->matchRepository->delete($match);
 
@@ -208,6 +233,15 @@ class MatchService
         if ($competition) {
             $this->standingsService->recalculateTeamStatistics($competition);
             $this->standingsService->syncCompetitionDatesAndStatus($competition);
+        }
+
+        if ($deleted) {
+            ActivityLogger::log(
+                action: 'DELETED',
+                entityType: 'GameMatch',
+                entityId: $matchId,
+                description: "Deleted match #{$matchId}."
+            );
         }
 
         return $deleted;
@@ -303,6 +337,13 @@ class MatchService
 
             $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
             \App\Jobs\Match\BroadcastMatchStatusJob::dispatch($freshMatch);
+
+            ActivityLogger::log(
+                action: 'UPDATED',
+                entityType: 'GameMatch',
+                entityId: $freshMatch->id,
+                description: "Finalized match #{$freshMatch->id}: '{$freshMatch->homeTeam?->name}' {$freshMatch->home_score} - {$freshMatch->away_score} '{$freshMatch->awayTeam?->name}'."
+            );
 
             return $freshMatch;
         }

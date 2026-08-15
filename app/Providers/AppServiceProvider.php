@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Contracts\ActivityLog\ActivityLogRepositoryInterface;
 use App\Repositories\Contracts\Admin\AdminRepositoryInterface;
 use App\Repositories\Contracts\Competition\CompetitionRepositoryInterface;
 use App\Repositories\Contracts\CompetitionGroup\CompetitionGroupRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Repositories\Contracts\Standing\GroupStandingRepositoryInterface;
 use App\Repositories\Contracts\Standing\TeamStatisticRepositoryInterface;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
 use App\Repositories\Contracts\User\UserRepositoryInterface;
+use App\Repositories\Eloquent\ActivityLog\ActivityLogRepository;
 use App\Repositories\Eloquent\Admin\AdminRepository;
 use App\Repositories\Eloquent\Competition\CompetitionRepository;
 use App\Repositories\Eloquent\CompetitionGroup\CompetitionGroupRepository;
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
         $this->app->bind(GroupStandingRepositoryInterface::class, GroupStandingRepository::class);
         $this->app->bind(TeamStatisticRepositoryInterface::class, TeamStatisticRepository::class);
+        $this->app->bind(ActivityLogRepositoryInterface::class, ActivityLogRepository::class);
     }
 
     /**

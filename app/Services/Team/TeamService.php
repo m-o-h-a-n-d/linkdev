@@ -9,6 +9,7 @@ use App\Mail\TeamAcceptedMail;
 use App\Mail\TeamRejectedMail;
 use App\Models\Team;
 use App\Repositories\Contracts\Team\TeamRepositoryInterface;
+use App\Utility\ActivityLogger;
 use App\Utility\Enums\TeamStatus;
 use App\Utility\ImageManager;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -57,7 +58,16 @@ class TeamService
             );
         }
 
-        return $this->teamRepository->create($data, $logoPath);
+        $team = $this->teamRepository->create($data, $logoPath);
+
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'Team',
+            entityId: $team->id,
+            description: "Registered new team '{$team->name}' ({$team->city}, {$team->country})."
+        );
+
+        return $team;
     }
 
     public function update(int $id, UpdateTeamData $data): Team
@@ -79,7 +89,16 @@ class TeamService
             );
         }
 
-        return $this->teamRepository->update($team, $data, $logoPath);
+        $updatedTeam = $this->teamRepository->update($team, $data, $logoPath);
+
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'Team',
+            entityId: $updatedTeam->id,
+            description: "Updated team profile for '{$updatedTeam->name}'."
+        );
+
+        return $updatedTeam;
     }
 
     /**
@@ -97,6 +116,13 @@ class TeamService
         if ($team->email) {
             \App\Jobs\SendTeamAcceptedEmailJob::dispatch($team);
         }
+
+        ActivityLogger::log(
+            action: 'ACCEPTED',
+            entityType: 'Team',
+            entityId: $team->id,
+            description: "Accepted team application for '{$team->name}'."
+        );
 
         return $team;
     }
@@ -118,6 +144,13 @@ class TeamService
             \App\Jobs\SendTeamRejectedEmailJob::dispatch($team, $reason);
         }
 
+        ActivityLogger::log(
+            action: 'REJECTED',
+            entityType: 'Team',
+            entityId: $team->id,
+            description: "Rejected team '{$team->name}'." . ($reason ? " Reason: {$reason}" : '')
+        );
+
         return $team;
     }
 
@@ -135,7 +168,16 @@ class TeamService
         }
 
         $team = $this->findOrFail($id);
-        return $this->teamRepository->updateStatus($team, TeamStatus::PENDING->value);
+        $team = $this->teamRepository->updateStatus($team, TeamStatus::PENDING->value);
+
+        ActivityLogger::log(
+            action: 'STATUS_CHANGE',
+            entityType: 'Team',
+            entityId: $team->id,
+            description: "Changed team '{$team->name}' status to Pending."
+        );
+
+        return $team;
     }
 
     public function destroy(int $id): bool
@@ -143,11 +185,22 @@ class TeamService
         $team = $this->findOrFail($id);
 
         $logoPath = $team->logo;
+        $teamName = $team->name;
+        $teamId = $team->id;
 
         $deleted = $this->teamRepository->delete($team);
 
         if ($deleted && $logoPath && $logoPath !== 'defaults/team-crest.png') {
             $this->imageManager->delete($logoPath, 'public');
+        }
+
+        if ($deleted) {
+            ActivityLogger::log(
+                action: 'DELETED',
+                entityType: 'Team',
+                entityId: $teamId,
+                description: "Deleted team '{$teamName}'."
+            );
         }
 
         return $deleted;

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Competition;
 
+use App\Utility\ActivityLogger;
+
 class CompetitionService
 {
     public function __construct(
@@ -50,21 +52,52 @@ class CompetitionService
 
     public function store(CreateCompetitionData $data): Competition
     {
-        return $this->competitionRepository->create($data);
+        $competition = $this->competitionRepository->create($data);
+
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'Competition',
+            entityId: $competition->id,
+            description: "Created competition '{$competition->name}' ({$competition->season})."
+        );
+
+        return $competition;
     }
 
     public function update(int $id, UpdateCompetitionData $data): Competition
     {
         $competition = $this->findOrFail($id);
 
-        return $this->competitionRepository->update($competition, $data);
+        $updated = $this->competitionRepository->update($competition, $data);
+
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'Competition',
+            entityId: $updated->id,
+            description: "Updated tournament details for '{$updated->name}'."
+        );
+
+        return $updated;
     }
 
     public function destroy(int $id): bool
     {
         $competition = $this->findOrFail($id);
+        $name = $competition->name;
+        $compId = $competition->id;
 
-        return $this->competitionRepository->delete($competition);
+        $deleted = $this->competitionRepository->delete($competition);
+
+        if ($deleted) {
+            ActivityLogger::log(
+                action: 'DELETED',
+                entityType: 'Competition',
+                entityId: $compId,
+                description: "Deleted competition '{$name}'."
+            );
+        }
+
+        return $deleted;
     }
 
     public function allWithRelations(array $relations): Collection

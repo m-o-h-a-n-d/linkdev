@@ -6,6 +6,7 @@ use App\Data\Admin\CreateAdminData;
 use App\Data\Admin\UpdateAdminData;
 use App\Models\User;
 use App\Repositories\Contracts\Admin\AdminRepositoryInterface;
+use App\Utility\ActivityLogger;
 use App\Utility\ImageManager;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -84,6 +85,13 @@ class AdminServices
             ]);
         }
 
+        ActivityLogger::log(
+            action: 'CREATED',
+            entityType: 'Admin',
+            entityId: $user->id,
+            description: "Created admin user '{$user->name}' ({$user->email})" . (! empty($data->role) ? " with role '{$data->role}'" : '')
+        );
+
         return $user->load([
             'admin',
             'roles',
@@ -130,6 +138,13 @@ class AdminServices
             ]);
         }
 
+        ActivityLogger::log(
+            action: 'UPDATED',
+            entityType: 'Admin',
+            entityId: $user->id,
+            description: "Updated admin details for '{$user->name}' ({$user->email})"
+        );
+
         return $user->load([
             'admin',
             'roles',
@@ -144,6 +159,13 @@ class AdminServices
         $user = $this->getAdminById($id);
 
         $this->deleteAdminProfile($user);
+
+        ActivityLogger::log(
+            action: 'DELETED',
+            entityType: 'Admin',
+            entityId: $user->id,
+            description: "Removed admin profile & privileges from '{$user->name}' ({$user->email})"
+        );
 
         return true;
     }

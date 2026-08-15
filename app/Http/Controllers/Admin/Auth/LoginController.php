@@ -6,6 +6,7 @@ use App\Data\User\LoginData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Services\User\UserService;
+use App\Utility\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,8 +37,6 @@ class LoginController extends Controller
 
         $user = Auth::guard('admin')->user();
 
-
-
         if (
             ! $user ||
             ! $user->can('dashboard.access' , 'admin')
@@ -53,6 +52,14 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
+        ActivityLogger::log(
+            action: 'LOGIN',
+            entityType: 'User',
+            entityId: $user->id,
+            description: "Admin '{$user->name}' ({$user->email}) logged into the administrative control panel.",
+            userId: $user->id
+        );
+
         return redirect()->intended(
             route('admin.dashboard')
         );
@@ -60,6 +67,18 @@ class LoginController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        $user = Auth::guard('admin')->user();
+
+        if ($user) {
+            ActivityLogger::log(
+                action: 'LOGOUT',
+                entityType: 'User',
+                entityId: $user->id,
+                description: "Admin '{$user->name}' ({$user->email}) logged out.",
+                userId: $user->id
+            );
+        }
+
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
