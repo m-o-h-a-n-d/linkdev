@@ -22,7 +22,7 @@ class MatchStartedLiveEvent implements ShouldBroadcastNow
         $this->matchData = [
             'id' => $match->id,
             'competition_id' => $match->competition_id,
-            'competition_name' => $match->competition?->name ?? 'Handball Competition',
+            'competition_name' => $match->competition?->name ?? 'Competition',
             'group_name' => $match->group?->name ?? ('Round ' . $match->round_number),
             'round_number' => $match->round_number,
             'home_team_id' => $match->home_team_id,
@@ -34,8 +34,6 @@ class MatchStartedLiveEvent implements ShouldBroadcastNow
             'status' => 'live',
             'started_at' => $match->started_at?->toIso8601String() ?? now()->toIso8601String(),
             'formatted_timer' => $match->formatted_timer,
-            'update_score_url' => route('admin.matches.update-score', $match->id),
-            'show_url' => route('admin.matches.show', $match->id),
         ];
     }
 

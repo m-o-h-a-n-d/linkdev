@@ -111,11 +111,25 @@
                             <td class="font-weight-bold text-gray-800">{{ $match->competition->name ?? 'N/A' }}</td>
                             <td>
                                 @if($match->group)
-                                    <span class="text-muted">{{ $match->group->name }}</span>
+                                    <span class="text-muted font-weight-bold">{{ $match->group->name }}</span>
                                     <small class="d-block text-muted">الجولة {{ $match->round_number }}</small>
                                 @else
-                                    <span class="badge badge-warning text-dark font-weight-bold">
-                                        <i class="fas fa-trophy mr-1"></i> {{ $match->notes ?? 'الأدوار الإقصائية (Knockout)' }}
+                                    @php
+                                        $shortTitle = 'الأدوار الإقصائية';
+                                        if ($match->notes) {
+                                            if (str_contains($match->notes, 'المباراة النهائية')) {
+                                                $shortTitle = 'المباراة النهائية 🏆';
+                                            } elseif (preg_match('/نصف النهائي\s*\d*/u', $match->notes, $m)) {
+                                                $shortTitle = $m[0] . ' 🏆';
+                                            } elseif (preg_match('/ربع النهائي\s*\d*/u', $match->notes, $m)) {
+                                                $shortTitle = $m[0] . ' 🏆';
+                                            } else {
+                                                $shortTitle = \Illuminate\Support\Str::limit($match->notes, 28);
+                                            }
+                                        }
+                                    @endphp
+                                    <span class="badge badge-warning text-dark font-weight-bold px-2 py-1" style="font-size: 0.8rem; white-space: nowrap; cursor: help;" title="{{ $match->notes }}">
+                                        <i class="fas fa-trophy mr-1"></i> {{ $shortTitle }}
                                     </span>
                                 @endif
                             </td>
@@ -194,7 +208,9 @@
                         <select name="competition_id" id="modal_competition_id" class="form-control" required>
                             <option value="">-- Choose Competition --</option>
                             @foreach($competitions as $comp)
-                                <option value="{{ $comp->id }}">{{ $comp->name }} ({{ $comp->season }})</option>
+                                <option value="{{ $comp->id }}">
+                                    {{ $comp->name }}@if($comp->season && !str_contains($comp->name, $comp->season)) ({{ $comp->season }})@endif
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -221,6 +237,41 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Dynamic Group Loader for Fixture Modal
+    var compSelect = document.getElementById('modal_competition_id');
+    var groupSelect = document.getElementById('modal_group_id');
+
+    if (compSelect && groupSelect) {
+        compSelect.addEventListener('change', function () {
+            var compId = this.value;
+            groupSelect.innerHTML = '<option value="">-- Loading Groups... --</option>';
+            groupSelect.disabled = true;
+
+            if (compId) {
+                fetch('/admin/api/competitions/' + compId + '/groups')
+                    .then(function (res) { return res.json(); })
+                    .then(function (data) {
+                        groupSelect.innerHTML = '';
+                        if (data && data.length > 0) {
+                            groupSelect.innerHTML += '<option value="">-- Choose Group --</option>';
+                            data.forEach(function (group) {
+                                groupSelect.innerHTML += '<option value="' + group.id + '">' + group.name + '</option>';
+                            });
+                            groupSelect.disabled = false;
+                        } else {
+                            groupSelect.innerHTML = '<option value="">-- No Groups Available for this Competition --</option>';
+                        }
+                    })
+                    .catch(function () {
+                        groupSelect.innerHTML = '<option value="">-- Error Loading Groups --</option>';
+                    });
+            } else {
+                groupSelect.innerHTML = '<option value="">-- Select Competition First --</option>';
+            }
+        });
+    }
+
+    // Real-Time Match Events
     if (window.Echo && typeof window.Echo.channel === 'function') {
         window.Echo.channel('live-matches')
             .listen('.MatchScoreUpdated', function (data) {

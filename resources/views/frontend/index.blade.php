@@ -42,12 +42,16 @@
                                 </span>
 
                                 <span class="live-bar-group">
-                                    {{ $liveMatch->group?->name ?? 'Group' }}
+                                    {{ $liveMatch->group?->name ?? 'Round ' . $liveMatch->round_number }}
                                 </span>
                             </div>
 
                             <div class="live-bar-teams">
-                                <span>
+                                <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                    <img src="{{ $liveMatch->homeTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $liveMatch->homeTeam?->name }}" 
+                                         style="width: 26px; height: 26px; object-fit: contain; border-radius: 4px; background: rgba(255,255,255,0.05); padding: 2px;"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                                     {{ $liveMatch->homeTeam->name }}
                                 </span>
 
@@ -55,13 +59,17 @@
                                     {{ $liveMatch->home_score }} : {{ $liveMatch->away_score }}
                                 </div>
 
-                                <span>
+                                <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                    <img src="{{ $liveMatch->awayTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $liveMatch->awayTeam?->name }}" 
+                                         style="width: 26px; height: 26px; object-fit: contain; border-radius: 4px; background: rgba(255,255,255,0.05); padding: 2px;"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
                                     {{ $liveMatch->awayTeam->name }}
                                 </span>
                             </div>
 
                             <div class="live-bar-venue">
-                                Venue TBA
+                                {{ $liveMatch->competition?->name ?? 'Championship' }}
                             </div>
 
                         </a>
@@ -103,8 +111,14 @@
                         <p>There are currently no active competitions available in the system.</p>
                     </div>
                 @endforelse
-
             </div>
+        </div>
+    </section>
+
+    <!-- Tournament Bracket Component -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            @include('frontend.partials.bracket')
         </div>
     </section>
 
@@ -112,8 +126,8 @@
     <section class="section">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">NEXT UP</h2>
-                <a href="{{ url('/matches') }}" class="section-link">ALL MATCHES</a>
+                <h2 class="section-title">NEXT UP & RECENT FIXTURES</h2>
+                <a href="{{ url('/matches') }}" class="section-link">ALL MATCHES &rarr;</a>
             </div>
             <div class="matches-container">
                 @forelse($upcomingMatches ?? [] as $match)
@@ -139,7 +153,13 @@
                             </div>
 
                             <div class="match-center">
-                                <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
+                                <div class="team-block home" style="display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex: 1;">
+                                    <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
+                                    <img src="{{ $match->homeTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $match->homeTeam?->name }}" 
+                                         style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.05); padding: 3px;"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                                </div>
 
                                 <div class="score-badge" id="home-match-score-{{ $match->id }}">
                                     @if(in_array($rawMatchStatus, ['live', 'finished']))
@@ -149,7 +169,13 @@
                                     @endif
                                 </div>
 
-                                <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                                <div class="team-block away" style="display: flex; align-items: center; gap: 10px; justify-content: flex-start; flex: 1;">
+                                    <img src="{{ $match->awayTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $match->awayTeam?->name }}" 
+                                         style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.05); padding: 3px;"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                                    <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                                </div>
                             </div>
 
                             <div class="match-badge-wrap">

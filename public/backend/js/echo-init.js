@@ -39,5 +39,23 @@
             disableStats: true,
             enabledTransports: useTLS ? ['wss', 'ws'] : ['ws', 'wss'],
         });
+
+        if (window.Echo.connector && window.Echo.connector.pusher) {
+            window.Echo.connector.pusher.connection.bind('connected', function () {
+                var badge = document.querySelector('.badge-success i.fa-bolt')?.parentElement;
+                if (badge) {
+                    badge.innerHTML = '<i class="fas fa-bolt text-warning mr-1 animate-pulse"></i> Real-Time Connected';
+                    badge.className = 'badge badge-success px-3 py-2 mr-3 font-weight-bold shadow-sm d-flex align-items-center';
+                }
+            });
+
+            window.Echo.connector.pusher.connection.bind('unavailable', function () {
+                var badge = document.querySelector('.badge-success i.fa-bolt')?.parentElement || document.querySelector('.badge-warning i.fa-bolt')?.parentElement;
+                if (badge) {
+                    badge.innerHTML = '<i class="fas fa-bolt text-dark mr-1"></i> AJAX Live Active (Reverb Offline)';
+                    badge.className = 'badge badge-warning text-dark px-3 py-2 mr-3 font-weight-bold shadow-sm d-flex align-items-center';
+                }
+            });
+        }
     }
 })();

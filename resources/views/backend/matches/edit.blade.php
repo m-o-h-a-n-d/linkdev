@@ -56,6 +56,28 @@
                 </div>
             </div>
 
+            @if($match->group_id === null)
+                <div class="form-group" id="knockout_winner_group">
+                    <label class="font-weight-bold text-warning">
+                        <i class="fas fa-trophy mr-1"></i> Shootout / Extra Time Winner (مطلوب في حال انتهاء الوقت بالتعادل في الأدوار الإقصائية)
+                    </label>
+                    <select name="winner_team_id" class="form-control">
+                        <option value="">-- Determine Winner Automatically from Scores --</option>
+                        @if($match->homeTeam)
+                            <option value="{{ $match->home_team_id }}" {{ old('winner_team_id', $match->winner_team_id) == $match->home_team_id ? 'selected' : '' }}>
+                                {{ $match->homeTeam->name }} (Home Team Winner)
+                            </option>
+                        @endif
+                        @if($match->awayTeam)
+                            <option value="{{ $match->away_team_id }}" {{ old('winner_team_id', $match->winner_team_id) == $match->away_team_id ? 'selected' : '' }}>
+                                {{ $match->awayTeam->name }} (Away Team Winner)
+                            </option>
+                        @endif
+                    </select>
+                    <small class="form-text text-muted">في مباريات خروج المغلوب، إذا انتهت النتيجة بالتعادل يجب تحديد الفريق الفائز بركلات الترجيح ليصعد للدور التالي.</small>
+                </div>
+            @endif
+
             <div class="form-group">
                 <label class="font-weight-bold text-gray-700">Notes / Stadium Venue</label>
                 <input type="text" name="notes" class="form-control" value="{{ old('notes', $match->notes) }}">

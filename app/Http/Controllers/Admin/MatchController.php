@@ -46,14 +46,21 @@ class MatchController extends Controller
 
     public function generateFixtures(GenerateFixturesRequest $request): RedirectResponse
     {
-        $createdMatches = $this->matchService->generateFixtures($request->group_id);
+        try {
+            $startDate = $request->filled('start_datetime') ? \Carbon\Carbon::parse($request->start_datetime) : null;
+            $createdMatches = $this->matchService->generateFixtures((int) $request->group_id, $startDate);
 
-        if ($createdMatches->isEmpty()) {
-            return redirect()->back()->with('error', 'Not enough teams in this group to generate fixtures.');
+            if ($createdMatches->isEmpty()) {
+                return redirect()->back()->with('error', 'عدد الفرق في هذه المجموعة غير كافٍ لتوليد المباريات (يلزم فريقين على الأقل).');
+            }
+
+            return redirect()->route('admin.matches.index')
+                ->with('success', "تم توليد جدول المباريات بنجاح ({$createdMatches->count()} مباراة)!");
+        } catch (\DomainException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'حدث خطأ أثناء توليد المباريات: ' . $e->getMessage());
         }
-
-        return redirect()->route('admin.matches.index')
-            ->with('success', "Generated {$createdMatches->count()} fixtures successfully!");
     }
 
     public function show(int $id): View
@@ -73,11 +80,17 @@ class MatchController extends Controller
 
     public function update(UpdateMatchRequest $request, int $id): RedirectResponse
     {
-        $matchData = UpdateMatchData::from($request);
-        $this->matchService->updateMatch($id, $matchData);
+        try {
+            $matchData = UpdateMatchData::from($request);
+            $this->matchService->updateMatch($id, $matchData);
 
-        return redirect()->route('admin.matches.index')
-            ->with('success', 'Match updated and standings recalculated successfully!');
+            return redirect()->route('admin.matches.index')
+                ->with('success', 'Match updated and standings recalculated successfully!');
+        } catch (\DomainException $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to update match: ' . $e->getMessage());
+        }
     }
 
     public function destroy(int $id): RedirectResponse
@@ -97,23 +110,43 @@ class MatchController extends Controller
 
     public function updateScore(UpdateMatchScoreRequest $request, int $id): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
-        $match = $this->matchService->updateScore($id, $request->action);
+        try {
+            $match = $this->matchService->updateScore($id, $request->action);
 
-        if ($request->expectsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Match updated successfully!',
-                'match' => [
-                    'id' => $match->id,
-                    'status' => $match->status,
-                    'home_score' => (int) $match->home_score,
-                    'away_score' => (int) $match->away_score,
-                    'formatted_timer' => $match->formatted_timer,
-                ],
-            ]);
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Match updated successfully!',
+                    'match' => [
+                        'id' => $match->id,
+                        'status' => $match->status,
+                        'home_score' => (int) $match->home_score,
+                        'away_score' => (int) $match->away_score,
+                        'formatted_timer' => $match->formatted_timer,
+                    ],
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Match updated successfully!');
+        } catch (\DomainException $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update match: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', 'Failed to update match.');
         }
-
-        return redirect()->back()->with('success', 'Match updated successfully!');
     }
 
     public function getGroupsByCompetition(int $id): \Illuminate\Http\JsonResponse

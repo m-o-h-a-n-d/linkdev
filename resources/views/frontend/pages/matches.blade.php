@@ -51,7 +51,13 @@
                         </div>
 
                         <div class="match-center">
-                            <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
+                            <div class="team-block home" style="display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex: 1;">
+                                <span class="team-name home">{{ $match->homeTeam->name ?? 'N/A' }}</span>
+                                <img src="{{ $match->homeTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                     alt="{{ $match->homeTeam?->name }}" 
+                                     style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.05); padding: 3px;"
+                                     onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                            </div>
 
                             <div class="score-badge" id="viewer-score-{{ $match->id }}">
                                 @if(in_array($rawStatus, ['finished', 'live']))
@@ -61,7 +67,13 @@
                                 @endif
                             </div>
 
-                            <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                            <div class="team-block away" style="display: flex; align-items: center; gap: 10px; justify-content: flex-start; flex: 1;">
+                                <img src="{{ $match->awayTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                     alt="{{ $match->awayTeam?->name }}" 
+                                     style="width: 32px; height: 32px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.05); padding: 3px;"
+                                     onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                                <span class="team-name away">{{ $match->awayTeam->name ?? 'N/A' }}</span>
+                            </div>
                         </div>
 
                         <div class="match-badge-wrap">

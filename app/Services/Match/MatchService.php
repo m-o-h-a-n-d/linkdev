@@ -13,6 +13,7 @@ use App\Utility\ActivityLogger;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class MatchService
 {
@@ -26,8 +27,7 @@ class MatchService
         protected TeamRepositoryInterface $teamRepository
     ) {}
 
-
-    //  All Of matches
+    // All matches
     public function all(): Collection
     {
         return $this->matchRepository->all();
@@ -39,7 +39,6 @@ class MatchService
         return $this->matchRepository->paginate($perPage);
     }
 
-
     // Paginate matches with filters and update live statuses
     public function getPaginatedMatches(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
@@ -47,7 +46,6 @@ class MatchService
 
         return $this->matchRepository->paginateWithFilters($filters, $perPage);
     }
-
 
     // Get match by ID or throw exception if not found
     public function findOrFail(int $id): GameMatch
@@ -61,9 +59,7 @@ class MatchService
         return $match;
     }
 
-
     // Get match with relations by ID or throw exception if not found
-
     public function findWithRelations(int $id, array $relations = []): GameMatch
     {
         $match = $this->matchRepository->findWithRelations($id, $relations);
@@ -75,8 +71,7 @@ class MatchService
         return $match;
     }
 
-    // Get match details for show view
-
+    // Get form data for matches
     public function getFormData(): array
     {
         return [
@@ -86,7 +81,6 @@ class MatchService
         ];
     }
 
-
     // Get filter data for matches
     public function getFilterData(): array
     {
@@ -95,7 +89,6 @@ class MatchService
             'groups' => $this->groupRepository->all(),
         ];
     }
-
 
     // Get match details for show view
     public function getShowDetails(int $id): array
@@ -109,11 +102,15 @@ class MatchService
     // Store a new match
     public function store(CreateMatchData $data): GameMatch
     {
-        $match = $this->matchRepository->create($data);
+        $match = DB::transaction(function () use ($data) {
+            $created = $this->matchRepository->create($data);
 
-        if ($match->competition) {
-            $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
-        }
+            if ($created->competition) {
+                $this->standingsService->syncCompetitionDatesAndStatus($created->competition);
+            }
+
+            return $created;
+        });
 
         if ($match->status === 'live') {
             $this->liveStatusService->sendLiveNotification($match);
@@ -131,7 +128,7 @@ class MatchService
     }
 
     // Generate fixtures for a group in a competition
-    public function generateFixtures(int $groupId): Collection
+    public function generateFixtures(int $groupId, ?\Carbon\Carbon $startDate = null): Collection
     {
         $group = $this->groupRepository->find($groupId);
 
@@ -139,11 +136,32 @@ class MatchService
             throw new ModelNotFoundException('Group not found.');
         }
 
-        $createdMatches = $this->fixtureGeneratorService->generateGroupFixtures($group);
+        $createdMatches = DB::transaction(function () use ($group, $startDate) {
+            $existingMatches = $group->matches;
 
-        if ($group->competition) {
-            $this->standingsService->syncCompetitionDatesAndStatus($group->competition);
-        }
+            if ($existingMatches->isNotEmpty()) {
+                $hasActiveOrFinished = $existingMatches->contains(function ($match) {
+                    return in_array($match->status, ['live', 'finished']);
+                });
+
+                if ($hasActiveOrFinished) {
+                    throw new \DomainException('لا يمكن إعادة توليد جدول المباريات: توجد مباريات بدأت بالفعل أو انتهت في هذه المجموعة.');
+                }
+
+                // Delete previous unplayed scheduled fixtures before regenerating to avoid duplicates
+                foreach ($existingMatches as $match) {
+                    $this->matchRepository->delete($match);
+                }
+            }
+
+            $matches = $this->fixtureGeneratorService->generateGroupFixtures($group, $startDate);
+
+            if ($group->competition) {
+                $this->standingsService->syncCompetitionDatesAndStatus($group->competition);
+            }
+
+            return $matches;
+        });
 
         ActivityLogger::log(
             action: 'CREATED',
@@ -162,6 +180,8 @@ class MatchService
         $wasLive = $match->status === 'live';
         $updatePayload = array_filter($data->toArray(), fn ($value) => $value !== null);
 
+        $isKnockout = $match->group_id === null;
+
         if (isset($updatePayload['status'])) {
             if ($updatePayload['status'] === 'live' && ! $wasLive) {
                 $now = now()->toDateTimeString();
@@ -178,25 +198,38 @@ class MatchService
                 } elseif ($awayScore > $homeScore) {
                     $updatePayload['winner_team_id'] = $match->away_team_id;
                 } else {
-                    $updatePayload['winner_team_id'] = null;
+                    // Score is tied
+                    if ($isKnockout) {
+                        $winnerId = $updatePayload['winner_team_id'] ?? $match->winner_team_id;
+                        if (! $winnerId) {
+                            throw new \DomainException('مباريات الأدوار الإقصائية لا يمكن أن تنتهي بالتعادل. يرجى تحديد الفريق الفائز (بركلات الترجيح / الأشواط الإضافية).');
+                        }
+                        $updatePayload['winner_team_id'] = $winnerId;
+                    } else {
+                        $updatePayload['winner_team_id'] = null;
+                    }
                 }
                 $updatePayload['ended_at'] = now()->toDateTimeString();
             }
         }
 
-        $updatedMatch = $this->matchRepository->update($match, $updatePayload);
+        $updatedMatch = DB::transaction(function () use ($match, $updatePayload) {
+            $updated = $this->matchRepository->update($match, $updatePayload);
 
-        if ($updatedMatch->group) {
-            $this->standingsService->recalculateGroupStandings($updatedMatch->group);
-        }
-        if ($updatedMatch->competition) {
-            $this->standingsService->recalculateTeamStatistics($updatedMatch->competition);
-            if ($updatedMatch->status === 'finished') {
-                $this->standingsService->checkAndGenerateKnockoutFromGroups($updatedMatch->competition);
-                $this->standingsService->advanceKnockoutWinner($updatedMatch);
+            if ($updated->group) {
+                $this->standingsService->recalculateGroupStandings($updated->group);
             }
-            $this->standingsService->syncCompetitionDatesAndStatus($updatedMatch->competition);
-        }
+            if ($updated->competition) {
+                $this->standingsService->recalculateTeamStatistics($updated->competition);
+                if ($updated->status === 'finished') {
+                    $this->standingsService->checkAndGenerateKnockoutFromGroups($updated->competition);
+                    $this->standingsService->advanceKnockoutWinner($updated);
+                }
+                $this->standingsService->syncCompetitionDatesAndStatus($updated->competition);
+            }
+
+            return $updated;
+        });
 
         if ($updatedMatch->status === 'live' && ! $wasLive) {
             $this->liveStatusService->sendLiveNotification($updatedMatch);
@@ -225,15 +258,19 @@ class MatchService
         $competition = $match->competition;
         $matchId = $match->id;
 
-        $deleted = $this->matchRepository->delete($match);
+        $deleted = DB::transaction(function () use ($match, $group, $competition) {
+            $del = $this->matchRepository->delete($match);
 
-        if ($group) {
-            $this->standingsService->recalculateGroupStandings($group);
-        }
-        if ($competition) {
-            $this->standingsService->recalculateTeamStatistics($competition);
-            $this->standingsService->syncCompetitionDatesAndStatus($competition);
-        }
+            if ($group) {
+                $this->standingsService->recalculateGroupStandings($group);
+            }
+            if ($competition) {
+                $this->standingsService->recalculateTeamStatistics($competition);
+                $this->standingsService->syncCompetitionDatesAndStatus($competition);
+            }
+
+            return $del;
+        });
 
         if ($deleted) {
             ActivityLogger::log(
@@ -256,22 +293,25 @@ class MatchService
     }
 
     // Update match score and handle live status changes
-    public function updateScore(int $id, string $action): GameMatch
+    public function updateScore(int $id, string $action, ?int $designatedWinnerId = null): GameMatch
     {
         $match = $this->findOrFail($id);
 
         if ($action === 'start_live') {
             $now = now();
-            $this->matchRepository->update($match, [
-                'status' => 'live',
-                'scheduled_at' => $now,
-                'started_at' => $now,
-            ]);
+            DB::transaction(function () use ($match, $now) {
+                $this->matchRepository->update($match, [
+                    'status' => 'live',
+                    'scheduled_at' => $now,
+                    'started_at' => $now,
+                ]);
+                if ($match->competition) {
+                    $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
+                }
+            });
+
             $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
             $this->liveStatusService->sendLiveNotification($freshMatch);
-            if ($match->competition) {
-                $this->standingsService->syncCompetitionDatesAndStatus($match->competition);
-            }
 
             return $freshMatch;
         }
@@ -309,33 +349,46 @@ class MatchService
         }
 
         if ($action === 'finish_match') {
+            $isKnockout = $match->group_id === null;
             $winnerId = null;
+
             if ($match->home_score > $match->away_score) {
                 $winnerId = $match->home_team_id;
             } elseif ($match->away_score > $match->home_score) {
                 $winnerId = $match->away_team_id;
+            } else {
+                if ($isKnockout) {
+                    $winnerId = $designatedWinnerId ?? $match->winner_team_id;
+                    if (! $winnerId) {
+                        throw new \DomainException('لا يمكن إنهاء مباراة في الأدوار الإقصائية بنتيجة تعادل (' . $match->home_score . ' - ' . $match->away_score . '). مباريات خروج المغلوب تتطلب فائزاً لحسم التأهل.');
+                    }
+                }
             }
 
             $startedAt = $match->started_at ?? $match->scheduled_at ?? now();
 
-            $updated = $this->matchRepository->update($match, [
-                'status' => 'finished',
-                'winner_team_id' => $winnerId,
-                'started_at' => $startedAt,
-                'ended_at' => now(),
-            ]);
+            $updated = DB::transaction(function () use ($match, $winnerId, $startedAt) {
+                $updatedMatch = $this->matchRepository->update($match, [
+                    'status' => 'finished',
+                    'winner_team_id' => $winnerId,
+                    'started_at' => $startedAt,
+                    'ended_at' => now(),
+                ]);
 
-            if ($updated->group) {
-                $this->standingsService->recalculateGroupStandings($updated->group);
-            }
-            if ($updated->competition) {
-                $this->standingsService->recalculateTeamStatistics($updated->competition);
-                $this->standingsService->checkAndGenerateKnockoutFromGroups($updated->competition);
-                $this->standingsService->advanceKnockoutWinner($updated);
-                $this->standingsService->syncCompetitionDatesAndStatus($updated->competition);
-            }
+                if ($updatedMatch->group) {
+                    $this->standingsService->recalculateGroupStandings($updatedMatch->group);
+                }
+                if ($updatedMatch->competition) {
+                    $this->standingsService->recalculateTeamStatistics($updatedMatch->competition);
+                    $this->standingsService->checkAndGenerateKnockoutFromGroups($updatedMatch->competition);
+                    $this->standingsService->advanceKnockoutWinner($updatedMatch);
+                    $this->syncAndCheckCompetition($updatedMatch->competition);
+                }
 
-            $freshMatch = $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
+                return $updatedMatch;
+            });
+
+            $freshMatch = $updated->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
             \App\Jobs\Match\BroadcastMatchStatusJob::dispatch($freshMatch);
 
             ActivityLogger::log(
@@ -351,26 +404,26 @@ class MatchService
         return $match->fresh(['homeTeam', 'awayTeam', 'competition', 'group']);
     }
 
+    protected function syncAndCheckCompetition($competition): void
+    {
+        $this->standingsService->syncCompetitionDatesAndStatus($competition);
+    }
 
     // Get groups by competition ID
-
     public function getGroupsByCompetition(int $competitionId): Collection
     {
         return $this->groupRepository->getGroupsByCompetitionId($competitionId);
     }
 
     // Get teams by group ID
-
     public function getTeamsByGroup(int $groupId): Collection
     {
         return $this->groupRepository->getTeamsByGroupId($groupId);
     }
 
     // Get teams by competition ID
-
     public function getTeamsByCompetition(int $competitionId): Collection
     {
         return $this->competitionRepository->getTeamsByCompetitionId($competitionId);
     }
 }
-

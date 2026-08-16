@@ -49,15 +49,17 @@
                     </div>
 
                     <div style="background: #070c14; padding: 18px; border-radius: 10px; border: 1px solid #1e293b;">
-                        <div style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Current
-                            Leader</div>
-                        <div
-                            style="font-size: 1.3rem; color: #ea580c; font-weight: 800; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ $competition->leader->name ?? 'Zamalek HC' }}
+                        <div style="color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">
+                            @if($competition->winnerTeam) Champion 🏆 @else Leader / Top Team @endif
+                        </div>
+                        <div style="font-size: 1.3rem; color: #ea580c; font-weight: 800; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ $competition->winnerTeam->name ?? $competition->leader->name ?? 'TBD' }}
                         </div>
                     </div>
                 </div>
-            <!-- Tournament Bracket / Waiting Status Component -->
+            </div>
+
+            <!-- Tournament Bracket / Knockout Status Component -->
             <div style="margin-bottom: 30px;">
                 @include('frontend.partials.bracket', ['competition' => $competition])
             </div>

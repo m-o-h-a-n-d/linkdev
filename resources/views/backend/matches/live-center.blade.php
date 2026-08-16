@@ -28,7 +28,7 @@
 
     <div class="row" id="liveMatchesRow">
         @forelse($liveMatches as $match)
-            <div class="col-lg-6 mb-4" id="match-card-{{ $match->id }}" data-match-id="{{ $match->id }}">
+            <div class="col-lg-6 mb-4" id="match-card-{{ $match->id }}" data-match-id="{{ $match->id }}" data-is-knockout="{{ $match->group_id === null ? '1' : '0' }}">
                 <div class="card border-left-{{ $match->status === 'live' ? 'danger' : 'primary' }} shadow h-100 py-2 match-card-box">
                     <div class="card-body">
                         <!-- Match Meta -->
@@ -56,10 +56,16 @@
                         <!-- Teams & Scores -->
                         <div class="row align-items-center text-center my-4">
                             <div class="col-5">
-                                <h5 class="font-weight-bold text-gray-900 mb-1 match-home-name">
+                                <div class="mb-2">
+                                    <img src="{{ $match->homeTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $match->homeTeam?->name }}" 
+                                         style="width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.06); padding: 4px; border: 1px solid rgba(255,255,255,0.1);"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                                </div>
+                                <h5 class="font-weight-bold text-white mb-1 match-home-name" style="font-size: 1.15rem; letter-spacing: 0.3px;">
                                     {{ $match->homeTeam->name ?? 'Home Team' }}
                                 </h5>
-                                <span class="badge badge-secondary">HOME</span>
+                                <span class="badge badge-primary px-2 py-1" style="font-size: 0.72rem; font-weight: 800;">HOME</span>
                                 <div class="display-3 font-weight-extrabold text-primary mt-2 score-display" id="home-score-{{ $match->id }}">
                                     {{ $match->home_score }}
                                 </div>
@@ -87,10 +93,16 @@
                             </div>
 
                             <div class="col-5">
-                                <h5 class="font-weight-bold text-gray-900 mb-1 match-away-name">
+                                <div class="mb-2">
+                                    <img src="{{ $match->awayTeam?->logo_url ?? asset('backend/img/undraw_profile.svg') }}" 
+                                         alt="{{ $match->awayTeam?->name }}" 
+                                         style="width: 48px; height: 48px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.06); padding: 4px; border: 1px solid rgba(255,255,255,0.1);"
+                                         onerror="this.src='{{ asset('backend/img/undraw_profile.svg') }}'">
+                                </div>
+                                <h5 class="font-weight-bold text-white mb-1 match-away-name" style="font-size: 1.15rem; letter-spacing: 0.3px;">
                                     {{ $match->awayTeam->name ?? 'Away Team' }}
                                 </h5>
-                                <span class="badge badge-secondary">AWAY</span>
+                                <span class="badge badge-danger px-2 py-1" style="font-size: 0.72rem; font-weight: 800;">AWAY</span>
                                 <div class="display-3 font-weight-extrabold text-danger mt-2 score-display" id="away-score-{{ $match->id }}">
                                     {{ $match->away_score }}
                                 </div>
@@ -293,22 +305,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
         var submitBtn = form.querySelector('button[type="submit"]');
         var originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = '0.7';
-        }
-
         var formData = new FormData(form);
         var url = form.getAttribute('action');
+        var action = formData.get('action');
+        var card = form.closest('[data-match-id]');
+        var isKnockout = card && card.getAttribute('data-is-knockout') === '1';
+
+        if (action === 'finish_match' && isKnockout) {
+            var matchId = card.getAttribute('data-match-id');
+            var homeScore = parseInt(document.getElementById('home-score-' + matchId)?.innerText || '0');
+            var awayScore = parseInt(document.getElementById('away-score-' + matchId)?.innerText || '0');
+
+            if (homeScore === awayScore) {
+                alert('⚠️ مباريات الأدوار الإقصائية (خروج المغلوب) لا يمكن أن تنتهي بالتعادل (' + homeScore + ' - ' + awayScore + ')!\n\nيرجى تسجيل هدف الحسم / ركلات الترجيح لأحد الفريقين قبل إنهاء المباراة لحسم التأهل.');
+                return;
+            }
+        }
 
         if (!url) {
             console.error('Form action URL missing');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                submitBtn.innerHTML = originalBtnHtml;
-            }
             return;
+        }
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
         }
 
         fetch(url, {
@@ -329,6 +350,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 submitBtn.innerHTML = originalBtnHtml;
             }
 
+            if (data.success === false) {
+                alert('⚠️ ' + (data.message || 'حدث خطأ أثناء حفظ المباراة.'));
+                return;
+            }
+
             if (data.success && data.match) {
                 var m = data.match;
                 var homeScoreEl = document.getElementById('home-score-' + m.id);
@@ -343,7 +369,71 @@ document.addEventListener('DOMContentLoaded', function () {
                     flashScore(awayScoreEl);
                 }
 
-                // If match status changed to finished
+                // 1. If match status changed to LIVE (Instant Zero-Refresh Switch)
+                if (m.status === 'live') {
+                    var statusBadge = document.getElementById('match-status-badge-' + m.id);
+                    if (statusBadge) {
+                        statusBadge.innerHTML = '<span class="badge badge-danger text-uppercase px-3 py-1 font-weight-bold animate-pulse"><i class="fas fa-circle mr-1" style="font-size: 8px;"></i> LIVE</span>';
+                    }
+
+                    var timerContainer = document.getElementById('match-timer-container-' + m.id);
+                    if (timerContainer) {
+                        timerContainer.innerHTML = '<div class="badge badge-dark text-warning font-weight-bold mt-2 px-2 py-1 match-live-timer" style="font-size: 0.9rem;" id="timer-' + m.id + '" data-started="' + new Date().toISOString() + '">' + (m.formatted_timer || '00:00') + '</div>';
+                    }
+
+                    var cardBox = document.getElementById('match-card-' + m.id);
+                    if (cardBox) {
+                        var cardInner = cardBox.querySelector('.card');
+                        if (cardInner) {
+                            cardInner.classList.remove('border-left-primary');
+                            cardInner.classList.add('border-left-danger');
+                        }
+                    }
+
+                    var actionsContainer = document.getElementById('match-actions-' + m.id);
+                    if (actionsContainer) {
+                        actionsContainer.innerHTML = 
+                            '<div class="row mb-3">' +
+                                '<div class="col-6">' +
+                                    '<div class="btn-group w-100" role="group">' +
+                                        '<form action="' + url + '" method="POST" class="w-50 ajax-match-action">' +
+                                            '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                            '<input type="hidden" name="action" value="decrement_home">' +
+                                            '<button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>' +
+                                        '</form>' +
+                                        '<form action="' + url + '" method="POST" class="w-50 ajax-match-action">' +
+                                            '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                            '<input type="hidden" name="action" value="increment_home">' +
+                                            '<button type="submit" class="btn btn-primary btn-block font-weight-bold">+ Goal</button>' +
+                                        '</form>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="col-6">' +
+                                    '<div class="btn-group w-100" role="group">' +
+                                        '<form action="' + url + '" method="POST" class="w-50 ajax-match-action">' +
+                                            '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                            '<input type="hidden" name="action" value="decrement_away">' +
+                                            '<button type="submit" class="btn btn-outline-danger btn-block font-weight-bold">- 1</button>' +
+                                        '</form>' +
+                                        '<form action="' + url + '" method="POST" class="w-50 ajax-match-action">' +
+                                            '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                            '<input type="hidden" name="action" value="increment_away">' +
+                                            '<button type="submit" class="btn btn-danger btn-block font-weight-bold">+ Goal</button>' +
+                                        '</form>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<form action="' + url + '" method="POST" class="ajax-match-action" onsubmit="return confirm(\'Finish this match and recalculate standings?\');">' +
+                                '<input type="hidden" name="_token" value="{{ csrf_token() }}">' +
+                                '<input type="hidden" name="action" value="finish_match">' +
+                                '<button type="submit" class="btn btn-dark btn-block font-weight-bold shadow-sm">' +
+                                    '<i class="fas fa-flag-checkered mr-1"></i> End Match & Recalculate Standings' +
+                                '</button>' +
+                            '</form>';
+                    }
+                }
+
+                // 2. If match status changed to finished
                 if (m.status === 'finished') {
                     var statusBadge = document.getElementById('match-status-badge-' + m.id);
                     if (statusBadge) {
@@ -494,6 +584,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
     }
+
+    // ------------------------------------------------------------------------
+    // 3. Client-Side Live Match Timer Ticker (Ticks every second)
+    // ------------------------------------------------------------------------
+    setInterval(function () {
+        document.querySelectorAll('.match-live-timer').forEach(function (el) {
+            var startedStr = el.getAttribute('data-started');
+            if (!startedStr) return;
+            var start = new Date(startedStr).getTime();
+            var now = Date.now();
+            var diff = Math.max(0, Math.floor((now - start) / 1000));
+            var mins = Math.floor(diff / 60);
+            var secs = diff % 60;
+            el.innerText = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+        });
+    }, 1000);
 });
 </script>
 

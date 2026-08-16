@@ -15,6 +15,7 @@ class GenerateFixturesRequest extends FormRequest
     {
         return [
             'group_id' => 'required|exists:competition_groups,id',
+            'start_datetime' => 'nullable|date',
         ];
     }
 }
