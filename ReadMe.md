@@ -27,6 +27,7 @@
 10. [خريطة المسارات والروابط (Routes & Endpoints)](#-خريطة-المسارات-والروابط-routes--endpoints)
 11. [دليل التثبيت والتشغيل خطوة بخطوة (Installation & How to Run)](#-دليل-التثبيت-والتشغيل-خطوة-بخطوة-installation--how-to-run)
 12. [بيانات تسجيل الدخول الافتراضية (Default Credentials)](#-بيانات-تسجيل-الدخول-الافتراضية-default-credentials)
+13. [المراجع والشروحات التوضيحية (Tutorials & Documentation)](#-المراجع-والشروحات-التوضيحية-tutorials--documentation)
 
 ---
 
@@ -552,6 +553,23 @@ php artisan test
 
 ---
 
+## 📚 المراجع والشروحات التوضيحية (Tutorials & Documentation)
+
+توجد جميع ملفات الشرح التوضيحي، التوثيق الشامل، والرسومات والمخططات المعمارية الخاصة بالمشروع داخل المجلد:
+📂 **`public/Tetorial/`**
+
+### 📄 محتويات المجلد:
+1. 📑 **التوثيق الشامل للنظام (PDF Document)**:
+   - الملف: `public/Tetorial/LinkDev_—_Documentation_شاملة_للمشروع.pdf`
+   - يحتوي على توثيق تفصيلي باللغة العربية يشمل كافة خواص المشروع، تدفق البيانات (Workflows)، والمحاكاة والبث المباشر.
+2. 🖼️ **مخطط الجداول وتوزيع البيانات (Tables Diagram)**:
+   - الملف: `public/Tetorial/Tables.png`
+3. 🖼️ **مخطط المعمارية والمستودعات (Repository Pattern Architecture)**:
+   - الملف: `public/Tetorial/comRepo.png`
+
+---
+
 <p align="center">
   صُنع بكل ❤️ لتقديم تجربة متكاملة لإدارة المنافسات الرياضية
 </p>
+
