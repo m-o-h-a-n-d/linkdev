@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Viewer\AccountController;
 use App\Http\Controllers\Viewer\Auth\EmailVerificationController;
 use App\Http\Controllers\Viewer\Auth\LoginController;
+use App\Http\Controllers\Viewer\Auth\OAuthController;
 use App\Http\Controllers\Viewer\Auth\Password\ForgetPasswordController;
 use App\Http\Controllers\Viewer\Auth\Password\OtpVerificationController;
 use App\Http\Controllers\Viewer\Auth\Password\ResetPasswordController;
@@ -44,6 +45,10 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Google OAuth Routes
+Route::get('/auth/google', [OAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [OAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // Email Verification OTP Routes
 Route::get('/email/verify-otp', [EmailVerificationController::class, 'show'])->name('verification.notice');
