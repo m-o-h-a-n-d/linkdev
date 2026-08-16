@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => ['auth:admin'],
 
     /*
     |--------------------------------------------------------------------------
@@ -377,7 +377,7 @@ return [
     | MCP server
     |--------------------------------------------------------------------------
     |
-    | The optional read-only, structure-only MCP server exposes the live schema
+    | The optional read-only, structure-only MCP server exposes the live schemaF
     | to a coding agent (structure only, never row data). It requires the
     | optional first-party `laravel/mcp` package: install it with
     | `composer require laravel/mcp`. When that package is absent this switch has

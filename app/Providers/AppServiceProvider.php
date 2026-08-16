@@ -28,6 +28,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -65,6 +67,17 @@ class AppServiceProvider extends ServiceProvider
             } catch (\Throwable $e) {
                 // Prevent database errors during artisan setup/migration
             }
+        });
+
+
+        Gate::define('viewVantage', function ($user) {
+                $admin = Auth::guard('admin')->user() ?? $user;
+    if (! $admin) {
+        return false;
+    }
+    // التحقق من رول super-admin
+    return $admin->hasRole('super-admin', 'admin');
+
         });
     }
 }
